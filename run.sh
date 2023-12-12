@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# Check if the correct number of arguments is provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <file_name>"
-    exit 1
-fi
+# This script compiles all C files in the src/ folder and saves the executables to the out/ folder.
+# It then runs the main.c executable.
 
 # Source file name provided as an argument
-file_name="$1"
+file_name="main"
 
 # Check if the source file exists
 if [ ! -f "src/$file_name.c" ]; then
-    echo "Error: Source file not found in /src folder."
+    echo "Error: main.c file not found in /src folder."
     exit 1
 fi
 
@@ -19,7 +16,7 @@ fi
 mkdir -p out
 
 # Compile the C file and save the executable to the out/ folder
-gcc "src/$file_name.c" -o "out/$file_name"
+gcc "src/*.c" -o "out/$file_name"
 
 # Check if compilation was successful
 if [ $? -eq 0 ]; then
