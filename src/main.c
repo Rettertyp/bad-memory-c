@@ -1,22 +1,16 @@
-#include "stack.h"
+#include "badMemoryAlg.h"
 #include <stdio.h>
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 int main(int argc, char** argv) {
-  Stack s1 = NULL;
-  push(&s1, 1);
-  push(&s1, 2);
-  push(&s1, 3);
-  push(&s1, 4);
 
-  if (!isEmpty(&s1))
-    printf("Stack is not empty\n");
+  Interval intervals1[] = {{1, 3}, {2, 4}, {3, 5}, {4, 9}, {5, 20}};
 
-  int val;
-  while ((val = pop(&s1)) != STACK_EMPTY)
-    printf("%d\n", val);
+  IntervalSet* intervalSet1 = createIntervalSet(intervals1, 5);
 
-  if (isEmpty(&s1))
-    printf("Stack is empty\n");
+  badMemoryAlgorithm(intervalSet1);
+
+  deleteIntervalSet(intervalSet1);
 
   return 0;
 }

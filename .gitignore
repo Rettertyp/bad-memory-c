@@ -1,2 +1,5 @@
 /.vscode
 /out
+/obj
+main
+main.exe
