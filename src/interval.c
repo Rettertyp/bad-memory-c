@@ -31,25 +31,19 @@ bool contains(Interval* interval, int value) {
 }
 
 /**
- * Checks if the top value of the interval is greater than the specified value.
+ * Checks if the bottom value of the given interval is greater than the specified value.
  *
- * @param interval A pointer to the interval to check.
- * @param value The value to compare against the top value of the interval.
- * @return true if the top value of the interval is greater than the specified
- * value, false otherwise.
+ * @param interval The interval to check.
+ * @param value The value to compare with the bottom value of the interval.
+ * @return true if the bottom value is greater than the specified value, false otherwise.
  */
-bool greaterThan(Interval* interval, int value) {
-  return interval->top > value;
-}
+bool greaterThan(Interval* interval, int value) { return interval->bottom > value; }
 
 /**
- * Checks if the bottom value of the interval is less than the specified value.
+ * Checks if the top value of the given interval is less than the specified value.
  *
- * @param interval A pointer to the interval to check.
- * @param value The value to compare against the bottom value of the interval.
- * @return true if the bottom value of the interval is less than the specified
- * value, false otherwise.
+ * @param interval The interval to check.
+ * @param value The value to compare with the top value of the interval.
+ * @return true if the top value is less than the specified value, false otherwise.
  */
-bool lessThan(Interval* interval, int value) {
-  return interval->bottom < value;
-}
+bool lessThan(Interval* interval, int value) { return interval->top < value; }

@@ -28,7 +28,8 @@ typedef StackNode* Stack;
 
 void push(Stack* stack, int value);
 int pop(Stack* stack);
-bool isEmpty(Stack* stack);
-bool equals(Stack* stack1, Stack* stack2);
+bool stackIsEmpty(Stack* stack);
+bool stackEquals(Stack* stack1, Stack* stack2);
+Stack copyStack(Stack stack);
 
 #endif // STACK_H

@@ -4,6 +4,15 @@
 #include "intervalSet.h"
 
 /**
+ * @brief Structure representing a node in a linked list of interval sets.
+ */
+typedef struct IntervalSetNode {
+  IntervalSet* set; /** Pointer to the interval set. */
+  struct IntervalSetNode*
+      next; /** Pointer to the next interval set node in the linked list. */
+} IntervalSetNode;
+
+/**
  * @brief Structure representing a node in a graph.
  */
 typedef struct GraphNode {
@@ -12,15 +21,6 @@ typedef struct GraphNode {
   IntervalSetNode* intervalSets; /** Pointer to the linked list of interval
                                     sets associated with the graph node. */
 } GraphNode;
-
-/**
- * @brief Structure representing a node in a linked list of interval sets.
- */
-typedef struct IntervalSetNode {
-  IntervalSet* set; /** Pointer to the interval set. */
-  struct IntervalSetNode*
-      next; /** Pointer to the next interval set node in the linked list. */
-} IntervalSetNode;
 
 GraphNode createGraphNode(int i, int s);
 void deleteGraphNode(GraphNode* graphNode);

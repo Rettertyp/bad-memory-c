@@ -42,7 +42,7 @@ int pop(Stack* stack) {
  * @param stack The stack to be checked.
  * @return True if the stack is empty, false otherwise.
  */
-bool isEmpty(Stack* stack) { return *stack == NULL; }
+bool stackIsEmpty(Stack* stack) { return *stack == NULL; }
 
 /**
  * Compares the values of each node in the two stacks to determine if
@@ -53,7 +53,7 @@ bool isEmpty(Stack* stack) { return *stack == NULL; }
  * @param stack2 Pointer to the second stack.
  * @return true if the stacks are equal, false otherwise.
  */
-bool equals(Stack* stack1, Stack* stack2) {
+bool stackEquals(Stack* stack1, Stack* stack2) {
   StackNode* node1 = *stack1;
   StackNode* node2 = *stack2;
 
@@ -66,4 +66,24 @@ bool equals(Stack* stack1, Stack* stack2) {
   }
 
   return node1 == NULL && node2 == NULL;
+}
+
+/**
+ * Creates a copy of the given stack.
+ *
+ * @param stack The stack to be copied.
+ * @return A new stack that is a copy of the original stack.
+ */
+Stack copyStack(Stack stack) {
+  Stack copy = NULL;
+  StackNode* node = stack;
+
+  // #TODO this reverses the order of the stack
+
+  while (node != NULL) {
+    push(&copy, node->value);
+    node = node->next;
+  }
+
+  return copy;
 }

@@ -9,11 +9,35 @@
  * @return A pointer to the newly created IntervalSet object, or NULL if memory
  * allocation fails.
  */
-IntervalSet* createIntervalSet(Interval intervals[], int length) {
+IntervalSet* createBlankIntervalSet(Interval intervals[], int length) {
   IntervalSet* intervalSet = malloc(sizeof(IntervalSet));
 
   if (intervalSet) {
     intervalSet->stack = NULL;
+    intervalSet->length = length;
+    intervalSet->intervals = malloc(sizeof(Interval) * length);
+
+    // copy the intervals into the new array
+    if (intervalSet->intervals) {
+      for (int i = 0; i < length; i++) {
+        intervalSet->intervals[i] = intervals[i];
+      }
+    } else {
+      free(intervalSet);
+      intervalSet = NULL;
+    }
+  }
+
+  return intervalSet;
+}
+
+IntervalSet* createIntervalSet(Interval intervals[], int length, Stack stack) {
+  IntervalSet* intervalSet = malloc(sizeof(IntervalSet));
+
+  printf("In createIntervalSet\n");
+
+  if (intervalSet) {
+    intervalSet->stack = stack;
     intervalSet->length = length;
     intervalSet->intervals = malloc(sizeof(Interval) * length);
 
@@ -140,8 +164,7 @@ void sortByBottom(IntervalSet* intervalSet) {
  */
 void printIntervalSet(IntervalSet* intervalSet) {
   for (int i = 0; i < intervalSet->length; i++) {
-    printf("(%d, %d), ", intervalSet->intervals[i].bottom,
-           intervalSet->intervals[i].top);
+    printf("(%d, %d), ", intervalSet->intervals[i].bottom, intervalSet->intervals[i].top);
   }
 
   printf("\n");
@@ -185,4 +208,34 @@ int countContainingI(IntervalSet* intervalSet, int i) {
   }
 
   return count;
+}
+
+/**
+ * Removes the first 'g' intervals that include 'i' from the given 'intervalSet' and
+ * returns a new IntervalSet.
+ *
+ * @param intervalSet The original IntervalSet from which intervals will be removed.
+ * @param i The number the intervals must include.
+ * @param g The number of intervals to be removed from the beginning of the IntervalSet.
+ * @return A new IntervalSet without the first 'g' intervals that include 'i'.
+ */
+IntervalSet* getWithoutFirstGIncludingI(IntervalSet* intervalSet, int i, int g) {
+  int newLength = intervalSet->length - g;
+  Interval intervals[newLength];
+
+  printf("In getWithoutFirstGIncludingI: newLength: %d\n", newLength);
+
+  int j = 0;
+  int nAssigned = 0;
+  for (int i = 0; i < intervalSet->length; i++) {
+    if (nAssigned < g && contains(&(intervalSet->intervals[i]), i)) {
+      nAssigned++;
+    } else {
+      intervals[j++] = intervalSet->intervals[i];
+    }
+  }
+
+  printf("After loop in getWithoutFirstGIncludingI\n");
+
+  return createIntervalSet(intervals, newLength, copyStack(intervalSet->stack));
 }

@@ -4,9 +4,9 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 int main(int argc, char** argv) {
 
-  Interval intervals1[] = {{1, 3}, {2, 4}, {3, 5}, {4, 9}, {5, 20}};
+  Interval intervals1[] = {{1, 3}, {1, 3}, {2, 2}};
 
-  IntervalSet* intervalSet1 = createIntervalSet(intervals1, 5);
+  IntervalSet* intervalSet1 = createBlankIntervalSet(intervals1, 3);
 
   badMemoryAlgorithm(intervalSet1);
 

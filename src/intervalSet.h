@@ -16,12 +16,13 @@ typedef struct IntervalSet {
   Interval* intervals; /** The array of Interval structs */
 } IntervalSet;
 
-IntervalSet* createIntervalSet(Interval intervals[], int length);
+IntervalSet* createBlankIntervalSet(Interval intervals[], int length);
 void deleteIntervalSet(IntervalSet* intervalSet);
 bool isDominatedBy(IntervalSet* thisSet, IntervalSet* otherSet);
 void sortByBottom(IntervalSet* intervalSet);
 void printIntervalSet(IntervalSet* intervalSet);
 int countGreaterI(IntervalSet* intervalSet, int i);
 int countContainingI(IntervalSet* intervalSet, int i);
+IntervalSet* getWithoutFirstGIncludingI(IntervalSet* intervalSet, int i, int g);
 
 #endif // INTERVAL_SET_H
