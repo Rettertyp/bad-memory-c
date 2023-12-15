@@ -1,5 +1,6 @@
 #include "graphNode.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Creates a new GraphNode with the specified i, s values and an empty list of
@@ -72,13 +73,8 @@ void removeDominatedSets(GraphNode* graphNode) {
     IntervalSetNode* innerSetNode = outerSetNode->next;
 
     while (innerSetNode) {
-      printf("Comparing:\n");
-      printIntervalSet(outerSetNode->set);
-      printf("and\n");
-      printIntervalSet(innerSetNode->set);
 
       if (isDominatedBy(innerSetNode->set, outerSetNode->set)) {
-        printf("innerSetNode is dominated by outerSetNode\n");
 
         // get predecessor of innerSetNode
         IntervalSetNode* pred = outerSetNode;
@@ -95,7 +91,6 @@ void removeDominatedSets(GraphNode* graphNode) {
         innerSetNode = next;
 
       } else if (isDominatedBy(outerSetNode->set, innerSetNode->set)) {
-        printf("outerSetNode is dominated by innerSetNode\n");
 
         IntervalSetNode* next = outerSetNode->next;
 
@@ -147,11 +142,20 @@ int getNumberOfIntervalSets(GraphNode* graphNode) {
 }
 
 /**
- * Prints the details of a GraphNode and its associated IntervalSets.
+ * Prints the details of a GraphNode.
  *
  * @param graphNode The GraphNode to be printed.
  */
 void printGraphNode(GraphNode* graphNode) {
+  printf("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
+}
+
+/**
+ * Prints the details of a GraphNode and its associated IntervalSets.
+ *
+ * @param graphNode The GraphNode to be printed.
+ */
+void printGraphNodeDetailed(GraphNode* graphNode) {
   printf("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
@@ -160,6 +164,4 @@ void printGraphNode(GraphNode* graphNode) {
     printIntervalSet(intervalSetNode->set);
     intervalSetNode = intervalSetNode->next;
   }
-
-  printf("\n");
 }

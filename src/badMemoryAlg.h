@@ -4,6 +4,15 @@
 #include "graphNode.h"
 
 /**
+ * @brief Represents the status of an assignment operation.
+ */
+typedef enum StatusCode {
+  SUCCESS = 0,    /** The assignment was successful. */
+  ERROR_evtl = 1, /** There were insufficiently many intervals to build the group. */
+  ERROR_defn = 2  /** The resulting set is not a valid part-solution.*/
+} StatusCode;
+
+/**
  * @brief Represents the result of an assignment operation.
  *
  * This struct contains a pointer to an IntervalSet and an error code.
@@ -12,8 +21,8 @@
  */
 typedef struct AssignRes {
   IntervalSet* intervalSet; /** Pointer to the IntervalSet */
-  int statusCode;           /** Status code indicating the success or failure of the
-                            assignment operation */
+  StatusCode statusCode;    /** Status code indicating the success or failure of the
+                     assignment operation */
 } AssignRes;
 
 bool badMemoryAlgorithm(IntervalSet* intervalSet);

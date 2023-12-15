@@ -8,7 +8,13 @@ int main(int argc, char** argv) {
 
   IntervalSet* intervalSet1 = createBlankIntervalSet(intervals1, 3);
 
-  badMemoryAlgorithm(intervalSet1);
+  bool hasRes = badMemoryAlgorithm(intervalSet1);
+
+  if (hasRes) {
+    printf("The interval set has a solution.\n");
+  } else {
+    printf("The interval set does not have a solution.\n");
+  }
 
   deleteIntervalSet(intervalSet1);
 

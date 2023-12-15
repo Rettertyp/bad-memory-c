@@ -1,5 +1,6 @@
 #include "intervalSet.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Creates a new IntervalSet object.
@@ -31,10 +32,17 @@ IntervalSet* createBlankIntervalSet(Interval intervals[], int length) {
   return intervalSet;
 }
 
+/**
+ * Creates a new IntervalSet object.
+ *
+ * @param intervals An array of Interval objects.
+ * @param length The length of the intervals array.
+ * @param stack The Stack object associated with the IntervalSet.
+ * @return A pointer to the newly created IntervalSet object, or NULL if memory allocation
+ * fails.
+ */
 IntervalSet* createIntervalSet(Interval intervals[], int length, Stack stack) {
   IntervalSet* intervalSet = malloc(sizeof(IntervalSet));
-
-  printf("In createIntervalSet\n");
 
   if (intervalSet) {
     intervalSet->stack = stack;
@@ -53,6 +61,17 @@ IntervalSet* createIntervalSet(Interval intervals[], int length, Stack stack) {
   }
 
   return intervalSet;
+}
+
+/**
+ * Creates a copy of the given IntervalSet.
+ *
+ * @param intervalSet The IntervalSet to be copied.
+ * @return A new IntervalSet that is a copy of the original IntervalSet.
+ */
+IntervalSet* copyIntervalSet(IntervalSet* intervalSet) {
+  return createIntervalSet(intervalSet->intervals, intervalSet->length,
+                           copyStack(intervalSet->stack));
 }
 
 /**
@@ -109,23 +128,23 @@ void swap(Interval* a, Interval* b) {
  * @param i The index of the current element.
  */
 void heapify(Interval intervals[], int n, int i) {
-  int largest = i;
+  int smallest = i;
   int left = 2 * i + 1;
   int right = 2 * i + 2;
 
   // check if one of the two successors is bigger
-  if (left < n && intervals[left].bottom > intervals[largest].bottom) {
-    largest = left;
+  if (left < n && intervals[left].bottom < intervals[smallest].bottom) {
+    smallest = left;
   }
 
-  if (right < n && intervals[right].bottom > intervals[largest].bottom) {
-    largest = right;
+  if (right < n && intervals[right].bottom < intervals[smallest].bottom) {
+    smallest = right;
   }
 
   // if the left or right was bigger
-  if (largest != i) {
-    swap(&intervals[i], &intervals[largest]);
-    heapify(intervals, n, largest);
+  if (smallest != i) {
+    swap(&intervals[i], &intervals[smallest]);
+    heapify(intervals, n, smallest);
   }
 }
 
@@ -149,7 +168,8 @@ void heapSort(Interval intervals[], int n) {
 }
 
 /**
- * Sorts the intervals in the given IntervalSet by their bottom values.
+ * Sorts the intervals in the given IntervalSet by their bottom values in descending
+ * order.
  *
  * @param intervalSet The IntervalSet to be sorted.
  */
@@ -211,6 +231,24 @@ int countContainingI(IntervalSet* intervalSet, int i) {
 }
 
 /**
+ * Returns the first interval in the given interval set that contains the specified value.
+ *
+ * @param intervalSet The interval set to search in.
+ * @param i The value to search for.
+ * @return A pointer to the first interval that contains the specified value, or NULL if
+ * no such interval is found.
+ */
+Interval* getFirstContainingI(IntervalSet* intervalSet, int i) {
+  for (int j = 0; j < intervalSet->length; j++) {
+    if (contains(&(intervalSet->intervals[j]), i)) {
+      return &(intervalSet->intervals[j]);
+    }
+  }
+
+  return NULL;
+}
+
+/**
  * Removes the first 'g' intervals that include 'i' from the given 'intervalSet' and
  * returns a new IntervalSet.
  *
@@ -223,19 +261,59 @@ IntervalSet* getWithoutFirstGIncludingI(IntervalSet* intervalSet, int i, int g) 
   int newLength = intervalSet->length - g;
   Interval intervals[newLength];
 
-  printf("In getWithoutFirstGIncludingI: newLength: %d\n", newLength);
-
   int j = 0;
   int nAssigned = 0;
-  for (int i = 0; i < intervalSet->length; i++) {
-    if (nAssigned < g && contains(&(intervalSet->intervals[i]), i)) {
+  for (int k = 0; k < intervalSet->length; k++) {
+    if (nAssigned < g && contains(&(intervalSet->intervals[k]), i)) {
       nAssigned++;
     } else {
-      intervals[j++] = intervalSet->intervals[i];
+      intervals[j++] = intervalSet->intervals[k];
     }
   }
 
-  printf("After loop in getWithoutFirstGIncludingI\n");
-
   return createIntervalSet(intervals, newLength, copyStack(intervalSet->stack));
+}
+
+/**
+ * Retrieves the intervals from the given intervalSet that are right of i and have a
+ * bottom value greater than or equal to b.
+ *
+ * @param intervalSet The intervalSet to retrieve the intervals from.
+ * @param i The value the intervals must be right of.
+ * @param b The value the intervals must have a greater or equal bottom value than.
+ * @return A new IntervalSet containing the retrieved intervals.
+ */
+IntervalSet* getLessThanIRightOfB(IntervalSet* intervalSet, int i, int b) {
+  // choosing intervalSet.length as upper bound
+  Interval intervals[intervalSet->length];
+
+  int nChosen = 0;
+  for (int j = 0; j < intervalSet->length; j++) {
+    if (lessThan(&(intervalSet->intervals[j]), i) &&
+        intervalSet->intervals[j].bottom >= b) {
+      intervals[nChosen++] = intervalSet->intervals[j];
+    }
+  }
+
+  return createIntervalSet(intervals, nChosen, copyStack(intervalSet->stack));
+}
+
+/**
+ * Retrieves the lowest part of the given interval set.
+ *
+ * @param intervalSet The interval set to retrieve the lowest part from.
+ * @return The lowest part of the interval set.
+ */
+IntervalSet* getLowestPart(IntervalSet* intervalSet) {
+  GraphNode* predNode = top(&(intervalSet->stack));
+
+  // if there is no predecessor, return a copy of the interval set
+  if (!predNode) {
+    return copyIntervalSet(intervalSet);
+  }
+
+  // check if there is an Interval that contains i
+  Interval* interval = getFirstContainingI(intervalSet, predNode->i);
+
+  return getLessThanIRightOfB(intervalSet, predNode->i, interval ? interval->bottom : 0);
 }

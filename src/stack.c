@@ -1,12 +1,14 @@
 #include "stack.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 /**
- * Pushes a value onto the stack.
+ * Pushes a new element onto the stack.
  *
- * @param stack The stack to push the value onto.
+ * @param stack The stack to push the element onto.
  * @param value The value to be pushed onto the stack.
  */
-void push(Stack* stack, int value) {
+void push(Stack* stack, GraphNode* value) {
   StackNode* newNode = malloc(sizeof(StackNode));
 
   newNode->value = value;
@@ -17,16 +19,16 @@ void push(Stack* stack, int value) {
 }
 
 /**
- * Pops the top value from the stack.
+ * Pops the top element from the stack.
  *
- * @param stack The stack to pop the value from.
- * @return The popped value, or STACK_EMPTY if the stack is empty.
+ * @param stack The stack to pop the element from.
+ * @return The popped element, or STACK_EMPTY if the stack is empty.
  */
-int pop(Stack* stack) {
+GraphNode* pop(Stack* stack) {
   if (*stack == NULL)
-    return STACK_EMPTY;
+    return NULL;
 
-  int result = (*stack)->value;
+  GraphNode* result = (*stack)->value;
 
   // save top node to variable, to be able to free it afterwards
   StackNode* topNode = *stack;
@@ -34,6 +36,19 @@ int pop(Stack* stack) {
   free(topNode);
 
   return result;
+}
+
+/**
+ * Returns the top element of the stack.
+ *
+ * @param stack The stack to retrieve the top element from.
+ * @return The top element of the stack, or NULL if the stack is empty.
+ */
+GraphNode* top(Stack* stack) {
+  if (*stack == NULL)
+    return NULL;
+
+  return (*stack)->value;
 }
 
 /**
@@ -69,6 +84,39 @@ bool stackEquals(Stack* stack1, Stack* stack2) {
 }
 
 /**
+ * Prints the elements of the stack.
+ *
+ * @param stack The stack to be printed.
+ */
+void printStack(Stack* stack) {
+  StackNode* node = *stack;
+
+  printf("\n[\n");
+
+  while (node != NULL) {
+    printGraphNode(node->value);
+
+    node = node->next;
+  }
+
+  printf("]\n");
+}
+
+/**
+ * Recursively pushes the values of a linked list backwards onto a stack.
+ *
+ * @param stack The stack to push the values onto.
+ * @param node The current node in the linked list.
+ */
+void pushBackwards(Stack* stack, StackNode* node) {
+  if (node == NULL)
+    return;
+
+  pushBackwards(stack, node->next);
+  push(stack, node->value);
+}
+
+/**
  * Creates a copy of the given stack.
  *
  * @param stack The stack to be copied.
@@ -76,14 +124,8 @@ bool stackEquals(Stack* stack1, Stack* stack2) {
  */
 Stack copyStack(Stack stack) {
   Stack copy = NULL;
-  StackNode* node = stack;
 
-  // #TODO this reverses the order of the stack
-
-  while (node != NULL) {
-    push(&copy, node->value);
-    node = node->next;
-  }
+  pushBackwards(&copy, stack);
 
   return copy;
 }

@@ -4,14 +4,18 @@
 #include "interval.h"
 #include "stack.h"
 
+// forward declaration of the Stack
+struct StackNode;
+typedef struct StackNode* Stack;
+
 /**
  * @brief Represents a set of intervals.
  *
- * The IntervalSet struct contains a stack, which is used to store the
- * intervals, the length of the interval set, and an array of Interval structs.
+ * The IntervalSet struct contains a stack of GraphNodes, the length of the interval set,
+ * and an array of Interval structs.
  */
 typedef struct IntervalSet {
-  Stack stack;         /** The stack used to store the intervals */
+  Stack stack;         /** The stack of the set */
   int length;          /** The length of the interval set */
   Interval* intervals; /** The array of Interval structs */
 } IntervalSet;
@@ -24,5 +28,6 @@ void printIntervalSet(IntervalSet* intervalSet);
 int countGreaterI(IntervalSet* intervalSet, int i);
 int countContainingI(IntervalSet* intervalSet, int i);
 IntervalSet* getWithoutFirstGIncludingI(IntervalSet* intervalSet, int i, int g);
+IntervalSet* getLowestPart(IntervalSet* intervalSet);
 
 #endif // INTERVAL_SET_H

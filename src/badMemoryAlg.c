@@ -8,6 +8,11 @@
  * @return Returns true if there is a solution, false otherwise.
  */
 bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
+  // Sort the intervals by their bottom value in descending order
+  sortByBottom(inputIntervalSet);
+
+  printIntervalSet(inputIntervalSet);
+
   int n = inputIntervalSet->length;
   GraphNode graphNodes[n][n];
 
@@ -25,11 +30,57 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
     printf("assignRes.statusCode: %d\n", assignRes.statusCode);
     if (assignRes.statusCode == 0) {
       addIntervalSet(&(graphNodes[i][i]), assignRes.intervalSet);
-      printGraphNode(&(graphNodes[i][i]));
+      printGraphNodeDetailed(&(graphNodes[i][i]));
     }
   }
 
-  return true;
+  // main loop of the algorithm
+  for (int i = n - 1; i >= 0; i--) {
+    for (int s = i + 1; s < n; s++) {
+      GraphNode* currNode = &(graphNodes[i][s]);
+      for (int i_ = i; i_ < n; i_++) {
+        int s_ = s - i;
+
+        // iterate over all the interval sets in the graph node
+        IntervalSetNode* node = graphNodes[i_][s_].intervalSets;
+        while (node != NULL) {
+
+          IntervalSet* lowestPart = getLowestPart(node->set);
+
+          // try to build the current group
+          AssignRes assignRes = assign(lowestPart, i + 1);
+
+          if (assignRes.statusCode == SUCCESS) {
+            // if the assignment was successful, add the new interval set to the graph
+            // node
+            addIntervalSet(currNode, assignRes.intervalSet);
+            push(&(assignRes.intervalSet->stack), currNode);
+
+            printGraphNodeDetailed(currNode);
+          } else if (assignRes.statusCode == ERROR_evtl) {
+            // #TODO: implement backtrack()
+          }
+
+          deleteIntervalSet(lowestPart);
+
+          node = node->next;
+        }
+      }
+
+      removeDominatedSets(currNode);
+    }
+  }
+
+  // check if there is a solution
+  for (int i = 0; i < n; i++) {
+    GraphNode* currNode = &(graphNodes[i][n - 1]);
+    printGraphNodeDetailed(currNode);
+    if (getNumberOfIntervalSets(currNode) > 0) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -44,14 +95,15 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
  */
 AssignRes assign(IntervalSet* intervalSet, int groupSize) {
   if (countGreaterI(intervalSet, groupSize) > 0) {
-    return (AssignRes){NULL, 1};
+    return (AssignRes){NULL, ERROR_evtl};
   }
 
   if (countContainingI(intervalSet, groupSize) < groupSize) {
-    return (AssignRes){NULL, 2};
+    return (AssignRes){NULL, ERROR_defn};
   }
 
   printf("The group %d can be built.\n", groupSize);
 
-  return (AssignRes){getWithoutFirstGIncludingI(intervalSet, groupSize, groupSize), 0};
+  return (AssignRes){getWithoutFirstGIncludingI(intervalSet, groupSize, groupSize),
+                     SUCCESS};
 }

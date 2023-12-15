@@ -1,11 +1,11 @@
-// stack.h
 #ifndef STACK_H
 #define STACK_H
 
+#include "graphNode.h"
 #include <stdbool.h>
-#include <stdlib.h>
 
-#define STACK_EMPTY INT_MIN
+// forward declaration of the GraphNode struct
+typedef struct GraphNode GraphNode;
 
 /**
  * @brief Represents a node in a stack.
@@ -14,7 +14,7 @@
  * the stack.
  */
 typedef struct StackNode {
-  int value;              /** The value of the node. */
+  GraphNode* value;       /** The value of the node. */
   struct StackNode* next; /** Pointer to the next node in the stack. */
 } StackNode;
 
@@ -26,10 +26,12 @@ typedef struct StackNode {
  */
 typedef StackNode* Stack;
 
-void push(Stack* stack, int value);
-int pop(Stack* stack);
+void push(Stack* stack, GraphNode* value);
+GraphNode* pop(Stack* stack);
+GraphNode* top(Stack* stack);
 bool stackIsEmpty(Stack* stack);
 bool stackEquals(Stack* stack1, Stack* stack2);
+void printStack(Stack* stack);
 Stack copyStack(Stack stack);
 
 #endif // STACK_H
