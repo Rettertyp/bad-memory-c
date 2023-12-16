@@ -138,8 +138,6 @@ int getNumberOfIntervalSets(const GraphNode* graphNode) {
     intervalSetNode = intervalSetNode->next;
   }
 
-  printf("counted %d interval sets\n", count);
-
   return count;
 }
 
@@ -168,4 +166,17 @@ void printGraphNodeDetailed(const GraphNode* graphNode) {
   }
 
   printf("]\n");
+}
+
+/**
+ * Returns a pointer to the specified GraphNode in the 2D array of GraphNodes.
+ *
+ * @param graphNodes The 2D array of GraphNodes.
+ * @param i The row index of the desired GraphNode (1-based index).
+ * @param s The column index of the desired GraphNode (1-based index).
+ * @param n The size of the square matrix (number of rows/columns).
+ * @return A pointer to the specified GraphNode.
+ */
+GraphNode* getGraphNode(GraphNode* graphNodes, const int i, const int s, const int n) {
+  return &(graphNodes[(i - 1) * n + (s - 1)]);
 }

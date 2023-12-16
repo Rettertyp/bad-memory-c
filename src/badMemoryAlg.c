@@ -7,7 +7,7 @@
  * @param intervalSet The input IntervalSet to be processed.
  * @return Returns true if there is a solution, false otherwise.
  */
-bool badMemoryAlgorithm(const IntervalSet* inputIntervalSet) {
+bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   // Sort the intervals by their bottom value in descending order
   sortByBottom(inputIntervalSet);
 
@@ -17,47 +17,47 @@ bool badMemoryAlgorithm(const IntervalSet* inputIntervalSet) {
 
   const int n = inputIntervalSet->length;
   GraphNode graphNodes[n][n];
+  GraphNode* graphNodesPtr = (GraphNode*)graphNodes;
 
   // Initialize empty graphNodes
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      graphNodes[i][j] = createGraphNode(i + 1, j + 1);
+  for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= n; j++) {
+      *(getGraphNode(graphNodesPtr, i, j, n)) = createGraphNode(i, j);
     }
   }
 
   printf("Initializing base cases...\n");
 
   // initialize the base cases
-  for (int i = 0; i < n; i++) {
-    AssignRes assignRes = assign(inputIntervalSet, i + 1);
+  for (int i = 1; i <= n; i++) {
+    AssignRes assignRes = assign(inputIntervalSet, i);
     if (assignRes.statusCode == SUCCESS) {
-      addIntervalSet(&(graphNodes[i][i]), assignRes.intervalSet);
-      printGraphNodeDetailed(&(graphNodes[i][i]));
+      addIntervalSet(getGraphNode(graphNodesPtr, i, i, n), assignRes.intervalSet);
+      printGraphNodeDetailed(getGraphNode(graphNodesPtr, i, i, n));
     }
   }
 
   printf("\nGoing into the main loop...\n");
 
   // main loop of the algorithm
-  for (int i = n - 1; i >= 0; i--) {
-    for (int s = i + 1; s < n; s++) {
-      printf("i: %d, s: %d\n", i, s);
-      GraphNode* currNode = &(graphNodes[i][s]);
-      printf("currNode: ");
+  for (int i = n; i > 0; i--) {
+    for (int s = i + 1; s <= n; s++) {
+      GraphNode* currNode = getGraphNode(graphNodesPtr, i, s, n);
+      printf("\ncurrNode: ");
       printGraphNode(currNode);
-      for (int i_ = i; i_ < n; i_++) {
-        int s_ = s - i;
+      const int s_ = s - i;
+      for (int i_ = i; i_ <= s_; i_++) {
 
-        printf("i_: %d, s_: %d\n", i_, s_);
+        printGraphNode(getGraphNode(graphNodesPtr, i_, s_, n));
 
         // iterate over all the interval sets in the graph node
-        IntervalSetNode* node = graphNodes[i_][s_].intervalSets;
+        IntervalSetNode* node = getGraphNode(graphNodesPtr, i_, s_, n)->intervalSets;
         while (node != NULL) {
 
           IntervalSet* lowestPart = getLowestPart(node->set);
 
           // try to build the current group
-          AssignRes assignRes = assign(lowestPart, i + 1);
+          AssignRes assignRes = assign(lowestPart, i);
 
           if (assignRes.statusCode == SUCCESS) {
             // if the assignment was successful, add the new interval set to the graph
@@ -80,11 +80,13 @@ bool badMemoryAlgorithm(const IntervalSet* inputIntervalSet) {
     }
   }
 
+  printf("\nChecking if there is a solution...\n");
+
   // check if there is a solution
-  for (int i = 0; i < n; i++) {
-    GraphNode* currNode = &(graphNodes[i][n - 1]);
-    printGraphNodeDetailed(currNode);
+  for (int i = 1; i <= n; i++) {
+    GraphNode* currNode = getGraphNode(graphNodesPtr, i, n, n);
     if (getNumberOfIntervalSets(currNode) > 0) {
+      printGraphNodeDetailed(currNode);
       return true;
     }
   }
