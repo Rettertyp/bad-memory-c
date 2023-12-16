@@ -1,4 +1,5 @@
 #include "interval.h"
+#include "debug.h"
 #include <stdlib.h>
 
 /**
@@ -37,8 +38,18 @@ bool contains(const Interval* interval, const int value) {
  * @param value The value to compare with the bottom value of the interval.
  * @return true if the bottom value is greater than the specified value, false otherwise.
  */
-bool greaterThan(const Interval* interval, const int value) {
-  return interval->bottom > value;
+bool greaterThan(const Interval* interval, const int value) { return interval->bottom > value; }
+
+/**
+ * Checks if the bottom value of the given interval is greater than or equal to the specified value.
+ *
+ * @param interval The interval to compare.
+ * @param value The value to compare against.
+ * @return True if the bottom value is greater than or equal to the specified value, false
+ * otherwise.
+ */
+bool greaterEqual(const Interval* interval, const int value) {
+  return contains(interval, value) || greaterThan(interval, value);
 }
 
 /**

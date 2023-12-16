@@ -26,6 +26,5 @@ typedef struct AssignRes {
 } AssignRes;
 
 bool badMemoryAlgorithm(IntervalSet* inputIntervalSet);
-AssignRes assign(const IntervalSet* intervalSet, const int groupSize);
 
 #endif // BAD_MEMORY_ALG_H

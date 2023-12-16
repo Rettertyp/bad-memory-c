@@ -1,4 +1,5 @@
 #include "intervalSet.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,8 +42,8 @@ IntervalSet* createBlankIntervalSet(const Interval intervals[], const int length
  * @return A pointer to the newly created IntervalSet object, or NULL if memory allocation
  * fails.
  */
-IntervalSet* createIntervalSet(const Interval intervals[], const int length,
-                               const Stack stack) {
+static IntervalSet* createIntervalSet(const Interval intervals[], const int length,
+                                      const Stack stack) {
   IntervalSet* intervalSet = malloc(sizeof(IntervalSet));
 
   if (intervalSet) {
@@ -115,7 +116,7 @@ bool isDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet) {
  * @param a Pointer to the first Interval object.
  * @param b Pointer to the second Interval object.
  */
-void swap(Interval* a, Interval* b) {
+static void swap(Interval* a, Interval* b) {
   Interval tmp = *a;
   *a = *b;
   *b = tmp;
@@ -128,7 +129,7 @@ void swap(Interval* a, Interval* b) {
  * @param n The size of the array.
  * @param i The index of the current element.
  */
-void heapify(Interval intervals[], const int n, const int i) {
+static void heapify(Interval intervals[], const int n, const int i) {
   int smallest = i;
   int left = 2 * i + 1;
   int right = 2 * i + 2;
@@ -155,7 +156,7 @@ void heapify(Interval intervals[], const int n, const int i) {
  * @param intervals The array of Interval structs to be sorted.
  * @param n The number of elements in the array.
  */
-void heapSort(Interval intervals[], const int n) {
+static void heapSort(Interval intervals[], const int n) {
   // go over all nodes that are not leaves (turns array into heap)
   for (int i = n / 2 - 1; i >= 0; i--) {
     heapify(intervals, n, i);
@@ -185,14 +186,13 @@ void sortByBottom(IntervalSet* intervalSet) {
  */
 void printIntervalSet(const IntervalSet* intervalSet) {
   if (intervalSet->length == 0) {
-    printf("()");
+    debug_print("()");
   } else
     for (int i = 0; i < intervalSet->length; i++) {
-      printf("(%d, %d), ", intervalSet->intervals[i].bottom,
-             intervalSet->intervals[i].top);
+      debug_print("(%d, %d), ", intervalSet->intervals[i].bottom, intervalSet->intervals[i].top);
     }
 
-  printf("\n");
+  debug_print("\n");
 }
 
 /**
@@ -207,7 +207,8 @@ int countGreaterI(const IntervalSet* intervalSet, const int i) {
   int count = 0;
 
   for (int j = 0; j < intervalSet->length; j++) {
-    if (greaterThan(&(intervalSet->intervals[j]), i)) {
+    Interval* currInterval = &(intervalSet->intervals[j]);
+    if (greaterThan(currInterval, i)) {
       count++;
     }
   }
@@ -236,6 +237,26 @@ int countContainingI(const IntervalSet* intervalSet, const int i) {
 }
 
 /**
+ * Counts the number of intervals in the given IntervalSet that are greater than or equal to the
+ * specified value.
+ *
+ * @param intervalSet The IntervalSet to search in.
+ * @param i The value to compare against the intervals.
+ * @return The count of intervals that are greater than or equal to the specified value.
+ */
+int countGreaterEqualI(const IntervalSet* intervalSet, const int i) {
+  int count = 0;
+
+  for (int j = 0; j < intervalSet->length; j++) {
+    if (greaterEqual(&(intervalSet->intervals[j]), i)) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+/**
  * Returns the first interval in the given interval set that contains the specified value.
  *
  * @param intervalSet The interval set to search in.
@@ -243,7 +264,7 @@ int countContainingI(const IntervalSet* intervalSet, const int i) {
  * @return A pointer to the first interval that contains the specified value, or NULL if
  * no such interval is found.
  */
-Interval* getFirstContainingI(const IntervalSet* intervalSet, const int i) {
+static Interval* getFirstContainingI(const IntervalSet* intervalSet, const int i) {
   for (int j = 0; j < intervalSet->length; j++) {
     if (contains(&(intervalSet->intervals[j]), i)) {
       return &(intervalSet->intervals[j]);
@@ -262,8 +283,7 @@ Interval* getFirstContainingI(const IntervalSet* intervalSet, const int i) {
  * @param g The number of intervals to be removed from the beginning of the IntervalSet.
  * @return A new IntervalSet without the first 'g' intervals that include 'i'.
  */
-IntervalSet* getWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i,
-                                        const int g) {
+IntervalSet* getWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i, const int g) {
   int newLength = intervalSet->length - g;
   Interval intervals[newLength];
 
@@ -289,16 +309,15 @@ IntervalSet* getWithoutFirstGIncludingI(const IntervalSet* intervalSet, const in
  * @param b The value the intervals must have a greater or equal bottom value than.
  * @return A new IntervalSet containing the retrieved intervals.
  */
-IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const int i,
-                                  const int b) {
+static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const int i, const int b) {
   // choosing intervalSet.length as upper bound
   Interval intervals[intervalSet->length];
 
   int nChosen = 0;
   for (int j = 0; j < intervalSet->length; j++) {
-    if (lessThan(&(intervalSet->intervals[j]), i) &&
-        intervalSet->intervals[j].bottom >= b) {
-      intervals[nChosen++] = intervalSet->intervals[j];
+    const Interval* currInterval = &(intervalSet->intervals[j]);
+    if (lessThan(currInterval, i) && currInterval->bottom >= b) {
+      intervals[nChosen++] = *currInterval;
     }
   }
 
@@ -323,4 +342,105 @@ IntervalSet* getLowestPart(const IntervalSet* intervalSet) {
   Interval* interval = getFirstContainingI(intervalSet, predNode->i);
 
   return getLessThanIRightOfB(intervalSet, predNode->i, interval ? interval->bottom : 0);
+}
+
+/**
+ * Counts the number of intervals in the given `intervalSet` that satisfy the following conditions:
+ * - The interval's index is less than `i`.
+ * - The interval's bottom value is greater than or equal to `b`.
+ * - The interval's index is greater than or equal to `j`.
+ *
+ * @param intervalSet The interval set to search in.
+ * @param i           The upper limit index.
+ * @param b           The lower limit bottom value.
+ * @param j           The lower limit index.
+ * @return            The count of intervals that meet the specified conditions.
+ */
+static int countLessThanIRightOfBGreaterEqualJ(const IntervalSet* intervalSet, const int i,
+                                               const int b, const int j) {
+  int nChosen = 0;
+  for (int k = 0; k < intervalSet->length; k++) {
+    const Interval* currInterval = &(intervalSet->intervals[k]);
+    if (lessThan(currInterval, i) && currInterval->bottom >= b && greaterEqual(currInterval, j)) {
+      nChosen++;
+    }
+  }
+
+  return nChosen;
+}
+
+/**
+ * Retrieves the lowest part of the IntervalSet that is greater than or equal to a given value.
+ *
+ * @param intervalSet The IntervalSet to search in.
+ * @param j The value to compare against.
+ * @return A pointer to the IntervalSet containing the lowest part greater than or equal to j.
+ *         If no such IntervalSet exists, a copy of the original IntervalSet is returned.
+ */
+int countLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j) {
+  GraphNode* predNode = top(&(intervalSet->stack));
+
+  // if there is no predecessor, return a copy of the interval set
+  if (!predNode) {
+    return countGreaterEqualI(intervalSet, j);
+  }
+
+  // check if there is an Interval that contains i
+  Interval* interval = getFirstContainingI(intervalSet, predNode->i);
+
+  return countLessThanIRightOfBGreaterEqualJ(intervalSet, predNode->i,
+                                             interval ? interval->bottom : 0, j);
+}
+
+/**
+ * Retrieves a new IntervalSet containing intervals from the given IntervalSet
+ * that DON'T satisfy the following conditions:
+ * - The interval's bottom is greater than or equal to 'b'.
+ * - The interval's index is greater than or equal to 'j'.
+ * - The interval's index is less than 'i'.
+ *
+ * @param intervalSet The original IntervalSet.
+ * @param i           The upper bound index.
+ * @param b           The lower bound value.
+ * @param j           The lower bound index.
+ * @return            A new IntervalSet containing the desired intervals.
+ */
+static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* intervalSet,
+                                                             const int i, const int b,
+                                                             const int j) {
+  // choosing intervalSet.length as upper bound
+  Interval intervals[intervalSet->length];
+
+  int nChosen = 0;
+  for (int k = 0; k < intervalSet->length; k++) {
+    const Interval* currInterval = &(intervalSet->intervals[k]);
+    if (!(lessThan(currInterval, i) && currInterval->bottom >= b &&
+          greaterEqual(currInterval, j))) {
+      intervals[nChosen++] = *currInterval;
+    }
+  }
+
+  return createIntervalSet(intervals, nChosen, copyStack(intervalSet->stack));
+}
+
+/**
+ * Retrieves the inverse of the lowest part greater than or equal to j from the given interval set.
+ *
+ * @param intervalSet The interval set to retrieve the inverse of.
+ * @param j The value to compare against the lowest part of the intervals.
+ * @return The resulting interval set containing the inverse.
+ */
+IntervalSet* getInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j) {
+  GraphNode* predNode = top(&(intervalSet->stack));
+
+  // if there is no predecessor, return an empty interval set
+  if (!predNode) {
+    return createBlankIntervalSet(NULL, 0);
+  }
+
+  // check if there is an Interval that contains i
+  Interval* interval = getFirstContainingI(intervalSet, predNode->i);
+
+  return getInverseLessThanIRightOfBGreaterEqualJ(intervalSet, predNode->i,
+                                                  interval ? interval->bottom : 0, j);
 }

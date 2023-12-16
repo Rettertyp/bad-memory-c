@@ -14,6 +14,7 @@ typedef struct Interval {
 Interval* createInterval(const int bottom, const int top);
 bool contains(const Interval* interval, const int value);
 bool greaterThan(const Interval* interval, const int value);
+bool greaterEqual(const Interval* interval, const int value);
 bool lessThan(const Interval* interval, const int value);
 
 #endif // INTERVAL_H

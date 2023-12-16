@@ -30,7 +30,7 @@ void push(Stack* stack, GraphNode* value);
 GraphNode* pop(Stack* stack);
 GraphNode* top(const Stack* stack);
 bool stackIsEmpty(const Stack* stack);
-bool stackEquals(const Stack* stack1, const Stack* stack2);
+bool stackEquals(const Stack stack1, const Stack stack2);
 void printStack(const Stack* stack);
 Stack copyStack(const Stack stack);
 

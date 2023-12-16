@@ -1,4 +1,5 @@
 #include "graphNode.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -147,7 +148,7 @@ int getNumberOfIntervalSets(const GraphNode* graphNode) {
  * @param graphNode The GraphNode to be printed.
  */
 void printGraphNode(const GraphNode* graphNode) {
-  printf("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
+  debug_print("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
 }
 
 /**
@@ -156,7 +157,7 @@ void printGraphNode(const GraphNode* graphNode) {
  * @param graphNode The GraphNode to be printed.
  */
 void printGraphNodeDetailed(const GraphNode* graphNode) {
-  printf("GraphNode(%d, %d) [\n", graphNode->i, graphNode->s);
+  debug_print("GraphNode(%d, %d) [\n", graphNode->i, graphNode->s);
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
 
@@ -165,7 +166,7 @@ void printGraphNodeDetailed(const GraphNode* graphNode) {
     intervalSetNode = intervalSetNode->next;
   }
 
-  printf("]\n");
+  debug_print("]\n");
 }
 
 /**

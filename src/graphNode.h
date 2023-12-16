@@ -10,9 +10,8 @@ typedef struct IntervalSet IntervalSet;
  * @brief Structure representing a node in a linked list of interval sets.
  */
 typedef struct IntervalSetNode {
-  IntervalSet* set; /** Pointer to the interval set. */
-  struct IntervalSetNode*
-      next; /** Pointer to the next interval set node in the linked list. */
+  IntervalSet* set;             /** Pointer to the interval set. */
+  struct IntervalSetNode* next; /** Pointer to the next interval set node in the linked list. */
 } IntervalSetNode;
 
 /**

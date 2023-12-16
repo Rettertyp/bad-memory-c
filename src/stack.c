@@ -1,4 +1,5 @@
 #include "stack.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -68,9 +69,9 @@ bool stackIsEmpty(const Stack* stack) { return *stack == NULL; }
  * @param stack2 Pointer to the second stack.
  * @return true if the stacks are equal, false otherwise.
  */
-bool stackEquals(const Stack* stack1, const Stack* stack2) {
-  StackNode* node1 = *stack1;
-  StackNode* node2 = *stack2;
+bool stackEquals(const Stack stack1, const Stack stack2) {
+  StackNode* node1 = stack1;
+  StackNode* node2 = stack2;
 
   while (node1 != NULL && node2 != NULL) {
     if (node1->value != node2->value)
@@ -89,17 +90,17 @@ bool stackEquals(const Stack* stack1, const Stack* stack2) {
  * @param stack The stack to be printed.
  */
 void printStack(const Stack* stack) {
-  StackNode* node = *stack;
+  StackNode* currNode = *stack;
 
-  printf("\n[\n");
+  debug_print("\n[\n");
 
-  while (node != NULL) {
-    printGraphNode(node->value);
+  while (currNode) {
+    printGraphNode(currNode->value);
 
-    node = node->next;
+    currNode = currNode->next;
   }
 
-  printf("]\n");
+  debug_print("]\n");
 }
 
 /**
@@ -108,9 +109,10 @@ void printStack(const Stack* stack) {
  * @param stack The stack to push the values onto.
  * @param node The current node in the linked list.
  */
-void pushBackwards(Stack* stack, StackNode* node) {
-  if (node == NULL)
+static void pushBackwards(Stack* stack, StackNode* node) {
+  if (!node) {
     return;
+  }
 
   pushBackwards(stack, node->next);
   push(stack, node->value);
