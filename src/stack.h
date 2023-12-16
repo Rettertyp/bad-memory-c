@@ -28,10 +28,10 @@ typedef StackNode* Stack;
 
 void push(Stack* stack, GraphNode* value);
 GraphNode* pop(Stack* stack);
-GraphNode* top(Stack* stack);
-bool stackIsEmpty(Stack* stack);
-bool stackEquals(Stack* stack1, Stack* stack2);
-void printStack(Stack* stack);
-Stack copyStack(Stack stack);
+GraphNode* top(const Stack* stack);
+bool stackIsEmpty(const Stack* stack);
+bool stackEquals(const Stack* stack1, const Stack* stack2);
+void printStack(const Stack* stack);
+Stack copyStack(const Stack stack);
 
 #endif // STACK_H

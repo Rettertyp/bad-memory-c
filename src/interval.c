@@ -8,7 +8,7 @@
  * @param top The top value of the interval.
  * @return A pointer to the newly created interval.
  */
-Interval* createInterval(int bottom, int top) {
+Interval* createInterval(const int bottom, const int top) {
   Interval* interval = malloc(sizeof(Interval));
 
   if (interval) {
@@ -26,7 +26,7 @@ Interval* createInterval(int bottom, int top) {
  * @param value The value to check for containment.
  * @return true if the interval contains the value, false otherwise.
  */
-bool contains(Interval* interval, int value) {
+bool contains(const Interval* interval, const int value) {
   return interval->bottom <= value && value <= interval->top;
 }
 
@@ -37,7 +37,9 @@ bool contains(Interval* interval, int value) {
  * @param value The value to compare with the bottom value of the interval.
  * @return true if the bottom value is greater than the specified value, false otherwise.
  */
-bool greaterThan(Interval* interval, int value) { return interval->bottom > value; }
+bool greaterThan(const Interval* interval, const int value) {
+  return interval->bottom > value;
+}
 
 /**
  * Checks if the top value of the given interval is less than the specified value.
@@ -46,4 +48,4 @@ bool greaterThan(Interval* interval, int value) { return interval->bottom > valu
  * @param value The value to compare with the top value of the interval.
  * @return true if the top value is less than the specified value, false otherwise.
  */
-bool lessThan(Interval* interval, int value) { return interval->top < value; }
+bool lessThan(const Interval* interval, const int value) { return interval->top < value; }

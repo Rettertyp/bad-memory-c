@@ -7,39 +7,48 @@
  * @param intervalSet The input IntervalSet to be processed.
  * @return Returns true if there is a solution, false otherwise.
  */
-bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
+bool badMemoryAlgorithm(const IntervalSet* inputIntervalSet) {
   // Sort the intervals by their bottom value in descending order
   sortByBottom(inputIntervalSet);
 
+  printf("The sorted input interval set is:\n");
   printIntervalSet(inputIntervalSet);
+  printf("\n");
 
-  int n = inputIntervalSet->length;
+  const int n = inputIntervalSet->length;
   GraphNode graphNodes[n][n];
 
   // Initialize empty graphNodes
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       graphNodes[i][j] = createGraphNode(i + 1, j + 1);
-      printGraphNode(&(graphNodes[i][j]));
     }
   }
+
+  printf("Initializing base cases...\n");
 
   // initialize the base cases
   for (int i = 0; i < n; i++) {
     AssignRes assignRes = assign(inputIntervalSet, i + 1);
-    printf("assignRes.statusCode: %d\n", assignRes.statusCode);
-    if (assignRes.statusCode == 0) {
+    if (assignRes.statusCode == SUCCESS) {
       addIntervalSet(&(graphNodes[i][i]), assignRes.intervalSet);
       printGraphNodeDetailed(&(graphNodes[i][i]));
     }
   }
 
+  printf("\nGoing into the main loop...\n");
+
   // main loop of the algorithm
   for (int i = n - 1; i >= 0; i--) {
     for (int s = i + 1; s < n; s++) {
+      printf("i: %d, s: %d\n", i, s);
       GraphNode* currNode = &(graphNodes[i][s]);
+      printf("currNode: ");
+      printGraphNode(currNode);
       for (int i_ = i; i_ < n; i_++) {
         int s_ = s - i;
+
+        printf("i_: %d, s_: %d\n", i_, s_);
 
         // iterate over all the interval sets in the graph node
         IntervalSetNode* node = graphNodes[i_][s_].intervalSets;
@@ -93,7 +102,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
  * assignment operation. The errorCode field of the AssignRes struct indicates
  * the success or failure of the assignment operation.
  */
-AssignRes assign(IntervalSet* intervalSet, int groupSize) {
+AssignRes assign(const IntervalSet* intervalSet, const int groupSize) {
   if (countGreaterI(intervalSet, groupSize) > 0) {
     return (AssignRes){NULL, ERROR_evtl};
   }

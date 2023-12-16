@@ -10,7 +10,7 @@
  * @param s The value of the 's' field in the GraphNode.
  * @return The newly created GraphNode.
  */
-GraphNode createGraphNode(int i, int s) {
+GraphNode createGraphNode(const int i, const int s) {
   GraphNode graphNode;
 
   graphNode.i = i;
@@ -128,7 +128,7 @@ void removeDominatedSets(GraphNode* graphNode) {
  * @param graphNode The graph node to count the interval sets from.
  * @return The number of interval sets in the graph node.
  */
-int getNumberOfIntervalSets(GraphNode* graphNode) {
+int getNumberOfIntervalSets(const GraphNode* graphNode) {
   int count = 0;
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
@@ -138,6 +138,8 @@ int getNumberOfIntervalSets(GraphNode* graphNode) {
     intervalSetNode = intervalSetNode->next;
   }
 
+  printf("counted %d interval sets\n", count);
+
   return count;
 }
 
@@ -146,7 +148,7 @@ int getNumberOfIntervalSets(GraphNode* graphNode) {
  *
  * @param graphNode The GraphNode to be printed.
  */
-void printGraphNode(GraphNode* graphNode) {
+void printGraphNode(const GraphNode* graphNode) {
   printf("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
 }
 
@@ -155,8 +157,8 @@ void printGraphNode(GraphNode* graphNode) {
  *
  * @param graphNode The GraphNode to be printed.
  */
-void printGraphNodeDetailed(GraphNode* graphNode) {
-  printf("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
+void printGraphNodeDetailed(const GraphNode* graphNode) {
+  printf("GraphNode(%d, %d) [\n", graphNode->i, graphNode->s);
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
 
@@ -164,4 +166,6 @@ void printGraphNodeDetailed(GraphNode* graphNode) {
     printIntervalSet(intervalSetNode->set);
     intervalSetNode = intervalSetNode->next;
   }
+
+  printf("]\n");
 }

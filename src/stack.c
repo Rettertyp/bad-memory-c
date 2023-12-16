@@ -44,7 +44,7 @@ GraphNode* pop(Stack* stack) {
  * @param stack The stack to retrieve the top element from.
  * @return The top element of the stack, or NULL if the stack is empty.
  */
-GraphNode* top(Stack* stack) {
+GraphNode* top(const Stack* stack) {
   if (*stack == NULL)
     return NULL;
 
@@ -57,7 +57,7 @@ GraphNode* top(Stack* stack) {
  * @param stack The stack to be checked.
  * @return True if the stack is empty, false otherwise.
  */
-bool stackIsEmpty(Stack* stack) { return *stack == NULL; }
+bool stackIsEmpty(const Stack* stack) { return *stack == NULL; }
 
 /**
  * Compares the values of each node in the two stacks to determine if
@@ -68,7 +68,7 @@ bool stackIsEmpty(Stack* stack) { return *stack == NULL; }
  * @param stack2 Pointer to the second stack.
  * @return true if the stacks are equal, false otherwise.
  */
-bool stackEquals(Stack* stack1, Stack* stack2) {
+bool stackEquals(const Stack* stack1, const Stack* stack2) {
   StackNode* node1 = *stack1;
   StackNode* node2 = *stack2;
 
@@ -88,7 +88,7 @@ bool stackEquals(Stack* stack1, Stack* stack2) {
  *
  * @param stack The stack to be printed.
  */
-void printStack(Stack* stack) {
+void printStack(const Stack* stack) {
   StackNode* node = *stack;
 
   printf("\n[\n");
@@ -122,7 +122,7 @@ void pushBackwards(Stack* stack, StackNode* node) {
  * @param stack The stack to be copied.
  * @return A new stack that is a copy of the original stack.
  */
-Stack copyStack(Stack stack) {
+Stack copyStack(const Stack stack) {
   Stack copy = NULL;
 
   pushBackwards(&copy, stack);

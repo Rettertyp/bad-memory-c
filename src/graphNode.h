@@ -25,12 +25,12 @@ typedef struct GraphNode {
                                     sets associated with the graph node. */
 } GraphNode;
 
-GraphNode createGraphNode(int i, int s);
+GraphNode createGraphNode(const int i, const int s);
 void deleteGraphNode(GraphNode* graphNode);
 void addIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet);
 void removeDominatedSets(GraphNode* graphNode);
-int getNumberOfIntervalSets(GraphNode* graphNode);
-void printGraphNode(GraphNode* graphNode);
-void printGraphNodeDetailed(GraphNode* graphNode);
+int getNumberOfIntervalSets(const GraphNode* graphNode);
+void printGraphNode(const GraphNode* graphNode);
+void printGraphNodeDetailed(const GraphNode* graphNode);
 
 #endif // GRAPH_NODE_H

@@ -20,14 +20,15 @@ typedef struct IntervalSet {
   Interval* intervals; /** The array of Interval structs */
 } IntervalSet;
 
-IntervalSet* createBlankIntervalSet(Interval intervals[], int length);
+IntervalSet* createBlankIntervalSet(const Interval intervals[], const int length);
 void deleteIntervalSet(IntervalSet* intervalSet);
-bool isDominatedBy(IntervalSet* thisSet, IntervalSet* otherSet);
+bool isDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet);
 void sortByBottom(IntervalSet* intervalSet);
-void printIntervalSet(IntervalSet* intervalSet);
-int countGreaterI(IntervalSet* intervalSet, int i);
-int countContainingI(IntervalSet* intervalSet, int i);
-IntervalSet* getWithoutFirstGIncludingI(IntervalSet* intervalSet, int i, int g);
-IntervalSet* getLowestPart(IntervalSet* intervalSet);
+void printIntervalSet(const IntervalSet* intervalSet);
+int countGreaterI(const IntervalSet* intervalSet, const int i);
+int countContainingI(const IntervalSet* intervalSet, const int i);
+IntervalSet* getWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i,
+                                        int g);
+IntervalSet* getLowestPart(const IntervalSet* intervalSet);
 
 #endif // INTERVAL_SET_H
