@@ -11,10 +11,10 @@ typedef struct Interval {
   int top;    /** The top value of the interval. */
 } Interval;
 
-Interval* createInterval(const int bottom, const int top);
-bool contains(const Interval* interval, const int value);
-bool greaterThan(const Interval* interval, const int value);
-bool greaterEqual(const Interval* interval, const int value);
-bool lessThan(const Interval* interval, const int value);
+Interval* intervalCreate(const int bottom, const int top);
+bool intervalContains(const Interval* interval, const int value);
+bool intervalGreaterThan(const Interval* interval, const int value);
+bool intervalGreaterEqual(const Interval* interval, const int value);
+bool intervalLessThan(const Interval* interval, const int value);
 
 #endif // INTERVAL_H

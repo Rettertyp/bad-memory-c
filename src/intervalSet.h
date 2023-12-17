@@ -11,7 +11,7 @@ typedef struct StackNode* Stack;
 /**
  * @brief Represents a set of intervals.
  *
- * The IntervalSet struct contains a stack of GraphNodes, the length of the interval set,
+ * The IntervalSet struct intervalContains a stack of GraphNodes, the length of the interval set,
  * and an array of Interval structs.
  */
 typedef struct IntervalSet {
@@ -20,16 +20,18 @@ typedef struct IntervalSet {
   Interval* intervals; /** The array of Interval structs */
 } IntervalSet;
 
-IntervalSet* createBlankIntervalSet(const Interval intervals[], const int length);
-void deleteIntervalSet(IntervalSet* intervalSet);
-bool isDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet);
-void sortByBottom(IntervalSet* intervalSet);
-void printIntervalSet(const IntervalSet* intervalSet);
-int countGreaterI(const IntervalSet* intervalSet, const int i);
-int countContainingI(const IntervalSet* intervalSet, const int i);
-IntervalSet* getWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i, int g);
-IntervalSet* getLowestPart(const IntervalSet* intervalSet);
-int countLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j);
-IntervalSet* getInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j);
+IntervalSet* intervalSetCreateBlank(const Interval intervals[], const int length);
+void intervalSetDelete(IntervalSet* intervalSet);
+bool intervalSetIsDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet);
+void intervalSetSortByBottom(IntervalSet* intervalSet);
+void intervalSetPrint(const IntervalSet* intervalSet);
+int intervalSetCountGreaterI(const IntervalSet* intervalSet, const int i);
+int intervalSetCountContainingI(const IntervalSet* intervalSet, const int i);
+IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i,
+                                                   int g);
+IntervalSet* intervalSetGetLowestPart(const IntervalSet* intervalSet);
+int intervalSetCountLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j);
+IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+                                                          const int j);
 
 #endif // INTERVAL_SET_H

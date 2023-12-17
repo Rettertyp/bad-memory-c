@@ -1,6 +1,5 @@
 #include "graphNode.h"
 #include "debug.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -11,7 +10,7 @@
  * @param s The value of the 's' field in the GraphNode.
  * @return The newly created GraphNode.
  */
-GraphNode createGraphNode(const int i, const int s) {
+GraphNode graphNodeCreate(const int i, const int s) {
   GraphNode graphNode;
 
   graphNode.i = i;
@@ -27,18 +26,19 @@ GraphNode createGraphNode(const int i, const int s) {
  *
  * @param graphNode A pointer to the GraphNode to be deleted.
  */
-void deleteGraphNode(GraphNode* graphNode) {
+void graphNodeDelete(GraphNode* graphNode) {
   if (graphNode) {
     IntervalSetNode* intervalSetNode = graphNode->intervalSets;
 
     while (intervalSetNode) {
       IntervalSetNode* next = intervalSetNode->next;
-      deleteIntervalSet(intervalSetNode->set);
+      intervalSetDelete(intervalSetNode->set);
       free(intervalSetNode);
       intervalSetNode = next;
     }
 
     free(graphNode);
+    graphNode = NULL;
   }
 }
 
@@ -49,7 +49,7 @@ void deleteGraphNode(GraphNode* graphNode) {
  * added.
  * @param intervalSet A pointer to the IntervalSet to be added.
  */
-void addIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet) {
+void graphNodeAddIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet) {
   IntervalSetNode* intervalSetNode = malloc(sizeof(IntervalSetNode));
 
   if (intervalSetNode) {
@@ -67,7 +67,7 @@ void addIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet) {
  *
  * @param graphNode The graph node from which to remove dominated sets.
  */
-void removeDominatedSets(GraphNode* graphNode) {
+void graphNodeRemoveDominatedSets(GraphNode* graphNode) {
   IntervalSetNode* outerSetNode = graphNode->intervalSets;
 
   while (outerSetNode) {
@@ -75,7 +75,7 @@ void removeDominatedSets(GraphNode* graphNode) {
 
     while (innerSetNode) {
 
-      if (isDominatedBy(innerSetNode->set, outerSetNode->set)) {
+      if (intervalSetIsDominatedBy(innerSetNode->set, outerSetNode->set)) {
 
         // get predecessor of innerSetNode
         IntervalSetNode* pred = outerSetNode;
@@ -87,11 +87,11 @@ void removeDominatedSets(GraphNode* graphNode) {
         pred->next = next;
 
         // delete innerSetNode
-        deleteIntervalSet(innerSetNode->set);
+        intervalSetDelete(innerSetNode->set);
         free(innerSetNode);
         innerSetNode = next;
 
-      } else if (isDominatedBy(outerSetNode->set, innerSetNode->set)) {
+      } else if (intervalSetIsDominatedBy(outerSetNode->set, innerSetNode->set)) {
 
         IntervalSetNode* next = outerSetNode->next;
 
@@ -107,7 +107,7 @@ void removeDominatedSets(GraphNode* graphNode) {
         }
 
         // delete outerSetNode
-        deleteIntervalSet(outerSetNode->set);
+        intervalSetDelete(outerSetNode->set);
         free(outerSetNode);
         outerSetNode = next;
 
@@ -129,7 +129,7 @@ void removeDominatedSets(GraphNode* graphNode) {
  * @param graphNode The graph node to count the interval sets from.
  * @return The number of interval sets in the graph node.
  */
-int getNumberOfIntervalSets(const GraphNode* graphNode) {
+int graphNodeGetNIntervalSets(const GraphNode* graphNode) {
   int count = 0;
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
@@ -147,7 +147,8 @@ int getNumberOfIntervalSets(const GraphNode* graphNode) {
  *
  * @param graphNode The GraphNode to be printed.
  */
-void printGraphNode(const GraphNode* graphNode) {
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+void graphNodePrint(const GraphNode* graphNode) {
   debug_print("GraphNode(%d, %d)\n", graphNode->i, graphNode->s);
 }
 
@@ -156,13 +157,13 @@ void printGraphNode(const GraphNode* graphNode) {
  *
  * @param graphNode The GraphNode to be printed.
  */
-void printGraphNodeDetailed(const GraphNode* graphNode) {
+void graphNodePrintDetailed(const GraphNode* graphNode) {
   debug_print("GraphNode(%d, %d) [\n", graphNode->i, graphNode->s);
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
 
   while (intervalSetNode) {
-    printIntervalSet(intervalSetNode->set);
+    intervalSetPrint(intervalSetNode->set);
     intervalSetNode = intervalSetNode->next;
   }
 

@@ -3,6 +3,8 @@
 
 #define DEBUG_PRINT 1
 
+#include <stdio.h>
+
 #if DEBUG_PRINT
 #define debug_print(fmt, ...) printf(fmt, ##__VA_ARGS__)
 #else

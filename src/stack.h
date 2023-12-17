@@ -10,7 +10,7 @@ typedef struct GraphNode GraphNode;
 /**
  * @brief Represents a node in a stack.
  *
- * This struct contains the value of the node and a pointer to the next node in
+ * This struct intervalContains the value of the node and a pointer to the next node in
  * the stack.
  */
 typedef struct StackNode {
@@ -26,12 +26,13 @@ typedef struct StackNode {
  */
 typedef StackNode* Stack;
 
-void push(Stack* stack, GraphNode* value);
-GraphNode* pop(Stack* stack);
-GraphNode* top(const Stack* stack);
+void stackPush(Stack* stack, GraphNode* value);
+GraphNode* stackPop(Stack* stack);
+GraphNode* stackTop(const Stack* stack);
+void stackDelete(Stack* stack);
 bool stackIsEmpty(const Stack* stack);
 bool stackEquals(const Stack stack1, const Stack stack2);
-void printStack(const Stack* stack);
-Stack copyStack(const Stack stack);
+void stackPrint(const Stack* stack);
+Stack stackCopy(const Stack stack);
 
 #endif // STACK_H

@@ -1,6 +1,5 @@
 #include "stack.h"
 #include "debug.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -9,7 +8,7 @@
  * @param stack The stack to push the element onto.
  * @param value The value to be pushed onto the stack.
  */
-void push(Stack* stack, GraphNode* value) {
+void stackPush(Stack* stack, GraphNode* value) {
   StackNode* newNode = malloc(sizeof(StackNode));
 
   newNode->value = value;
@@ -25,7 +24,7 @@ void push(Stack* stack, GraphNode* value) {
  * @param stack The stack to pop the element from.
  * @return The popped element, or STACK_EMPTY if the stack is empty.
  */
-GraphNode* pop(Stack* stack) {
+GraphNode* stackPop(Stack* stack) {
   if (*stack == NULL)
     return NULL;
 
@@ -45,11 +44,25 @@ GraphNode* pop(Stack* stack) {
  * @param stack The stack to retrieve the top element from.
  * @return The top element of the stack, or NULL if the stack is empty.
  */
-GraphNode* top(const Stack* stack) {
+GraphNode* stackTop(const Stack* stack) {
   if (*stack == NULL)
     return NULL;
 
   return (*stack)->value;
+}
+
+/**
+ * @brief Deletes all elements from the stack.
+ *
+ * This function removes all elements from the stack by repeatedly calling the stackPop function
+ * until the stack is empty.
+ *
+ * @param stack Pointer to the stack to be deleted.
+ */
+void stackDelete(Stack* stack) {
+  while (*stack != NULL) {
+    stackPop(stack);
+  }
 }
 
 /**
@@ -89,13 +102,13 @@ bool stackEquals(const Stack stack1, const Stack stack2) {
  *
  * @param stack The stack to be printed.
  */
-void printStack(const Stack* stack) {
+void stackPrint(const Stack* stack) {
   StackNode* currNode = *stack;
 
   debug_print("\n[\n");
 
   while (currNode) {
-    printGraphNode(currNode->value);
+    graphNodePrint(currNode->value);
 
     currNode = currNode->next;
   }
@@ -115,7 +128,7 @@ static void pushBackwards(Stack* stack, StackNode* node) {
   }
 
   pushBackwards(stack, node->next);
-  push(stack, node->value);
+  stackPush(stack, node->value);
 }
 
 /**
@@ -124,7 +137,7 @@ static void pushBackwards(Stack* stack, StackNode* node) {
  * @param stack The stack to be copied.
  * @return A new stack that is a copy of the original stack.
  */
-Stack copyStack(const Stack stack) {
+Stack stackCopy(const Stack stack) {
   Stack copy = NULL;
 
   pushBackwards(&copy, stack);
