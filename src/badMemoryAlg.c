@@ -169,7 +169,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
             // if the assignment was successful, add the new interval set to the graph
             // node
             graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
-            stackPush(&(assignRes.intervalSet->stack), currNode);
+            stackPush(&(assignRes.intervalSet->stack), predNode);
 
             graphNodePrintDetailed(currNode);
           } else if (assignRes.statusCode == ERROR_evtl) {

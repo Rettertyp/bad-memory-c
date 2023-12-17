@@ -1,7 +1,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define DEBUG_PRINT 1
+#ifndef DEBUG_PRINT
+#define DEBUG_PRINT 0
+#endif
 
 #include <stdio.h>
 
