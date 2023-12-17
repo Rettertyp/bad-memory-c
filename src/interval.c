@@ -9,7 +9,7 @@
  * @param top The top value of the interval.
  * @return A pointer to the newly created interval.
  */
-Interval* intervalCreate(const int bottom, const int top) {
+Interval* intervalCreate(const unsigned int bottom, const unsigned int top) {
   Interval* interval = malloc(sizeof(Interval));
 
   if (interval) {
@@ -27,7 +27,7 @@ Interval* intervalCreate(const int bottom, const int top) {
  * @param value The value to check for containment.
  * @return true if the interval intervalContains the value, false otherwise.
  */
-bool intervalContains(const Interval* interval, const int value) {
+bool intervalContains(const Interval* interval, const unsigned int value) {
   return interval->bottom <= value && value <= interval->top;
 }
 
@@ -38,7 +38,7 @@ bool intervalContains(const Interval* interval, const int value) {
  * @param value The value to compare with the bottom value of the interval.
  * @return true if the bottom value is greater than the specified value, false otherwise.
  */
-bool intervalGreaterThan(const Interval* interval, const int value) {
+bool intervalGreaterThan(const Interval* interval, const unsigned int value) {
   return interval->bottom > value;
 }
 
@@ -50,7 +50,7 @@ bool intervalGreaterThan(const Interval* interval, const int value) {
  * @return True if the bottom value is greater than or equal to the specified value, false
  * otherwise.
  */
-bool intervalGreaterEqual(const Interval* interval, const int value) {
+bool intervalGreaterEqual(const Interval* interval, const unsigned int value) {
   return value <= interval->top;
 }
 
@@ -61,4 +61,6 @@ bool intervalGreaterEqual(const Interval* interval, const int value) {
  * @param value The value to compare with the top value of the interval.
  * @return true if the top value is less than the specified value, false otherwise.
  */
-bool intervalLessThan(const Interval* interval, const int value) { return interval->top < value; }
+bool intervalLessThan(const Interval* interval, const unsigned int value) {
+  return interval->top < value;
+}

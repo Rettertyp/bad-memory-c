@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 
   instanceInitRandom();
 
-  for (int i = 0; i < N_INSTANCES; i++) {
+  for (unsigned int i = 0; i < N_INSTANCES; i++) {
     if (!(i % 100)) {
       debug_print("Instance %d\n", i);
     }
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
       if (instance->length == 0) {
         debug_print("()");
       } else
-        for (int i = 0; i < instance->length; i++) {
+        for (unsigned int i = 0; i < instance->length; i++) {
           debug_print("(%d, %d), ", instance->intervals[i].bottom, instance->intervals[i].top);
         }
 

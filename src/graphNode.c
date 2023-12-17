@@ -10,7 +10,7 @@
  * @param s The value of the 's' field in the GraphNode.
  * @return The newly created GraphNode.
  */
-GraphNode graphNodeCreate(const int i, const int s) {
+GraphNode graphNodeCreate(const unsigned int i, const unsigned int s) {
   GraphNode graphNode;
 
   graphNode.i = i;
@@ -129,8 +129,8 @@ void graphNodeRemoveDominatedSets(GraphNode* graphNode) {
  * @param graphNode The graph node to count the interval sets from.
  * @return The number of interval sets in the graph node.
  */
-int graphNodeGetNIntervalSets(const GraphNode* graphNode) {
-  int count = 0;
+unsigned int graphNodeGetNIntervalSets(const GraphNode* graphNode) {
+  unsigned int count = 0;
 
   IntervalSetNode* intervalSetNode = graphNode->intervalSets;
 
@@ -179,6 +179,7 @@ void graphNodePrintDetailed(const GraphNode* graphNode) {
  * @param n The size of the square matrix (number of rows/columns).
  * @return A pointer to the specified GraphNode.
  */
-GraphNode* getGraphNode(GraphNode* graphNodes, const int i, const int s, const int n) {
+GraphNode* getGraphNode(GraphNode* graphNodes, const unsigned int i, const unsigned int s,
+                        const unsigned int n) {
   return &(graphNodes[(i - 1) * n + (s - 1)]);
 }

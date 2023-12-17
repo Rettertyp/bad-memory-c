@@ -18,19 +18,20 @@ typedef struct IntervalSetNode {
  * @brief Structure representing a data-node in the dynamic program.
  */
 typedef struct GraphNode {
-  int i;                         /** The i-value of the graph node. */
-  int s;                         /** The s-value of the graph node. */
+  unsigned int i;                /** The i-value of the graph node. */
+  unsigned int s;                /** The s-value of the graph node. */
   IntervalSetNode* intervalSets; /** Pointer to the linked list of interval
                                     sets associated with the graph node. */
 } GraphNode;
 
-GraphNode graphNodeCreate(const int i, const int s);
+GraphNode graphNodeCreate(const unsigned int i, const unsigned int s);
 void graphNodeDelete(GraphNode* graphNode);
 void graphNodeAddIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet);
 void graphNodeRemoveDominatedSets(GraphNode* graphNode);
-int graphNodeGetNIntervalSets(const GraphNode* graphNode);
+unsigned int graphNodeGetNIntervalSets(const GraphNode* graphNode);
 void graphNodePrint(const GraphNode* graphNode);
 void graphNodePrintDetailed(const GraphNode* graphNode);
-GraphNode* getGraphNode(GraphNode* graphNodes, const int n, const int i, const int s);
+GraphNode* getGraphNode(GraphNode* graphNodes, const unsigned int n, const unsigned int i,
+                        const unsigned int s);
 
 #endif // GRAPH_NODE_H

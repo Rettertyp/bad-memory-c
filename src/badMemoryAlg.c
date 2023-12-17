@@ -11,7 +11,7 @@
  * assignment operation. The errorCode field of the AssignRes struct indicates
  * the success or failure of the assignment operation.
  */
-AssignRes assign(const IntervalSet* intervalSet, const int groupSize) {
+AssignRes assign(const IntervalSet* intervalSet, const unsigned int groupSize) {
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
     return (AssignRes){NULL, ERROR_defn};
   }
@@ -37,7 +37,8 @@ AssignRes assign(const IntervalSet* intervalSet, const int groupSize) {
  * operation. The errorCode field of the AssignRes struct indicates the success or failure of
  * the assignment operation.
  */
-AssignRes assignRest(const IntervalSet* intervalSet, const int groupSize, const int rest) {
+AssignRes assignRest(const IntervalSet* intervalSet, const unsigned int groupSize,
+                     const unsigned int rest) {
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
     return (AssignRes){NULL, ERROR_defn};
   }
@@ -69,7 +70,7 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
 
   int nLowestPartGEqI = intervalSetCountLowestPartGreaterEqualJ(intervalSet, currNode->i);
 
-  const int rest = currNode->s - predNode->s - nLowestPartGEqI;
+  const unsigned int rest = currNode->s - predNode->s - nLowestPartGEqI;
 
   IntervalSet* inverseLowestPart =
       intervalSetGetInverseLowestPartGreaterEqualJ(intervalSet, currNode->i);
@@ -117,13 +118,13 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   intervalSetPrint(inputIntervalSet);
   debug_print("\n");
 
-  const int n = inputIntervalSet->length;
+  const unsigned int n = inputIntervalSet->length;
   GraphNode graphNodes[n][n];
   GraphNode* graphNodesPtr = (GraphNode*)graphNodes;
 
   // Initialize empty graphNodes
-  for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= n; j++) {
+  for (unsigned int i = 1; i <= n; i++) {
+    for (unsigned int j = 1; j <= n; j++) {
       *(getGraphNode(graphNodesPtr, i, j, n)) = graphNodeCreate(i, j);
     }
   }
@@ -131,7 +132,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   debug_print("Initializing base cases...\n");
 
   // initialize the base cases
-  for (int i = 1; i <= n; i++) {
+  for (unsigned int i = 1; i <= n; i++) {
     AssignRes assignRes = assign(inputIntervalSet, i);
     if (assignRes.statusCode == SUCCESS) {
       graphNodeAddIntervalSet(getGraphNode(graphNodesPtr, i, i, n), assignRes.intervalSet);
@@ -142,13 +143,13 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   debug_print("\nGoing into the main loop...\n");
 
   // main loop of the algorithm
-  for (int i = n; i > 0; i--) {
-    for (int s = i + 1; s <= n; s++) {
+  for (unsigned int i = n; i > 0; i--) {
+    for (unsigned int s = i + 1; s <= n; s++) {
       GraphNode* currNode = getGraphNode(graphNodesPtr, i, s, n);
       debug_print("\ncurrNode: ");
       graphNodePrintDetailed(currNode);
-      const int s_ = s - i;
-      for (int i_ = i; i_ <= n; i_++) {
+      const unsigned int s_ = s - i;
+      for (unsigned int i_ = i; i_ <= n; i_++) {
         GraphNode* predNode = getGraphNode(graphNodesPtr, i_, s_, n);
 
         graphNodePrintDetailed(predNode);
@@ -193,7 +194,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   debug_print("\nChecking if there is a solution...\n");
 
   // check if there is a solution
-  for (int i = 1; i <= n; i++) {
+  for (unsigned int i = 1; i <= n; i++) {
     GraphNode* currNode = getGraphNode(graphNodesPtr, i, n, n);
     if (graphNodeGetNIntervalSets(currNode) > 0) {
       graphNodePrintDetailed(currNode);

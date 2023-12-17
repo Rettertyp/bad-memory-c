@@ -4,6 +4,6 @@
 #include "intervalSet.h"
 
 void instanceInitRandom();
-IntervalSet* instanceSimpleYes(const int n);
+IntervalSet* instanceSimpleYes(const unsigned int n);
 
 #endif // INSTANCEGEN_H

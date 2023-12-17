@@ -16,22 +16,23 @@ typedef struct StackNode* Stack;
  */
 typedef struct IntervalSet {
   Stack stack;         /** The stack of the set */
-  int length;          /** The length of the interval set */
+  unsigned int length; /** The length of the interval set */
   Interval* intervals; /** The array of Interval structs */
 } IntervalSet;
 
-IntervalSet* intervalSetCreateBlank(const Interval intervals[], const int length);
+IntervalSet* intervalSetCreateBlank(const Interval intervals[], const unsigned int length);
 void intervalSetDelete(IntervalSet* intervalSet);
 bool intervalSetIsDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet);
 void intervalSetSortByBottom(IntervalSet* intervalSet);
 void intervalSetPrint(const IntervalSet* intervalSet);
-int intervalSetCountGreaterI(const IntervalSet* intervalSet, const int i);
-int intervalSetCountContainingI(const IntervalSet* intervalSet, const int i);
-IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet, const int i,
-                                                   int g);
+unsigned int intervalSetCountGreaterI(const IntervalSet* intervalSet, const unsigned int i);
+unsigned int intervalSetCountContainingI(const IntervalSet* intervalSet, const unsigned int i);
+IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet,
+                                                   const unsigned int i, unsigned int g);
 IntervalSet* intervalSetGetLowestPart(const IntervalSet* intervalSet);
-int intervalSetCountLowestPartGreaterEqualJ(const IntervalSet* intervalSet, const int j);
+unsigned int intervalSetCountLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+                                                     const unsigned int j);
 IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
-                                                          const int j);
+                                                          const unsigned int j);
 
 #endif // INTERVAL_SET_H

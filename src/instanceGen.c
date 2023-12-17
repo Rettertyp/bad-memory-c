@@ -16,7 +16,7 @@ void instanceInitRandom() { srand(time(NULL)); }
  * @param max The maximum value of the range.
  * @return The randomly generated number.
  */
-static int getRandomNumber(const int min, const int max) {
+static unsigned int getRandomNumber(const unsigned int min, const unsigned int max) {
   return (rand() % (max - min + 1)) + min;
 }
 
@@ -26,9 +26,9 @@ static int getRandomNumber(const int min, const int max) {
  * @param i The integer to be contained in the Interval.
  * @return The Interval containing the given integer.
  */
-static Interval getIntervalContainingI(const int i) {
-  int start = getRandomNumber(__max(1, i / 2), i);
-  int end = getRandomNumber(i, 2 * i);
+static Interval getIntervalContainingI(const unsigned int i) {
+  unsigned int start = getRandomNumber(__max(1, i / 2), i);
+  unsigned int end = getRandomNumber(i, 2 * i);
 
   return (Interval){start, end};
 }
@@ -38,13 +38,13 @@ static Interval getIntervalContainingI(const int i) {
  *
  * @param n The number of intervals in the instance.
  */
-IntervalSet* instanceSimpleYes(const int n) {
+IntervalSet* instanceSimpleYes(const unsigned int n) {
   // generate random numbers that add up to n
-  int groups[n];
-  int sum = 0;
-  int nGroups = 0;
+  unsigned int groups[n];
+  unsigned int sum = 0;
+  unsigned int nGroups = 0;
 
-  for (int i = 0; i < n; i++) {
+  for (unsigned int i = 0; i < n; i++) {
     groups[i] = getRandomNumber(1, n - sum);
     sum += groups[i];
     nGroups++;
@@ -56,7 +56,7 @@ IntervalSet* instanceSimpleYes(const int n) {
 
   // print the groups
   debug_print("Groups: ");
-  for (int i = 0; i < nGroups; i++) {
+  for (unsigned int i = 0; i < nGroups; i++) {
     debug_print("%d ", groups[i]);
   }
   debug_print("\n");
@@ -64,17 +64,17 @@ IntervalSet* instanceSimpleYes(const int n) {
   // generate the intervals
   Interval intervals[n];
 
-  int currGroup = 0;
-  int currInterval = 0;
-  for (int i = 0; i < nGroups; i++) {
-    for (int j = 0; j < (currGroup = groups[i]); j++) {
+  unsigned int currGroup = 0;
+  unsigned int currInterval = 0;
+  for (unsigned int i = 0; i < nGroups; i++) {
+    for (unsigned int j = 0; j < (currGroup = groups[i]); j++) {
       intervals[currInterval++] = getIntervalContainingI(currGroup);
     }
   }
 
   // print the intervals
   debug_print("Intervals: ");
-  for (int i = 0; i < n; i++) {
+  for (unsigned int i = 0; i < n; i++) {
     debug_print("[%d, %d] ", intervals[i].bottom, intervals[i].top);
   }
   debug_print("\n");
