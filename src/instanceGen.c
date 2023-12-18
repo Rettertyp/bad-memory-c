@@ -34,13 +34,13 @@ static Interval getIntervalContainingI(const unsigned int i) {
 }
 
 /**
- * Generates a random simple instance of the GAI problem with a solution.
+ * Generates a set of groups that add up to n.
  *
- * @param n The number of intervals in the instance.
+ * @param groups An array to store the generated groups (gets mutated)
+ * @param n The total number of the groups should add up to.
+ * @return The number of groups generated.
  */
-IntervalSet* instanceSimpleYes(const unsigned int n) {
-  // generate random numbers that add up to n
-  unsigned int groups[n];
+static unsigned int getRandomGroups(unsigned int groups[], const unsigned int n) {
   unsigned int sum = 0;
   unsigned int nGroups = 0;
 
@@ -54,16 +54,20 @@ IntervalSet* instanceSimpleYes(const unsigned int n) {
     }
   }
 
-  // print the groups
-  debug_print("Groups: ");
-  for (unsigned int i = 0; i < nGroups; i++) {
-    debug_print("%d ", groups[i]);
-  }
-  debug_print("\n");
+  return nGroups;
+}
 
-  // generate the intervals
-  Interval intervals[n];
-
+/**
+ * @brief Generates intervals containing the given groups.
+ *
+ * This function populates an array of intervals with intervals that contain the specified groups.
+ *
+ * @param intervals The array of intervals to be populated.
+ * @param groups The array of groups to be checked.
+ * @param nGroups The number of groups in the array.
+ */
+static void getIntervalsContainingI(Interval intervals[], const unsigned int groups[],
+                                    const unsigned int nGroups) {
   unsigned int currGroup = 0;
   unsigned int currInterval = 0;
   for (unsigned int i = 0; i < nGroups; i++) {
@@ -71,13 +75,99 @@ IntervalSet* instanceSimpleYes(const unsigned int n) {
       intervals[currInterval++] = getIntervalContainingI(currGroup);
     }
   }
+}
 
-  // print the intervals
+/**
+ * Prints the elements of an integer array.
+ *
+ * @param groups The integer array to be printed.
+ * @param n The number of elements in the array.
+ */
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void printGroups(unsigned int groups[], unsigned int n) {
+  debug_print("Groups: ");
+  for (unsigned int i = 0; i < n; i++) {
+    debug_print("%d ", groups[i]);
+  }
+  debug_print("\n");
+}
+
+/**
+ * Prints the intervals in the given array.
+ *
+ * @param intervals The array of intervals.
+ * @param n The number of intervals in the array.
+ */
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void printIntervals(Interval intervals[], unsigned int n) {
   debug_print("Intervals: ");
   for (unsigned int i = 0; i < n; i++) {
     debug_print("[%d, %d] ", intervals[i].bottom, intervals[i].top);
   }
   debug_print("\n");
+}
+
+/**
+ * Generates a random simple instance of the GAI problem with a solution.
+ *
+ * @param n The number of intervals in the instance.
+ */
+IntervalSet* instanceSimpleYes(const unsigned int n) {
+  // generate random numbers that add up to n
+  unsigned int groups[n];
+  unsigned int nGroups = getRandomGroups(groups, n);
+
+  printGroups(groups, nGroups);
+
+  // generate the intervals
+  Interval intervals[n];
+
+  getIntervalsContainingI(intervals, groups, nGroups);
+
+  printIntervals(intervals, n);
+
+  return intervalSetCreateBlank(intervals, n);
+}
+
+/**
+ * Generates a random simple instance of the GAI problem without a solution.
+ *
+ * @param n The number of intervals in the instance.
+ */
+IntervalSet* instanceSimpleNo(const unsigned int n) {
+  // make groups that add up to n-1, to be able to add the last group that makes the solution
+  // impossible
+  unsigned int groups[n - 1];
+  unsigned int nGroups = getRandomGroups(groups, n - 1);
+
+  printGroups(groups, nGroups);
+
+  Interval intervals[n];
+
+  getIntervalsContainingI(intervals, groups, nGroups);
+
+  // add the last group that makes the solution impossible
+  for (unsigned int i = 1; i <= n; i++) {
+    // check if group i can be built
+    unsigned int nIncluding = 0;
+
+    for (unsigned int j = 0; j < n - 1; j++) {
+      if (intervalContains(&(intervals[j]), i)) {
+        nIncluding++;
+      }
+    }
+
+    if (nIncluding < i - 1) {
+      intervals[n - 1] = (Interval){i, i};
+      break;
+    }
+  }
+
+  if (intervals[n - 1].bottom == 0) {
+    printf("Could not find a group that makes the solution impossible.\n");
+  }
+
+  printIntervals(intervals, n);
 
   return intervalSetCreateBlank(intervals, n);
 }
