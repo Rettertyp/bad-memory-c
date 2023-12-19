@@ -12,15 +12,15 @@
  * @return True if the test was succesful, false otherwise.
  */
 bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals) {
-  debug_print("testSimpleYes\n");
+  debug_print("Testing simple yes instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
   for (unsigned int i = 0; i < nInstances; i++) {
-    if (!(i % 100)) {
-      debug_print("Instance %d\n", i + 1);
+    if (nIntervals > 200 || !(i % 100)) {
+      debug_print("Running instance %d\n", i + 1);
     }
 
     IntervalSet* instance = instanceSimpleYes(nIntervals);
@@ -43,7 +43,7 @@ bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals)
     intervalSetDelete(instance);
   }
 
-  debug_print("Done.\n");
+  debug_print("Done.\n\n");
 
   return success;
 }
@@ -56,15 +56,15 @@ bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals)
  * @return True if the test was succesful, false otherwise.
  */
 bool testSimpleNo(const unsigned int nInstances, const unsigned int nIntervals) {
-  debug_print("testSimpleNo\n");
+  debug_print("Testing simple no instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
   for (unsigned int i = 0; i < nInstances; i++) {
-    if (!(i % 100)) {
-      debug_print("Instance %d\n", i + 1);
+    if (nIntervals > 200 || !(i % 100)) {
+      debug_print("Running instance %d\n", i + 1);
     }
 
     IntervalSet* instance = instanceSimpleNo(nIntervals);

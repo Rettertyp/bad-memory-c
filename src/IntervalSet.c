@@ -3,6 +3,11 @@
 #include <stdlib.h>
 
 /**
+ * Function pointer type for Interval comparison functions.
+ */
+typedef bool (*ComparisonFunc)(const Interval*, const unsigned int);
+
+/**
  * Creates a new IntervalSet object.
  *
  * @param intervals An array of Interval objects.
@@ -16,7 +21,7 @@ static IntervalSet* intervalSetCreate(const Interval intervals[], const unsigned
   IntervalSet* intervalSet = malloc(sizeof(IntervalSet) + sizeof(Interval) * (length));
 
   if (intervalSet) {
-    intervalSet->stack = stack;
+    intervalSet->stack = stackCopy(stack);
     intervalSet->length = length;
     // set the intervals pointer one cell after the IntervalSet struct
     intervalSet->intervals = (Interval*)(intervalSet + 1);
@@ -50,8 +55,7 @@ IntervalSet* intervalSetCreateBlank(const Interval intervals[], const unsigned i
  * @return A new IntervalSet that is a copy of the original IntervalSet.
  */
 IntervalSet* intervalSetCopy(const IntervalSet* intervalSet) {
-  return intervalSetCreate(intervalSet->intervals, intervalSet->length,
-                           stackCopy(intervalSet->stack));
+  return intervalSetCreate(intervalSet->intervals, intervalSet->length, intervalSet->stack);
 }
 
 /**
@@ -175,6 +179,27 @@ void intervalSetPrint(const IntervalSet* intervalSet) {
 }
 
 /**
+ * Counts the number of intervals in the given IntervalSet that satisfy the comparison function.
+ *
+ * @param intervalSet The IntervalSet to count intervals from.
+ * @param i The value to compare intervals with.
+ * @param compFunc The comparison function used to compare intervals with the value.
+ * @return The number of intervals that satisfy the comparison function.
+ */
+static unsigned int intervalSetCount(const IntervalSet* intervalSet, const unsigned int i,
+                                     ComparisonFunc compFunc) {
+  unsigned int count = 0;
+
+  for (unsigned int j = 0; j < intervalSet->length; j++) {
+    if (compFunc(&(intervalSet->intervals[j]), i)) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+/**
  * Counts the number of intervals in the given IntervalSet that are greater than
  * the specified value.
  *
@@ -183,16 +208,7 @@ void intervalSetPrint(const IntervalSet* intervalSet) {
  * @return The count of intervals greater than the specified value.
  */
 unsigned int intervalSetCountGreaterI(const IntervalSet* intervalSet, const unsigned int i) {
-  unsigned int count = 0;
-
-  for (unsigned int j = 0; j < intervalSet->length; j++) {
-    Interval* currInterval = &(intervalSet->intervals[j]);
-    if (intervalGreaterThan(currInterval, i)) {
-      count++;
-    }
-  }
-
-  return count;
+  return intervalSetCount(intervalSet, i, intervalGreaterThan);
 }
 
 /**
@@ -204,15 +220,7 @@ unsigned int intervalSetCountGreaterI(const IntervalSet* intervalSet, const unsi
  * @return The count of intervals containing the specified value.
  */
 unsigned int intervalSetCountContainingI(const IntervalSet* intervalSet, const unsigned int i) {
-  unsigned int count = 0;
-
-  for (unsigned int j = 0; j < intervalSet->length; j++) {
-    if (intervalContains(&(intervalSet->intervals[j]), i)) {
-      count++;
-    }
-  }
-
-  return count;
+  return intervalSetCount(intervalSet, i, intervalContains);
 }
 
 /**
@@ -225,23 +233,15 @@ unsigned int intervalSetCountContainingI(const IntervalSet* intervalSet, const u
  */
 static unsigned int intervalSetCountGreaterEqualI(const IntervalSet* intervalSet,
                                                   const unsigned int i) {
-  unsigned int count = 0;
-
-  for (unsigned int j = 0; j < intervalSet->length; j++) {
-    if (intervalGreaterEqual(&(intervalSet->intervals[j]), i)) {
-      count++;
-    }
-  }
-
-  return count;
+  return intervalSetCount(intervalSet, i, intervalGreaterEqual);
 }
 
 /**
- * Returns the first interval in the given interval set that intervalContains the specified value.
+ * Returns the first interval in the given interval set that contains the specified value.
  *
  * @param intervalSet The interval set to search in.
  * @param i The value to search for.
- * @return A pointer to the first interval that intervalContains the specified value, or NULL if
+ * @return A pointer to the first interval that contains the specified value, or NULL if
  * no such interval is found.
  */
 static Interval* intervalSetGetFirstContainingI(const IntervalSet* intervalSet,
@@ -279,7 +279,7 @@ IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSe
     }
   }
 
-  return intervalSetCreate(intervals, newLength, stackCopy(intervalSet->stack));
+  return intervalSetCreate(intervals, newLength, intervalSet->stack);
 }
 
 /**
@@ -304,7 +304,7 @@ static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const u
     }
   }
 
-  return intervalSetCreate(intervals, nChosen, stackCopy(intervalSet->stack));
+  return intervalSetCreate(intervals, nChosen, intervalSet->stack);
 }
 
 /**
@@ -407,7 +407,7 @@ static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* 
     }
   }
 
-  return intervalSetCreate(intervals, nChosen, stackCopy(intervalSet->stack));
+  return intervalSetCreate(intervals, nChosen, intervalSet->stack);
 }
 
 /**

@@ -5,7 +5,7 @@ make
 if [ $? -eq 0 ]; then
     echo -e "\nCompilation successful. Running the executable...\n"
     # Run the compiled executable
-    "./out/main.exe"
+    "./out/main"
 else
     echo "Compilation failed."
 fi

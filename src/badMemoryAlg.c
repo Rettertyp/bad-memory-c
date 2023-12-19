@@ -1,5 +1,6 @@
 #include "badMemoryAlg.h"
 #include "debug.h"
+#include <stdlib.h>
 
 /**
  * Tries to build the group of size groupSize. If it is not possible to build
@@ -64,9 +65,9 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
                Stack currStack) {
 
   debug_print("Backtracking... predNode: ");
-  graphNodePrintDetailed(predNode);
+  // graphNodePrintDetailed(predNode);
   debug_print("currNode: ");
-  graphNodePrintDetailed(currNode);
+  // graphNodePrintDetailed(currNode);
 
   int nLowestPartGEqI = intervalSetCountLowestPartGreaterEqualJ(intervalSet, currNode->i);
 
@@ -81,7 +82,7 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
 
   if (assignRes.statusCode == SUCCESS) {
     graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
-    graphNodePrintDetailed(currNode);
+    // graphNodePrintDetailed(currNode);
 
   } else if (assignRes.statusCode == ERROR_evtl) {
 
@@ -119,13 +120,17 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   debug_print("\n");
 
   const unsigned int n = inputIntervalSet->length;
-  GraphNode graphNodes[n][n];
-  GraphNode* graphNodesPtr = (GraphNode*)graphNodes;
 
-  // Initialize empty graphNodes
+  // Initialize the graph nodes on the heap
+  GraphNode** graphNodes = malloc(n * sizeof(GraphNode*));
+  for (unsigned int i = 0; i < n; i++) {
+    graphNodes[i] = malloc(n * sizeof(GraphNode));
+  }
+
+  // populate the graph nodes
   for (unsigned int i = 1; i <= n; i++) {
     for (unsigned int j = 1; j <= n; j++) {
-      *(getGraphNode(graphNodesPtr, i, j, n)) = graphNodeCreate(i, j);
+      *(getGraphNode(graphNodes, i, j)) = graphNodeCreate(i, j);
     }
   }
 
@@ -135,8 +140,9 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   for (unsigned int i = 1; i <= n; i++) {
     AssignRes assignRes = assign(inputIntervalSet, i);
     if (assignRes.statusCode == SUCCESS) {
-      graphNodeAddIntervalSet(getGraphNode(graphNodesPtr, i, i, n), assignRes.intervalSet);
-      graphNodePrintDetailed(getGraphNode(graphNodesPtr, i, i, n));
+      GraphNode* currNode = getGraphNode(graphNodes, i, i);
+      graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
+      graphNodePrintDetailed(currNode);
     }
   }
 
@@ -145,12 +151,12 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   // main loop of the algorithm
   for (unsigned int i = n; i > 0; i--) {
     for (unsigned int s = i + 1; s <= n; s++) {
-      GraphNode* currNode = getGraphNode(graphNodesPtr, i, s, n);
+      GraphNode* currNode = getGraphNode(graphNodes, i, s);
       debug_print("\ncurrNode: ");
       graphNodePrintDetailed(currNode);
       const unsigned int s_ = s - i;
       for (unsigned int i_ = i; i_ <= n; i_++) {
-        GraphNode* predNode = getGraphNode(graphNodesPtr, i_, s_, n);
+        GraphNode* predNode = getGraphNode(graphNodes, i_, s_);
 
         graphNodePrintDetailed(predNode);
 
@@ -173,12 +179,10 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
             stackPush(&(assignRes.intervalSet->stack), predNode);
 
             graphNodePrintDetailed(currNode);
+
           } else if (assignRes.statusCode == ERROR_evtl) {
-            debug_print("Assign returned ERROR_evtl.\n");
 
             Stack copiedStack = stackCopy(currSet->stack);
-
-            debug_print("Copied the stack.\n");
 
             backtrack(predNode, currNode, currSet, copiedStack);
           }
@@ -193,14 +197,31 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
 
   debug_print("\nChecking if there is a solution...\n");
 
+  bool solutionFound = false;
+
   // check if there is a solution
   for (unsigned int i = 1; i <= n; i++) {
-    GraphNode* currNode = getGraphNode(graphNodesPtr, i, n, n);
+    GraphNode* currNode = getGraphNode(graphNodes, i, n);
     if (graphNodeGetNIntervalSets(currNode) > 0) {
+      debug_print("Solution found!\n");
       graphNodePrintDetailed(currNode);
-      return true;
+      solutionFound = true;
+      break;
     }
   }
 
-  return false;
+  // free the memory allocated for the graph nodes and their corresponding intervalSets
+  for (unsigned int i = 1; i <= n; i++) {
+    for (unsigned int j = 1; j <= n; j++) {
+      graphNodeDelete(getGraphNode(graphNodes, i, j));
+    }
+
+    free(graphNodes[i - 1]);
+    graphNodes[i - 1] = NULL;
+  }
+
+  free(graphNodes);
+  graphNodes = NULL;
+
+  return solutionFound;
 }

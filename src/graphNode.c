@@ -33,12 +33,26 @@ void graphNodeDelete(GraphNode* graphNode) {
     while (intervalSetNode) {
       IntervalSetNode* next = intervalSetNode->next;
       intervalSetDelete(intervalSetNode->set);
+      intervalSetNode->set = NULL;
       free(intervalSetNode);
       intervalSetNode = next;
     }
 
-    free(graphNode);
-    graphNode = NULL;
+    // the graphNode itself does not need to be freed, only the array containing it
+  }
+}
+
+/**
+ * Deletes an IntervalSetNode and frees the memory allocated for it.
+ *
+ * @param intervalSetNode The IntervalSetNode to be deleted.
+ */
+static void graphNodeDeleteIntervalSet(IntervalSetNode* intervalSetNode) {
+  if (intervalSetNode) {
+    intervalSetDelete(intervalSetNode->set);
+    intervalSetNode->set = NULL;
+    free(intervalSetNode);
+    intervalSetNode = NULL;
   }
 }
 
@@ -76,22 +90,25 @@ void graphNodeRemoveDominatedSets(GraphNode* graphNode) {
     while (innerSetNode) {
 
       if (intervalSetIsDominatedBy(innerSetNode->set, outerSetNode->set)) {
+        // the innerSetNode is dominated by the outerSetNode => remove the innerSetNode
 
         // get predecessor of innerSetNode
         IntervalSetNode* pred = outerSetNode;
         while (pred->next != innerSetNode) {
           pred = pred->next;
         }
+
         // remove innerSetNode from list
         IntervalSetNode* next = innerSetNode->next;
         pred->next = next;
 
         // delete innerSetNode
-        intervalSetDelete(innerSetNode->set);
-        free(innerSetNode);
+        graphNodeDeleteIntervalSet(innerSetNode);
+
         innerSetNode = next;
 
       } else if (intervalSetIsDominatedBy(outerSetNode->set, innerSetNode->set)) {
+        // the outerSetNode is dominated by the innerSetNode => remove the outerSetNode
 
         IntervalSetNode* next = outerSetNode->next;
 
@@ -107,14 +124,15 @@ void graphNodeRemoveDominatedSets(GraphNode* graphNode) {
         }
 
         // delete outerSetNode
-        intervalSetDelete(outerSetNode->set);
-        free(outerSetNode);
+        graphNodeDeleteIntervalSet(outerSetNode);
+
         outerSetNode = next;
 
         // continue with next outerSetNode
         innerSetNode = outerSetNode->next;
 
       } else {
+
         innerSetNode = innerSetNode->next;
       }
     }
@@ -179,7 +197,6 @@ void graphNodePrintDetailed(const GraphNode* graphNode) {
  * @param n The size of the square matrix (number of rows/columns).
  * @return A pointer to the specified GraphNode.
  */
-GraphNode* getGraphNode(GraphNode* graphNodes, const unsigned int i, const unsigned int s,
-                        const unsigned int n) {
-  return &(graphNodes[(i - 1) * n + (s - 1)]);
+GraphNode* getGraphNode(GraphNode** graphNodes, const unsigned int i, const unsigned int s) {
+  return &(graphNodes[i - 1][s - 1]);
 }

@@ -31,7 +31,6 @@ void graphNodeRemoveDominatedSets(GraphNode* graphNode);
 unsigned int graphNodeGetNIntervalSets(const GraphNode* graphNode);
 void graphNodePrint(const GraphNode* graphNode);
 void graphNodePrintDetailed(const GraphNode* graphNode);
-GraphNode* getGraphNode(GraphNode* graphNodes, const unsigned int n, const unsigned int i,
-                        const unsigned int s);
+GraphNode* getGraphNode(GraphNode** graphNodes, const unsigned int i, const unsigned int s);
 
 #endif // GRAPH_NODE_H
