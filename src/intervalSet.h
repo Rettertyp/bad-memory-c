@@ -15,9 +15,9 @@ typedef struct StackNode* Stack;
  * and an array of Interval structs.
  */
 typedef struct IntervalSet {
-  Stack stack;         /** The stack of the set */
-  unsigned int length; /** The length of the interval set */
-  Interval* intervals; /** The array of Interval structs */
+  Stack stack;          /** The stack of the set */
+  unsigned int length;  /** The length of the interval set */
+  Interval intervals[]; /** The array of Interval structs */
 } IntervalSet;
 
 IntervalSet* intervalSetCreateBlank(const Interval intervals[], const unsigned int length);
@@ -29,10 +29,10 @@ unsigned int intervalSetCountGreaterI(const IntervalSet* intervalSet, const unsi
 unsigned int intervalSetCountContainingI(const IntervalSet* intervalSet, const unsigned int i);
 IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet,
                                                    const unsigned int i, unsigned int g);
-IntervalSet* intervalSetGetLowestPart(const IntervalSet* intervalSet);
-unsigned int intervalSetCountLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet);
+unsigned int intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet,
                                                      const unsigned int j);
-IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(IntervalSet* intervalSet,
                                                           const unsigned int j);
 
 #endif // INTERVAL_SET_H

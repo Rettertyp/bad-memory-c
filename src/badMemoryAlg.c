@@ -62,7 +62,8 @@ AssignRes assignRest(const IntervalSet* intervalSet, const unsigned int groupSiz
  * @param currStack The current stack.
  */
 void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSet,
-               Stack currStack) {
+               Stack otherStack) {
+  Stack currStack = stackCopy(otherStack);
 
   debug_print("Backtracking... predNode: ");
   // graphNodePrintDetailed(predNode);
@@ -82,27 +83,28 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
 
   if (assignRes.statusCode == SUCCESS) {
     graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
-    // graphNodePrintDetailed(currNode);
 
   } else if (assignRes.statusCode == ERROR_evtl) {
 
     GraphNode* nextPredNode = stackPop(&currStack);
 
-    if (!nextPredNode) {
-      return;
-    }
+    if (nextPredNode) {
 
-    IntervalSetNode* currIntSetNode = nextPredNode->intervalSets;
-    while (currIntSetNode) {
-      IntervalSet* currSet = currIntSetNode->set;
+      IntervalSetNode* currIntSetNode = nextPredNode->intervalSets;
+      while (currIntSetNode) {
+        IntervalSet* currSet = currIntSetNode->set;
 
-      if (stackEquals(currSet->stack, currStack)) {
-        backtrack(nextPredNode, currNode, currSet, currStack);
+        if (stackEquals(currSet->stack, currStack)) {
+
+          backtrack(nextPredNode, currNode, currSet, currStack);
+        }
+
+        currIntSetNode = currIntSetNode->next;
       }
-
-      currIntSetNode = currIntSetNode->next;
     }
   }
+
+  stackDelete(&currStack);
 }
 
 /**
@@ -182,9 +184,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
 
           } else if (assignRes.statusCode == ERROR_evtl) {
 
-            Stack copiedStack = stackCopy(currSet->stack);
-
-            backtrack(predNode, currNode, currSet, copiedStack);
+            backtrack(predNode, currNode, currSet, currSet->stack);
           }
 
           currIntSetNode = currIntSetNode->next;

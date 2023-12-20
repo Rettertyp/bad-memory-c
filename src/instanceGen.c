@@ -108,25 +108,43 @@ static void printIntervals(Interval intervals[], unsigned int n) {
 }
 
 /**
+ * Frees the memory allocated for groups and intervals.
+ *
+ * @param groups The pointer to the array of groups.
+ * @param intervals The pointer to the array of intervals.
+ */
+static void freeGroupsAndIntervals(unsigned int groups[], Interval intervals[]) {
+  free(groups);
+  groups = NULL;
+  free(intervals);
+  intervals = NULL;
+}
+
+/**
  * Generates a random simple instance of the GAI problem with a solution.
  *
  * @param n The number of intervals in the instance.
  */
 IntervalSet* instanceSimpleYes(const unsigned int n) {
   // generate random numbers that add up to n
-  unsigned int groups[n];
+  unsigned int* groups = malloc(sizeof(unsigned int) * n);
   unsigned int nGroups = getRandomGroups(groups, n);
 
   printGroups(groups, nGroups);
 
   // generate the intervals
-  Interval intervals[n];
+  Interval* intervals = malloc(sizeof(Interval) * n);
 
   getIntervalsContainingI(intervals, groups, nGroups);
 
   printIntervals(intervals, n);
 
-  return intervalSetCreateBlank(intervals, n);
+  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
+
+  // free allocated memory
+  freeGroupsAndIntervals(groups, intervals);
+
+  return instance;
 }
 
 /**
@@ -137,12 +155,12 @@ IntervalSet* instanceSimpleYes(const unsigned int n) {
 IntervalSet* instanceSimpleNo(const unsigned int n) {
   // make groups that add up to n-1, to be able to add the last group that makes the solution
   // impossible
-  unsigned int groups[n - 1];
+  unsigned int* groups = malloc(sizeof(unsigned int) * (n - 1));
   unsigned int nGroups = getRandomGroups(groups, n - 1);
 
   printGroups(groups, nGroups);
 
-  Interval intervals[n];
+  Interval* intervals = malloc(sizeof(Interval) * n);
 
   getIntervalsContainingI(intervals, groups, nGroups);
 
@@ -169,5 +187,10 @@ IntervalSet* instanceSimpleNo(const unsigned int n) {
 
   printIntervals(intervals, n);
 
-  return intervalSetCreateBlank(intervals, n);
+  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
+
+  // free allocated memory
+  freeGroupsAndIntervals(groups, intervals);
+
+  return instance;
 }

@@ -18,16 +18,13 @@ typedef bool (*ComparisonFunc)(const Interval*, const unsigned int);
  */
 static IntervalSet* intervalSetCreate(const Interval intervals[], const unsigned int length,
                                       const Stack stack) {
-  IntervalSet* intervalSet = malloc(sizeof(IntervalSet) + sizeof(Interval) * (length));
+  IntervalSet* intervalSet = malloc(sizeof(IntervalSet) + sizeof(Interval) * length);
 
   if (intervalSet) {
     intervalSet->stack = stackCopy(stack);
     intervalSet->length = length;
-    // set the intervals pointer one cell after the IntervalSet struct
-    intervalSet->intervals = (Interval*)(intervalSet + 1);
 
     // copy the intervals into the new array
-
     for (unsigned int i = 0; i < length; i++) {
       intervalSet->intervals[i] = intervals[i];
     }
@@ -237,6 +234,16 @@ static unsigned int intervalSetCountGreaterEqualI(const IntervalSet* intervalSet
 }
 
 /**
+ * Frees an array of intervals.
+ *
+ * @param intervals The Interval-array to free.
+ */
+static void freeIntervals(Interval intervals[]) {
+  free(intervals);
+  intervals = NULL;
+}
+
+/**
  * Returns the first interval in the given interval set that contains the specified value.
  *
  * @param intervalSet The interval set to search in.
@@ -244,8 +251,7 @@ static unsigned int intervalSetCountGreaterEqualI(const IntervalSet* intervalSet
  * @return A pointer to the first interval that contains the specified value, or NULL if
  * no such interval is found.
  */
-static Interval* intervalSetGetFirstContainingI(const IntervalSet* intervalSet,
-                                                const unsigned int i) {
+static Interval* intervalSetGetFirstContainingI(IntervalSet* intervalSet, const unsigned int i) {
   for (unsigned int j = 0; j < intervalSet->length; j++) {
     if (intervalContains(&(intervalSet->intervals[j]), i)) {
       return &(intervalSet->intervals[j]);
@@ -267,7 +273,7 @@ static Interval* intervalSetGetFirstContainingI(const IntervalSet* intervalSet,
 IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet,
                                                    const unsigned int i, const unsigned int g) {
   unsigned int newLength = intervalSet->length - g;
-  Interval intervals[newLength];
+  Interval* intervals = malloc(sizeof(Interval) * newLength);
 
   unsigned int j = 0;
   unsigned int nAssigned = 0;
@@ -279,7 +285,11 @@ IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSe
     }
   }
 
-  return intervalSetCreate(intervals, newLength, intervalSet->stack);
+  IntervalSet* res = intervalSetCreate(intervals, newLength, intervalSet->stack);
+
+  freeIntervals(intervals);
+
+  return res;
 }
 
 /**
@@ -294,7 +304,7 @@ IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSe
 static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const unsigned int i,
                                          const unsigned int b) {
   // choosing intervalSet.length as upper bound
-  Interval intervals[intervalSet->length];
+  Interval* intervals = malloc(sizeof(Interval) * intervalSet->length);
 
   unsigned int nChosen = 0;
   for (unsigned int j = 0; j < intervalSet->length; j++) {
@@ -304,7 +314,11 @@ static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const u
     }
   }
 
-  return intervalSetCreate(intervals, nChosen, intervalSet->stack);
+  IntervalSet* res = intervalSetCreate(intervals, nChosen, intervalSet->stack);
+
+  freeIntervals(intervals);
+
+  return res;
 }
 
 /**
@@ -313,7 +327,7 @@ static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const u
  * @param intervalSet The interval set to retrieve the lowest part from.
  * @return The lowest part of the interval set.
  */
-IntervalSet* intervalSetGetLowestPart(const IntervalSet* intervalSet) {
+IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet) {
   GraphNode* predNode = stackTop(&(intervalSet->stack));
 
   // if there is no predecessor, return a copy of the interval set
@@ -362,7 +376,7 @@ static unsigned int countLessThanIRightOfBGreaterEqualJ(const IntervalSet* inter
  * @return A pointer to the IntervalSet containing the lowest part greater than or equal to j.
  *         If no such IntervalSet exists, a copy of the original IntervalSet is returned.
  */
-unsigned int intervalSetCountLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+unsigned int intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet,
                                                      const unsigned int j) {
   GraphNode* predNode = stackTop(&(intervalSet->stack));
 
@@ -396,7 +410,7 @@ static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* 
                                                              const unsigned int b,
                                                              const unsigned int j) {
   // choosing intervalSet.length as upper bound
-  Interval intervals[intervalSet->length];
+  Interval* intervals = malloc(sizeof(Interval) * intervalSet->length);
 
   unsigned int nChosen = 0;
   for (unsigned int k = 0; k < intervalSet->length; k++) {
@@ -407,7 +421,11 @@ static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* 
     }
   }
 
-  return intervalSetCreate(intervals, nChosen, intervalSet->stack);
+  IntervalSet* res = intervalSetCreate(intervals, nChosen, intervalSet->stack);
+
+  freeIntervals(intervals);
+
+  return res;
 }
 
 /**
@@ -417,7 +435,7 @@ static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* 
  * @param j The value to compare against the lowest part of the intervals.
  * @return The resulting interval set containing the inverse.
  */
-IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(const IntervalSet* intervalSet,
+IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(IntervalSet* intervalSet,
                                                           const unsigned int j) {
   GraphNode* predNode = stackTop(&(intervalSet->stack));
 

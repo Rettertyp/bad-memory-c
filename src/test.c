@@ -3,6 +3,18 @@
 #define DEBUG_PRINT 1
 #include "debug.h"
 #include "instanceGen.h"
+#include <unistd.h>
+
+/**
+ * Determines whether the given interval should be logged.
+ *
+ * @param nIntervals The total number of intervals.
+ * @param i The current interval index.
+ * @return True if the interval should be logged, false otherwise.
+ */
+bool shouldBeLogged(const unsigned int nIntervals, const unsigned int i) {
+  return nIntervals > 200 || !(i % 100);
+}
 
 /**
  * Tests the bad memory algorithm on a set of simple yes instances.
@@ -19,7 +31,7 @@ bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals)
   instanceInitRandom();
 
   for (unsigned int i = 0; i < nInstances; i++) {
-    if (nIntervals > 200 || !(i % 100)) {
+    if (shouldBeLogged(nIntervals, i)) {
       debug_print("Running instance %d\n", i + 1);
     }
 
@@ -63,7 +75,7 @@ bool testSimpleNo(const unsigned int nInstances, const unsigned int nIntervals) 
   instanceInitRandom();
 
   for (unsigned int i = 0; i < nInstances; i++) {
-    if (nIntervals > 200 || !(i % 100)) {
+    if (shouldBeLogged(nIntervals, i)) {
       debug_print("Running instance %d\n", i + 1);
     }
 
