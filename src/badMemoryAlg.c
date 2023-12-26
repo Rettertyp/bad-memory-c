@@ -1,5 +1,6 @@
 #include "badMemoryAlg.h"
 #include "debug.h"
+#include "markStorage.h"
 #include <stdlib.h>
 
 /**
@@ -61,14 +62,12 @@ AssignRes assignRest(const IntervalSet* intervalSet, const unsigned int groupSiz
  * @param intervalSet The current interval set.
  * @param currStack The current stack.
  */
-void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSet,
-               Stack otherStack) {
+void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSet, Stack otherStack,
+               MarkStorage* markStorage) {
   Stack currStack = stackCopy(otherStack);
 
-  debug_print("Backtracking... predNode: ");
-  // graphNodePrintDetailed(predNode);
-  debug_print("currNode: ");
-  // graphNodePrintDetailed(currNode);
+  // mark the current interval set
+  markStorageAddSet(markStorage, intervalSet);
 
   int nLowestPartGEqI = intervalSetCountLowestPartGreaterEqualJ(intervalSet, currNode->i);
 
@@ -94,9 +93,9 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
       while (currIntSetNode) {
         IntervalSet* currSet = currIntSetNode->set;
 
-        if (stackEquals(currSet->stack, currStack)) {
+        if (!markStorageIsMarked(markStorage, currSet) && stackEquals(currSet->stack, currStack)) {
 
-          backtrack(nextPredNode, currNode, currSet, currStack);
+          backtrack(nextPredNode, currNode, currSet, currStack, markStorage);
         }
 
         currIntSetNode = currIntSetNode->next;
@@ -156,6 +155,10 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
       GraphNode* currNode = getGraphNode(graphNodes, i, s);
       debug_print("\ncurrNode: ");
       graphNodePrintDetailed(currNode);
+
+      // create a mark storage
+      MarkStorage markStorage = NULL;
+
       const unsigned int s_ = s - i;
       for (unsigned int i_ = i; i_ <= n; i_++) {
         GraphNode* predNode = getGraphNode(graphNodes, i_, s_);
@@ -184,7 +187,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
 
           } else if (assignRes.statusCode == ERROR_evtl) {
 
-            backtrack(predNode, currNode, currSet, currSet->stack);
+            backtrack(predNode, currNode, currSet, currSet->stack, &markStorage);
           }
 
           currIntSetNode = currIntSetNode->next;
@@ -192,6 +195,9 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
       }
 
       graphNodeRemoveDominatedSets(currNode);
+
+      // free the memory allocated for the mark storage
+      markStorageDelete(&markStorage);
     }
   }
 
