@@ -103,3 +103,37 @@ bool testSimpleNo(const unsigned int nInstances, const unsigned int nIntervals) 
 
   return success;
 }
+
+/**
+ * Tests the bad memory algorithm on a set of hard whitness instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testHardYes(const unsigned int nInstances, const unsigned int nIntervals) {
+  debug_print("Testing hard whitness instances.\n");
+
+  bool success = true;
+
+  instanceInitRandom();
+
+  for (unsigned int i = 0; i < nInstances; i++) {
+    if (shouldBeLogged(nIntervals, i)) {
+      debug_print("Running instance %d\n", i + 1);
+    }
+
+    IntervalSet* instance = instanceHardYes(nIntervals);
+    bool hasSolution = badMemoryAlgorithm(instance);
+
+    if (!hasSolution) {
+      success = false;
+    }
+
+    intervalSetDelete(instance);
+  }
+
+  debug_print("Done.\n\n");
+
+  return success;
+}

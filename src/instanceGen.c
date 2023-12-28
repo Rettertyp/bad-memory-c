@@ -1,5 +1,6 @@
 #include "instanceGen.h"
 #include "debug.h"
+#include <math.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -121,6 +122,38 @@ static void freeGroupsAndIntervals(unsigned int groups[], Interval intervals[]) 
 }
 
 /**
+ * Creates an IntervalSet from an array of Intervals and frees the memory of the array.
+ *
+ * @param intervals The array of Intervals.
+ * @param n The number of Intervals in the array.
+ * @return The created IntervalSet.
+ */
+static IntervalSet* createIntervalSetAndFree(Interval* intervals, const unsigned int n) {
+  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
+
+  free(intervals);
+
+  return instance;
+}
+
+/**
+ * Creates an interval set and frees the groups and intervals.
+ *
+ * @param intervals The array of intervals.
+ * @param n The number of intervals.
+ * @param groups The array of groups.
+ * @return The created interval set.
+ */
+static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], unsigned int groups[],
+                                                   const unsigned int n) {
+  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
+
+  freeGroupsAndIntervals(groups, intervals);
+
+  return instance;
+}
+
+/**
  * Generates a random simple instance of the GAI problem with a solution.
  *
  * @param n The number of intervals in the instance.
@@ -139,12 +172,7 @@ IntervalSet* instanceSimpleYes(const unsigned int n) {
 
   printIntervals(intervals, n);
 
-  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
-
-  // free allocated memory
-  freeGroupsAndIntervals(groups, intervals);
-
-  return instance;
+  return createIntervalSetAndFreeGroups(intervals, groups, n);
 }
 
 /**
@@ -187,10 +215,102 @@ IntervalSet* instanceSimpleNo(const unsigned int n) {
 
   printIntervals(intervals, n);
 
-  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
+  return createIntervalSetAndFreeGroups(intervals, groups, n);
+}
 
-  // free allocated memory
-  freeGroupsAndIntervals(groups, intervals);
+/**
+ * Calculates the size of the whiteness based on the given start and end values.
+ *
+ * @param start The starting value.
+ * @param end The ending value.
+ * @return The size of the whiteness.
+ */
+static unsigned int calcWhitnessSize(const unsigned int start, const unsigned int end) {
+  if (start >= end) {
+    return 0;
+  }
 
-  return instance;
+  return 3 * end - 3;
+}
+
+/**
+ * Adds a whitness to the given array of intervals.
+ *
+ * @param intervals The array of intervals to be populated.
+ * @param start The starting value of the whitness.
+ * @param end The ending value of the whitness.
+ * @param i The index of the array on which to start adding the whitness.
+ */
+static unsigned int getWhitness(Interval intervals[], const unsigned int start,
+                                const unsigned int end, unsigned int i) {
+  const unsigned int nIntervalsPerGroup = end - 1;
+
+  // add the top interval
+  intervals[i++] = (Interval){start, end};
+
+  // add the middle group of intervals
+  for (unsigned int j = 0; j < nIntervalsPerGroup; j++) {
+    intervals[i++] = (Interval){start + 1, end - 1};
+  }
+
+  // add the bottom group of interval
+  for (unsigned int j = 0; j < nIntervalsPerGroup - 1; j++) {
+    intervals[i++] = (Interval){start + 2, end - 2};
+  }
+
+  // add the group that turns the combination into a whitness
+  for (unsigned int j = 0; j < nIntervalsPerGroup; j++) {
+    intervals[i++] = (Interval){end - 1, end};
+  }
+
+  return i;
+}
+
+/**
+ * Generates a hard instance of the GAI problem, consisting of as many whitnesses as possible.
+ *
+ * @param n The number of intervals in the instance.
+ * @return The generated instance.
+ */
+IntervalSet* instanceHardYes(const unsigned int n) {
+  Interval* intervals = malloc(sizeof(Interval) * n);
+
+  unsigned int i = 0;
+  unsigned int start = 1;
+  unsigned int end = 2 * sqrt(n);
+  unsigned int nextWhitnessSize = 0;
+  unsigned int nWhitnesses = 0;
+
+  // add whitnesses until no whitness fits in the remaining space
+  while (i < n) {
+    nextWhitnessSize = calcWhitnessSize(start, end);
+
+    // if the next whitness does not fit in the remaining space, shrink the start and end values
+    while (i + nextWhitnessSize >= n) {
+      debug_print("Next whitness size: %d, start: %d, end: %d\n", nextWhitnessSize, start, end);
+      end--;
+      nextWhitnessSize = calcWhitnessSize(start, end);
+    }
+
+    // if no whitnesses can be added anymore, add "[1, 1]" intervals to fill the remaining space
+    if (nextWhitnessSize == 0) {
+      while (i < n) {
+        intervals[i++] = (Interval){1, 1};
+      }
+    }
+
+    // if there is space for a whitness, add it
+    else if (i + nextWhitnessSize < n) {
+      nWhitnesses++;
+      i = getWhitness(intervals, start, end, i);
+      start += 3;
+      end -= 3;
+    }
+  }
+
+  debug_print("Number of whitnesses: %d\n", nWhitnesses);
+
+  printIntervals(intervals, n);
+
+  return createIntervalSetAndFree(intervals, n);
 }

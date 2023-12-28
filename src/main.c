@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
 
   success &= testSimpleNo(N_INSTANCES, N_INTERVALS);
 
+  success &= testHardYes(N_INSTANCES, N_INTERVALS);
+
   if (success) {
     debug_print("All tests passed.\n");
   } else {
