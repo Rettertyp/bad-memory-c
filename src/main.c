@@ -18,6 +18,8 @@ int main(int argc, char** argv) {
 
   success &= testHardYes(N_INSTANCES, N_INTERVALS);
 
+  success &= testHardNo(N_INSTANCES, N_INTERVALS);
+
   if (success) {
     debug_print("All tests passed.\n");
   } else {

@@ -154,6 +154,34 @@ static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], unsigne
 }
 
 /**
+ * Adds a group that makes the solution impossible to the given array of n-1 intervals.
+ *
+ * @param intervals The array of intervals to be populated.
+ * @param n The number of intervals in the array.
+ */
+static void addImpossibleGroup(Interval intervals[], const unsigned int n) {
+  for (unsigned int i = 1; i <= n; i++) {
+    // check if group i can be built
+    unsigned int nIncluding = 0;
+
+    for (unsigned int j = 0; j < n - 1; j++) {
+      if (intervalContains(&(intervals[j]), i)) {
+        nIncluding++;
+      }
+    }
+
+    if (nIncluding < i - 1) {
+      intervals[n - 1] = (Interval){i, i};
+      break;
+    }
+  }
+
+  if (intervals[n - 1].bottom == 0) {
+    printf("Could not find a group that makes the solution impossible.\n");
+  }
+}
+
+/**
  * Generates a random simple instance of the GAI problem with a solution.
  *
  * @param n The number of intervals in the instance.
@@ -193,25 +221,7 @@ IntervalSet* instanceSimpleNo(const unsigned int n) {
   getIntervalsContainingI(intervals, groups, nGroups);
 
   // add the last group that makes the solution impossible
-  for (unsigned int i = 1; i <= n; i++) {
-    // check if group i can be built
-    unsigned int nIncluding = 0;
-
-    for (unsigned int j = 0; j < n - 1; j++) {
-      if (intervalContains(&(intervals[j]), i)) {
-        nIncluding++;
-      }
-    }
-
-    if (nIncluding < i - 1) {
-      intervals[n - 1] = (Interval){i, i};
-      break;
-    }
-  }
-
-  if (intervals[n - 1].bottom == 0) {
-    printf("Could not find a group that makes the solution impossible.\n");
-  }
+  addImpossibleGroup(intervals, n);
 
   printIntervals(intervals, n);
 
@@ -267,16 +277,14 @@ static unsigned int getWhitness(Interval intervals[], const unsigned int start,
 }
 
 /**
- * Generates a hard instance of the GAI problem, consisting of as many whitnesses as possible.
+ * Generates as many whitnesses as possible for the given number of intervals.
  *
- * @param n The number of intervals in the instance.
- * @return The generated instance.
+ * @param intervals The array of intervals to be populated.
+ * @param n The length of the array.
  */
-IntervalSet* instanceHardYes(const unsigned int n) {
-  Interval* intervals = malloc(sizeof(Interval) * n);
-
+static void getWhitnesses(Interval intervals[], const unsigned int n) {
   unsigned int i = 0;
-  unsigned int start = 1;
+  unsigned int start = __min(3, n);
   unsigned int end = 2 * sqrt(n);
   unsigned int nextWhitnessSize = 0;
   unsigned int nWhitnesses = 0;
@@ -285,7 +293,7 @@ IntervalSet* instanceHardYes(const unsigned int n) {
   while (i < n) {
     nextWhitnessSize = calcWhitnessSize(start, end);
 
-    // if the next whitness does not fit in the remaining space, shrink the start and end values
+    // if the next whitness does not fit in the remaining space, shrink the end value
     while (i + nextWhitnessSize >= n) {
       debug_print("Next whitness size: %d, start: %d, end: %d\n", nextWhitnessSize, start, end);
       end--;
@@ -309,6 +317,37 @@ IntervalSet* instanceHardYes(const unsigned int n) {
   }
 
   debug_print("Number of whitnesses: %d\n", nWhitnesses);
+}
+
+/**
+ * Generates a hard yes instance of the GAI problem, consisting of as many whitnesses as possible.
+ *
+ * @param n The number of intervals in the instance.
+ * @return The generated instance.
+ */
+IntervalSet* instanceHardYes(const unsigned int n) {
+  Interval* intervals = malloc(sizeof(Interval) * n);
+
+  getWhitnesses(intervals, n);
+
+  printIntervals(intervals, n);
+
+  return createIntervalSetAndFree(intervals, n);
+}
+
+/**
+ * Generates a hard no instance of the GAI problem, consisting of as many whitnesses as possible.
+ *
+ * @param n The number of intervals in the instance.
+ * @return The generated instance.
+ */
+IntervalSet* instanceHardNo(const unsigned int n) {
+  Interval* intervals = malloc(sizeof(Interval) * n);
+
+  getWhitnesses(intervals, n - 1);
+
+  // add the last group that makes the solution impossible
+  addImpossibleGroup(intervals, n);
 
   printIntervals(intervals, n);
 
