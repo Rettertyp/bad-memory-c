@@ -81,11 +81,12 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
 
   intervalSetDelete(inverseLowestPart);
 
-  if (assignRes.statusCode == SUCCESS) {
+  switch (assignRes.statusCode) {
+  case SUCCESS:
     graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
+    break;
 
-  } else if (assignRes.statusCode == ERROR_evtl) {
-
+  case ERROR_evtl:
     GraphNode* nextPredNode = stackPop(&currStack);
 
     if (nextPredNode) {
@@ -102,6 +103,10 @@ void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSe
         currIntSetNode = currIntSetNode->next;
       }
     }
+    break;
+
+  default:
+    break;
   }
 
   stackDelete(&currStack);
@@ -178,17 +183,22 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
 
           intervalSetDelete(lowestPart);
 
-          if (assignRes.statusCode == SUCCESS) {
+          switch (assignRes.statusCode) {
+          case SUCCESS:
             // if the assignment was successful, add the new interval set to the graph
             // node
             graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
             stackPush(&(assignRes.intervalSet->stack), predNode);
 
             graphNodePrintDetailed(currNode);
+            break;
 
-          } else if (assignRes.statusCode == ERROR_evtl) {
-
+          case ERROR_evtl:
             backtrack(predNode, currNode, currSet, currSet->stack, &markStorage);
+            break;
+
+          default:
+            break;
           }
 
           currIntSetNode = currIntSetNode->next;
