@@ -12,7 +12,7 @@
  * @param i The current interval index.
  * @return True if the interval should be logged, false otherwise.
  */
-static bool shouldBeLogged(const unsigned int nIntervals, const unsigned int i) {
+static bool shouldBeLogged(const uint32_t nIntervals, const uint32_t i) {
   return nIntervals > 200 || !(i % 100);
 }
 
@@ -22,7 +22,7 @@ static bool shouldBeLogged(const unsigned int nIntervals, const unsigned int i) 
  * @param nIntervals The total number of intervals.
  * @param i The current interval index.
  */
-static void logTestStatusIfNecessary(const unsigned int nIntervals, const unsigned int i) {
+static void logTestStatusIfNecessary(const uint32_t nIntervals, const uint32_t i) {
   if (shouldBeLogged(nIntervals, i)) {
     debug_print("Running instance %d\n", i + 1);
   }
@@ -34,12 +34,12 @@ static void logTestStatusIfNecessary(const unsigned int nIntervals, const unsign
  * @param instance The instance to log.
  * @param i The instance index.
  */
-static void logFailedYesInstance(IntervalSet* instance, const unsigned int i) {
+static void logFailedYesInstance(IntervalSet* instance, const uint32_t i) {
   debug_print("Instance %d has a solution, but shouldn't.\n", i);
   if (instance->length == 0) {
     debug_print("()");
   } else
-    for (unsigned int i = 0; i < instance->length; i++) {
+    for (uint32_t i = 0; i < instance->length; i++) {
       debug_print("(%d, %d), ", instance->intervals[i].bottom, instance->intervals[i].top);
     }
 
@@ -52,12 +52,12 @@ static void logFailedYesInstance(IntervalSet* instance, const unsigned int i) {
  * @param instance The instance to log.
  * @param i The instance index.
  */
-static void logFailedNoInstance(IntervalSet* instance, const unsigned int i) {
+static void logFailedNoInstance(IntervalSet* instance, const uint32_t i) {
   debug_print("Instance %d has a solution, but shouldn't.\n", i);
   if (instance->length == 0) {
     debug_print("()");
   } else
-    for (unsigned int i = 0; i < instance->length; i++) {
+    for (uint32_t i = 0; i < instance->length; i++) {
       debug_print("(%d, %d), ", instance->intervals[i].bottom, instance->intervals[i].top);
     }
 
@@ -71,14 +71,14 @@ static void logFailedNoInstance(IntervalSet* instance, const unsigned int i) {
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals) {
+bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple yes instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
-  for (unsigned int i = 0; i < nInstances; i++) {
+  for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceSimpleYes(nIntervals);
@@ -106,14 +106,14 @@ bool testSimpleYes(const unsigned int nInstances, const unsigned int nIntervals)
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testSimpleNo(const unsigned int nInstances, const unsigned int nIntervals) {
+bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple no instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
-  for (unsigned int i = 0; i < nInstances; i++) {
+  for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceSimpleNo(nIntervals);
@@ -141,14 +141,14 @@ bool testSimpleNo(const unsigned int nInstances, const unsigned int nIntervals) 
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testHardYes(const unsigned int nInstances, const unsigned int nIntervals) {
+bool testHardYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard whitness yes instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
-  for (unsigned int i = 0; i < nInstances; i++) {
+  for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceHardYes(nIntervals);
@@ -176,14 +176,14 @@ bool testHardYes(const unsigned int nInstances, const unsigned int nIntervals) {
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testHardNo(const unsigned int nInstances, const unsigned int nIntervals) {
+bool testHardNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard whitness no instances.\n");
 
   bool success = true;
 
   instanceInitRandom();
 
-  for (unsigned int i = 0; i < nInstances; i++) {
+  for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceHardNo(nIntervals);

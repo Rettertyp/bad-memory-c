@@ -3,12 +3,13 @@
 #include "debug.h"
 #include "instanceGen.h"
 #include "test.h"
+#include <stdint.h>
 
 #define N_INSTANCES 1000
 #define N_INTERVALS 100
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-int main(int argc, char** argv) {
+int32_t main(int32_t argc, char** argv) {
 
   bool success = true;
 

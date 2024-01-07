@@ -3,6 +3,7 @@
 
 #include "interval.h"
 #include "stack.h"
+#include <stdint.h>
 
 // forward declaration of the Stack
 struct StackNode;
@@ -16,23 +17,22 @@ typedef struct StackNode* Stack;
  */
 typedef struct IntervalSet {
   Stack stack;          /** The stack of the set */
-  unsigned int length;  /** The length of the interval set */
+  uint32_t length;      /** The length of the interval set */
   Interval intervals[]; /** The array of Interval structs */
 } IntervalSet;
 
-IntervalSet* intervalSetCreateBlank(const Interval intervals[], const unsigned int length);
+IntervalSet* intervalSetCreateBlank(const Interval intervals[], const uint32_t length);
 void intervalSetDelete(IntervalSet* intervalSet);
 bool intervalSetIsDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet);
 void intervalSetSortByBottom(IntervalSet* intervalSet);
 void intervalSetPrint(const IntervalSet* intervalSet);
-unsigned int intervalSetCountGreaterI(const IntervalSet* intervalSet, const unsigned int i);
-unsigned int intervalSetCountContainingI(const IntervalSet* intervalSet, const unsigned int i);
-IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet,
-                                                   const unsigned int i, unsigned int g);
+uint32_t intervalSetCountGreaterI(const IntervalSet* intervalSet, const uint32_t i);
+uint32_t intervalSetCountContainingI(const IntervalSet* intervalSet, const uint32_t i);
+IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet, const uint32_t i,
+                                                   uint32_t g);
 IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet);
-unsigned int intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet,
-                                                     const unsigned int j);
+uint32_t intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet, const uint32_t j);
 IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(IntervalSet* intervalSet,
-                                                          const unsigned int j);
+                                                          const uint32_t j);
 
 #endif // INTERVAL_SET_H

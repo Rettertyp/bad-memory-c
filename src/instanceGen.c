@@ -17,7 +17,7 @@ void instanceInitRandom() { srand(time(NULL)); }
  * @param max The maximum value of the range.
  * @return The randomly generated number.
  */
-static unsigned int getRandomNumber(const unsigned int min, const unsigned int max) {
+static uint32_t getRandomNumber(const uint32_t min, const uint32_t max) {
   return (rand() % (max - min + 1)) + min;
 }
 
@@ -27,9 +27,9 @@ static unsigned int getRandomNumber(const unsigned int min, const unsigned int m
  * @param i The integer to be contained in the Interval.
  * @return The Interval containing the given integer.
  */
-static Interval getIntervalContainingI(const unsigned int i) {
-  unsigned int start = getRandomNumber(__max(1, i / 2), i);
-  unsigned int end = getRandomNumber(i, 2 * i);
+static Interval getIntervalContainingI(const uint32_t i) {
+  uint32_t start = getRandomNumber(__max(1, i / 2), i);
+  uint32_t end = getRandomNumber(i, 2 * i);
 
   return (Interval){start, end};
 }
@@ -41,11 +41,11 @@ static Interval getIntervalContainingI(const unsigned int i) {
  * @param n The total number of the groups should add up to.
  * @return The number of groups generated.
  */
-static unsigned int getRandomGroups(unsigned int groups[], const unsigned int n) {
-  unsigned int sum = 0;
-  unsigned int nGroups = 0;
+static uint32_t getRandomGroups(uint32_t groups[], const uint32_t n) {
+  uint32_t sum = 0;
+  uint32_t nGroups = 0;
 
-  for (unsigned int i = 0; i < n; i++) {
+  for (uint32_t i = 0; i < n; i++) {
     groups[i] = getRandomNumber(1, n - sum);
     sum += groups[i];
     nGroups++;
@@ -67,12 +67,12 @@ static unsigned int getRandomGroups(unsigned int groups[], const unsigned int n)
  * @param groups The array of groups to be checked.
  * @param nGroups The number of groups in the array.
  */
-static void getIntervalsContainingI(Interval intervals[], const unsigned int groups[],
-                                    const unsigned int nGroups) {
-  unsigned int currGroup = 0;
-  unsigned int currInterval = 0;
-  for (unsigned int i = 0; i < nGroups; i++) {
-    for (unsigned int j = 0; j < (currGroup = groups[i]); j++) {
+static void getIntervalsContainingI(Interval intervals[], const uint32_t groups[],
+                                    const uint32_t nGroups) {
+  uint32_t currGroup = 0;
+  uint32_t currInterval = 0;
+  for (uint32_t i = 0; i < nGroups; i++) {
+    for (uint32_t j = 0; j < (currGroup = groups[i]); j++) {
       intervals[currInterval++] = getIntervalContainingI(currGroup);
     }
   }
@@ -85,9 +85,9 @@ static void getIntervalsContainingI(Interval intervals[], const unsigned int gro
  * @param n The number of elements in the array.
  */
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-static void printGroups(unsigned int groups[], unsigned int n) {
+static void printGroups(uint32_t groups[], uint32_t n) {
   debug_print("Groups: ");
-  for (unsigned int i = 0; i < n; i++) {
+  for (uint32_t i = 0; i < n; i++) {
     debug_print("%d ", groups[i]);
   }
   debug_print("\n");
@@ -100,9 +100,9 @@ static void printGroups(unsigned int groups[], unsigned int n) {
  * @param n The number of intervals in the array.
  */
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-static void printIntervals(Interval intervals[], unsigned int n) {
+static void printIntervals(Interval intervals[], uint32_t n) {
   debug_print("Intervals: ");
-  for (unsigned int i = 0; i < n; i++) {
+  for (uint32_t i = 0; i < n; i++) {
     debug_print("[%d, %d] ", intervals[i].bottom, intervals[i].top);
   }
   debug_print("\n");
@@ -114,7 +114,7 @@ static void printIntervals(Interval intervals[], unsigned int n) {
  * @param groups The pointer to the array of groups.
  * @param intervals The pointer to the array of intervals.
  */
-static void freeGroupsAndIntervals(unsigned int groups[], Interval intervals[]) {
+static void freeGroupsAndIntervals(uint32_t groups[], Interval intervals[]) {
   free(groups);
   groups = NULL;
   free(intervals);
@@ -128,7 +128,7 @@ static void freeGroupsAndIntervals(unsigned int groups[], Interval intervals[]) 
  * @param n The number of Intervals in the array.
  * @return The created IntervalSet.
  */
-static IntervalSet* createIntervalSetAndFree(Interval* intervals, const unsigned int n) {
+static IntervalSet* createIntervalSetAndFree(Interval* intervals, const uint32_t n) {
   IntervalSet* instance = intervalSetCreateBlank(intervals, n);
 
   free(intervals);
@@ -144,8 +144,8 @@ static IntervalSet* createIntervalSetAndFree(Interval* intervals, const unsigned
  * @param groups The array of groups.
  * @return The created interval set.
  */
-static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], unsigned int groups[],
-                                                   const unsigned int n) {
+static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], uint32_t groups[],
+                                                   const uint32_t n) {
   IntervalSet* instance = intervalSetCreateBlank(intervals, n);
 
   freeGroupsAndIntervals(groups, intervals);
@@ -159,12 +159,12 @@ static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], unsigne
  * @param intervals The array of intervals to be populated.
  * @param n The number of intervals in the array.
  */
-static void addImpossibleGroup(Interval intervals[], const unsigned int n) {
-  for (unsigned int i = 1; i <= n; i++) {
+static void addImpossibleGroup(Interval intervals[], const uint32_t n) {
+  for (uint32_t i = 1; i <= n; i++) {
     // check if group i can be built
-    unsigned int nIncluding = 0;
+    uint32_t nIncluding = 0;
 
-    for (unsigned int j = 0; j < n - 1; j++) {
+    for (uint32_t j = 0; j < n - 1; j++) {
       if (intervalContains(&(intervals[j]), i)) {
         nIncluding++;
       }
@@ -186,10 +186,10 @@ static void addImpossibleGroup(Interval intervals[], const unsigned int n) {
  *
  * @param n The number of intervals in the instance.
  */
-IntervalSet* instanceSimpleYes(const unsigned int n) {
+IntervalSet* instanceSimpleYes(const uint32_t n) {
   // generate random numbers that add up to n
-  unsigned int* groups = malloc(sizeof(unsigned int) * n);
-  unsigned int nGroups = getRandomGroups(groups, n);
+  uint32_t* groups = malloc(sizeof(uint32_t) * n);
+  uint32_t nGroups = getRandomGroups(groups, n);
 
   printGroups(groups, nGroups);
 
@@ -208,11 +208,11 @@ IntervalSet* instanceSimpleYes(const unsigned int n) {
  *
  * @param n The number of intervals in the instance.
  */
-IntervalSet* instanceSimpleNo(const unsigned int n) {
+IntervalSet* instanceSimpleNo(const uint32_t n) {
   // make groups that add up to n-1, to be able to add the last group that makes the solution
   // impossible
-  unsigned int* groups = malloc(sizeof(unsigned int) * (n - 1));
-  unsigned int nGroups = getRandomGroups(groups, n - 1);
+  uint32_t* groups = malloc(sizeof(uint32_t) * (n - 1));
+  uint32_t nGroups = getRandomGroups(groups, n - 1);
 
   printGroups(groups, nGroups);
 
@@ -235,7 +235,7 @@ IntervalSet* instanceSimpleNo(const unsigned int n) {
  * @param end The ending value.
  * @return The size of the whiteness.
  */
-static unsigned int calcWhitnessSize(const unsigned int start, const unsigned int end) {
+static uint32_t calcWhitnessSize(const uint32_t start, const uint32_t end) {
   if (start >= end) {
     return 0;
   }
@@ -251,25 +251,25 @@ static unsigned int calcWhitnessSize(const unsigned int start, const unsigned in
  * @param end The ending value of the whitness.
  * @param i The index of the array on which to start adding the whitness.
  */
-static unsigned int getWhitness(Interval intervals[], const unsigned int start,
-                                const unsigned int end, unsigned int i) {
-  const unsigned int nIntervalsPerGroup = end - 1;
+static uint32_t getWhitness(Interval intervals[], const uint32_t start, const uint32_t end,
+                            uint32_t i) {
+  const uint32_t nIntervalsPerGroup = end - 1;
 
   // add the top interval
   intervals[i++] = (Interval){start, end};
 
   // add the middle group of intervals
-  for (unsigned int j = 0; j < nIntervalsPerGroup; j++) {
+  for (uint32_t j = 0; j < nIntervalsPerGroup; j++) {
     intervals[i++] = (Interval){start + 1, end - 1};
   }
 
   // add the bottom group of interval
-  for (unsigned int j = 0; j < nIntervalsPerGroup - 1; j++) {
+  for (uint32_t j = 0; j < nIntervalsPerGroup - 1; j++) {
     intervals[i++] = (Interval){start + 2, end - 2};
   }
 
   // add the group that turns the combination into a whitness
-  for (unsigned int j = 0; j < nIntervalsPerGroup; j++) {
+  for (uint32_t j = 0; j < nIntervalsPerGroup; j++) {
     intervals[i++] = (Interval){end - 1, end};
   }
 
@@ -282,12 +282,12 @@ static unsigned int getWhitness(Interval intervals[], const unsigned int start,
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
  */
-static void getWhitnesses(Interval intervals[], const unsigned int n) {
-  unsigned int i = 0;
-  unsigned int start = __min(3, n);
-  unsigned int end = 2 * sqrt(n);
-  unsigned int nextWhitnessSize = 0;
-  unsigned int nWhitnesses = 0;
+static void getWhitnesses(Interval intervals[], const uint32_t n) {
+  uint32_t i = 0;
+  uint32_t start = __min(3, n);
+  uint32_t end = 2 * sqrt(n);
+  uint32_t nextWhitnessSize = 0;
+  uint32_t nWhitnesses = 0;
 
   // add whitnesses until no whitness fits in the remaining space
   while (i < n) {
@@ -325,7 +325,7 @@ static void getWhitnesses(Interval intervals[], const unsigned int n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceHardYes(const unsigned int n) {
+IntervalSet* instanceHardYes(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
   getWhitnesses(intervals, n);
@@ -341,7 +341,7 @@ IntervalSet* instanceHardYes(const unsigned int n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceHardNo(const unsigned int n) {
+IntervalSet* instanceHardNo(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
   getWhitnesses(intervals, n - 1);

@@ -2,6 +2,7 @@
 #define GRAPH_NODE_H
 
 #include "intervalSet.h"
+#include <stdint.h>
 
 // forward declaration of IntervalSet
 typedef struct IntervalSet IntervalSet;
@@ -18,19 +19,19 @@ typedef struct IntervalSetNode {
  * @brief Structure representing a data-node in the dynamic program.
  */
 typedef struct GraphNode {
-  unsigned int i;                /** The i-value of the graph node. */
-  unsigned int s;                /** The s-value of the graph node. */
+  uint32_t i;                    /** The i-value of the graph node. */
+  uint32_t s;                    /** The s-value of the graph node. */
   IntervalSetNode* intervalSets; /** Pointer to the linked list of interval
                                     sets associated with the graph node. */
 } GraphNode;
 
-GraphNode graphNodeCreate(const unsigned int i, const unsigned int s);
+GraphNode graphNodeCreate(const uint32_t i, const uint32_t s);
 void graphNodeDelete(GraphNode* graphNode);
 void graphNodeAddIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet);
 void graphNodeRemoveDominatedSets(GraphNode* graphNode);
-unsigned int graphNodeGetNIntervalSets(const GraphNode* graphNode);
+uint32_t graphNodeGetNIntervalSets(const GraphNode* graphNode);
 void graphNodePrint(const GraphNode* graphNode);
 void graphNodePrintDetailed(const GraphNode* graphNode);
-GraphNode* getGraphNode(GraphNode** graphNodes, const unsigned int i, const unsigned int s);
+GraphNode* getGraphNode(GraphNode** graphNodes, const uint32_t i, const uint32_t s);
 
 #endif // GRAPH_NODE_H
