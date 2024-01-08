@@ -72,7 +72,9 @@ static void getIntervalsContainingI(Interval intervals[], const uint32_t groups[
   uint32_t currGroup = 0;
   uint32_t currInterval = 0;
   for (uint32_t i = 0; i < nGroups; i++) {
-    for (uint32_t j = 0; j < (currGroup = groups[i]); j++) {
+    currGroup = groups[i];
+
+    for (uint32_t j = 0; j < currGroup; j++) {
       intervals[currInterval++] = getIntervalContainingI(currGroup);
     }
   }
@@ -187,8 +189,9 @@ static void addImpossibleGroup(Interval intervals[], const uint32_t n) {
  * @param n The number of intervals in the instance.
  */
 IntervalSet* instanceSimpleYes(const uint32_t n) {
-  // generate random numbers that add up to n
   uint32_t* groups = malloc(sizeof(uint32_t) * n);
+
+  // generate random numbers that add up to n
   uint32_t nGroups = getRandomGroups(groups, n);
 
   printGroups(groups, nGroups);
@@ -209,9 +212,10 @@ IntervalSet* instanceSimpleYes(const uint32_t n) {
  * @param n The number of intervals in the instance.
  */
 IntervalSet* instanceSimpleNo(const uint32_t n) {
+  uint32_t* groups = malloc(sizeof(uint32_t) * (n - 1));
+
   // make groups that add up to n-1, to be able to add the last group that makes the solution
   // impossible
-  uint32_t* groups = malloc(sizeof(uint32_t) * (n - 1));
   uint32_t nGroups = getRandomGroups(groups, n - 1);
 
   printGroups(groups, nGroups);
@@ -268,7 +272,7 @@ static uint32_t getWhitness(Interval intervals[], const uint32_t start, const ui
     intervals[i++] = (Interval){start + 2, end - 2};
   }
 
-  // add the group that turns the combination into a whitness
+  // add the key group that turns the combination into a whitness
   for (uint32_t j = 0; j < nIntervalsPerGroup; j++) {
     intervals[i++] = (Interval){end - 1, end};
   }
