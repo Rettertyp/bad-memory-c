@@ -244,7 +244,7 @@ static uint32_t calcWhitnessSize(const uint32_t start, const uint32_t end) {
     return 0;
   }
 
-  return 3 * end - 3;
+  return 3 * (end - 1);
 }
 
 /**
