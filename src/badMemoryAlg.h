@@ -2,6 +2,7 @@
 #define BAD_MEMORY_ALG_H
 
 #include "graphNode.h"
+#include <stdlib.h>
 
 /**
  * @brief Represents the status of an assignment operation.
@@ -25,6 +26,6 @@ typedef struct AssignRes {
                      assignment operation */
 } AssignRes;
 
-bool badMemoryAlgorithm(IntervalSet* inputIntervalSet);
+bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printExtraInfo);
 
 #endif // BAD_MEMORY_ALG_H

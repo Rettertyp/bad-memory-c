@@ -3,7 +3,29 @@
 #define DEBUG_PRINT 1
 #include "debug.h"
 #include "instanceGen.h"
+#include <time.h>
 #include <unistd.h>
+
+/**
+ * Measures the time it takes to execute the given test.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @param test The test to execute.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool measureTime(const uint32_t nInstances, const uint32_t nIntervals,
+                 bool (*test)(const uint32_t, const uint32_t)) {
+  clock_t start, end;
+
+  start = clock();
+  bool success = test(nInstances, nIntervals);
+  end = clock();
+  double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+  debug_print("Test took %.3f seconds to execute \n\n", cpu_time_used);
+
+  return success;
+}
 
 /**
  * Determines whether the given interval should be logged.
@@ -35,7 +57,7 @@ static void logTestStatusIfNecessary(const uint32_t nIntervals, const uint32_t i
  * @param i The instance index.
  */
 static void logFailedYesInstance(IntervalSet* instance, const uint32_t i) {
-  debug_print("Instance %d has a solution, but shouldn't.\n", i);
+  debug_print("Instance %d has no solution, but should.\n", i);
   if (instance->length == 0) {
     debug_print("()");
   } else
@@ -65,24 +87,24 @@ static void logFailedNoInstance(IntervalSet* instance, const uint32_t i) {
 }
 
 /**
- * Tests the bad memory algorithm on a set of simple yes instances.
+ * Gets an instance generator that generates yes instances and tests the bad memory algorithm on it.
  *
  * @param nInstances The number of instances to test.
  * @param nIntervals The number of intervals in each instance.
+ * @param instanceGenerator The instance generator to use.
  * @return True if the test was succesful, false otherwise.
  */
-bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
-  debug_print("Testing simple yes instances.\n");
+static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
+                    IntervalSet* (*instanceGenerator)(const uint32_t)) {
+  instanceInitRandom();
 
   bool success = true;
-
-  instanceInitRandom();
 
   for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
-    IntervalSet* instance = instanceSimpleYes(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance);
+    IntervalSet* instance = instanceGenerator(nIntervals);
+    bool hasSolution = badMemoryAlgorithm(instance, nInstances == 1);
 
     if (!hasSolution) {
       success = false;
@@ -94,9 +116,51 @@ bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
     intervalSetDelete(instance);
   }
 
-  debug_print("Done.\n\n");
+  return success;
+}
+
+/**
+ * Gets an instance generator that generates no instances and tests the bad memory algorithm on it.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @param instanceGenerator The instance generator to use.
+ * @return True if the test was succesful, false otherwise.
+ */
+static bool testNo(const uint32_t nInstances, const uint32_t nIntervals,
+                   IntervalSet* (*instanceGenerator)(const uint32_t)) {
+  bool success = true;
+
+  for (uint32_t i = 0; i < nInstances; i++) {
+    logTestStatusIfNecessary(nIntervals, i);
+
+    IntervalSet* instance = instanceGenerator(nIntervals);
+    bool hasSolution = badMemoryAlgorithm(instance, nInstances == 1);
+
+    if (hasSolution) {
+      success = false;
+
+      logFailedNoInstance(instance, i);
+      break;
+    }
+
+    intervalSetDelete(instance);
+  }
 
   return success;
+}
+
+/**
+ * Tests the bad memory algorithm on a set of simple yes instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing simple yes instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceSimpleYes);
 }
 
 /**
@@ -109,29 +173,7 @@ bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple no instances.\n");
 
-  bool success = true;
-
-  instanceInitRandom();
-
-  for (uint32_t i = 0; i < nInstances; i++) {
-    logTestStatusIfNecessary(nIntervals, i);
-
-    IntervalSet* instance = instanceSimpleNo(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance);
-
-    if (hasSolution) {
-      success = false;
-
-      logFailedNoInstance(instance, i);
-      break;
-    }
-
-    intervalSetDelete(instance);
-  }
-
-  debug_print("Done.\n\n");
-
-  return success;
+  return testNo(nInstances, nIntervals, instanceSimpleNo);
 }
 
 /**
@@ -141,32 +183,10 @@ bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testHardYes(const uint32_t nInstances, const uint32_t nIntervals) {
-  debug_print("Testing hard whitness yes instances.\n");
+bool testMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing max whitness yes instances.\n");
 
-  bool success = true;
-
-  instanceInitRandom();
-
-  for (uint32_t i = 0; i < nInstances; i++) {
-    logTestStatusIfNecessary(nIntervals, i);
-
-    IntervalSet* instance = instanceHardYes(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance);
-
-    if (!hasSolution) {
-      success = false;
-
-      logFailedYesInstance(instance, i);
-      break;
-    }
-
-    intervalSetDelete(instance);
-  }
-
-  debug_print("Done.\n\n");
-
-  return success;
+  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes);
 }
 
 /**
@@ -176,30 +196,119 @@ bool testHardYes(const uint32_t nInstances, const uint32_t nIntervals) {
  * @param nIntervals The number of intervals in each instance.
  * @return True if the test was succesful, false otherwise.
  */
-bool testHardNo(const uint32_t nInstances, const uint32_t nIntervals) {
-  debug_print("Testing hard whitness no instances.\n");
+bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing max whitness no instances.\n");
 
+  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo);
+}
+
+/**
+ * Tests the bad memory algorithm on a set of whitness yes instances that try to maximize the number
+ * of groups built.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing max group whitness yes instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes);
+}
+
+/**
+ * Tests the bad memory algorithm on a set of whitness no instances that try to maximize the number
+ * of groups built.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing max group whitness no instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo);
+}
+
+/**
+ * Tests the bad memory algorithm on a set of hard yes amount version instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testHardYesAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing hard yes amount version instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion);
+}
+
+/**
+ * Tests the bad memory algorithm on a set of hard no amount version instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testHardNoAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing hard no amount version instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion);
+}
+
+/**
+ * Tests the bad memory algorithm on a set of all full instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing all full instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceAllFull);
+}
+
+/**
+ * Runs all tests and logs the time it took to execute each test.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if all tests were succesful, false otherwise.
+ */
+bool testRunAll(const uint32_t nInstances, const uint32_t nIntervals) {
   bool success = true;
 
-  instanceInitRandom();
+  success &= measureTime(nInstances, nIntervals, testSimpleYes);
+  success &= measureTime(nInstances, nIntervals, testSimpleNo);
+  success &= measureTime(nInstances, nIntervals, testMaxWhitnessesYes);
+  success &= measureTime(nInstances, nIntervals, testMaxWhitnessesNo);
+  success &= measureTime(nInstances, nIntervals, testMaxGroupWhitnessesYes);
+  success &= measureTime(nInstances, nIntervals, testMaxGroupWhitnessesNo);
+  success &= measureTime(nInstances, nIntervals, testAllFull);
 
-  for (uint32_t i = 0; i < nInstances; i++) {
-    logTestStatusIfNecessary(nIntervals, i);
+  debug_print(success ? "All tests passed.\n" : "Some tests failed.\n");
 
-    IntervalSet* instance = instanceHardNo(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance);
+  return success;
+}
 
-    if (hasSolution) {
-      success = false;
+/**
+ * Runs 1 instance of all yes tests and logs the time it took to execute each test.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if all tests were succesful, false otherwise.
+ */
+bool testRunYes(const uint32_t nIntervals) {
+  bool success = true;
 
-      logFailedNoInstance(instance, i);
-      break;
-    }
+  success &= measureTime(1, nIntervals, testSimpleYes);
+  success &= measureTime(1, nIntervals, testMaxWhitnessesYes);
+  success &= measureTime(1, nIntervals, testMaxGroupWhitnessesYes);
+  success &= measureTime(1, nIntervals, testAllFull);
+  // success &= measureTime(1, nIntervals, testHardYesAmountVersion);
 
-    intervalSetDelete(instance);
-  }
-
-  debug_print("Done.\n\n");
+  debug_print(success ? "All tests passed.\n" : "Some tests failed.\n");
 
   return success;
 }

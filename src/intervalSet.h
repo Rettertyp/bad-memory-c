@@ -16,8 +16,9 @@ typedef struct StackNode* Stack;
  * and an array of Interval structs.
  */
 typedef struct IntervalSet {
-  Stack stack;          /** The stack of the set */
-  uint32_t length;      /** The length of the interval set */
+  Stack stack;     /** The stack of the set */
+  uint32_t length; /** The length of the interval set (measured in how many distinct intervals it
+                      contains) */
   Interval intervals[]; /** The array of Interval structs */
 } IntervalSet;
 
@@ -34,5 +35,6 @@ IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet);
 uint32_t intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet, const uint32_t j);
 IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(IntervalSet* intervalSet,
                                                           const uint32_t j);
+uint32_t intervalSetCountIntervals(const IntervalSet* intervalSet);
 
 #endif // INTERVAL_SET_H

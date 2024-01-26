@@ -1,4 +1,5 @@
 #include "intervalSet.h"
+// #define DEBUG_PRINT 1
 #include "debug.h"
 #include <stdlib.h>
 
@@ -69,6 +70,20 @@ void intervalSetDelete(IntervalSet* intervalSet) {
 }
 
 /**
+ * Counts the number of intervals in the given IntervalSet.
+ *
+ * @param intervalSet The IntervalSet to count intervals from.
+ * @return The number of intervals in the IntervalSet.
+ */
+uint32_t intervalSetCountIntervals(const IntervalSet* intervalSet) {
+  uint32_t count = 0;
+  for (uint32_t i = 0; i < intervalSet->length; i++) {
+    count += intervalSet->intervals[i].amount;
+  }
+  return count;
+}
+
+/**
  * Determines whether the given IntervalSet is dominated by another IntervalSet.
  *
  * @param thisSet   The IntervalSet to be checked.
@@ -77,13 +92,26 @@ void intervalSetDelete(IntervalSet* intervalSet) {
  * otherwise.
  */
 bool intervalSetIsDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet) {
-  if (thisSet->length != otherSet->length) {
+  if (intervalSetCountIntervals(thisSet) != intervalSetCountIntervals(otherSet)) {
     return false;
   }
 
-  for (uint32_t i = 0; i < thisSet->length; i++) {
-    if (!(otherSet->intervals[i].bottom <= thisSet->intervals[i].bottom)) {
+  uint32_t thisI = 0, thisJ = 0, otherI = 0, otherJ = 0;
+  while (thisI < thisSet->length) {
+    if (!(otherSet->intervals[otherI].bottom <= thisSet->intervals[thisI].bottom)) {
       return false;
+    }
+
+    // J counts how many intervals at position I have been checked
+    thisJ++;
+    otherJ++;
+    if (thisJ == thisSet->intervals[thisI].amount) {
+      thisI++;
+      thisJ = 0;
+    }
+    if (otherJ == otherSet->intervals[otherI].amount) {
+      otherI++;
+      otherJ = 0;
     }
   }
 
@@ -166,10 +194,11 @@ void intervalSetSortByBottom(IntervalSet* intervalSet) {
  */
 void intervalSetPrint(const IntervalSet* intervalSet) {
   if (intervalSet->length == 0) {
-    debug_print("()");
+    debug_print("[]");
   } else
     for (uint32_t i = 0; i < intervalSet->length; i++) {
-      debug_print("(%d, %d), ", intervalSet->intervals[i].bottom, intervalSet->intervals[i].top);
+      debug_print("[%d, %d, %d], ", intervalSet->intervals[i].bottom, intervalSet->intervals[i].top,
+                  intervalSet->intervals[i].amount);
     }
 
   debug_print("\n");
@@ -189,7 +218,7 @@ static uint32_t intervalSetCount(const IntervalSet* intervalSet, const uint32_t 
 
   for (uint32_t j = 0; j < intervalSet->length; j++) {
     if (compFunc(&(intervalSet->intervals[j]), i)) {
-      count++;
+      count += intervalSet->intervals[j].amount;
     }
   }
 
@@ -271,20 +300,34 @@ static Interval* intervalSetGetFirstContainingI(IntervalSet* intervalSet, const 
  */
 IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSet, const uint32_t i,
                                                    const uint32_t g) {
-  uint32_t newLength = intervalSet->length - g;
-  Interval* intervals = malloc(sizeof(Interval) * newLength);
+  Interval* intervals = malloc(sizeof(Interval) * intervalSet->length);
 
-  uint32_t j = 0;
+  // counts the number of interval-objects that have been added to the new set
+  int32_t lengthCounter = -1;
+
   uint32_t nAssigned = 0;
-  for (uint32_t k = 0; k < intervalSet->length; k++) {
-    if (nAssigned < g && intervalContains(&(intervalSet->intervals[k]), i)) {
-      nAssigned++;
-    } else {
-      intervals[j++] = intervalSet->intervals[k];
+  for (uint32_t outerK = 0; outerK < intervalSet->length; outerK++) {
+    // computed once, since it is the same for all intervals in the outer loop
+    const Interval* currInterval = &(intervalSet->intervals[outerK]);
+    bool intervalContainsI = intervalContains(currInterval, i);
+    bool hasBeenAdded = false;
+
+    for (uint32_t innerK = 0; innerK < currInterval->amount; innerK++) {
+      if (nAssigned < g && intervalContainsI) {
+        nAssigned++;
+      } else if (hasBeenAdded) {
+        // if the interval has already been added to the new set, just increment the amount
+        intervals[lengthCounter].amount++;
+      } else {
+        // if the interval has not been added to the new set yet, add it now
+        intervals[++lengthCounter] = *currInterval;
+        intervals[lengthCounter].amount = 1;
+        hasBeenAdded = true;
+      }
     }
   }
 
-  IntervalSet* res = intervalSetCreate(intervals, newLength, intervalSet->stack);
+  IntervalSet* res = intervalSetCreate(intervals, lengthCounter + 1, intervalSet->stack);
 
   freeIntervals(intervals);
 
@@ -360,7 +403,7 @@ static uint32_t countLessThanIRightOfBGreaterEqualJ(const IntervalSet* intervalS
     const Interval* currInterval = &(intervalSet->intervals[k]);
     if (intervalLessThan(currInterval, i) && currInterval->bottom >= b &&
         intervalGreaterEqual(currInterval, j)) {
-      nChosen++;
+      nChosen += currInterval->amount;
     }
   }
 

@@ -7,14 +7,16 @@
  *
  * @param bottom The bottom value of the interval.
  * @param top The top value of the interval.
+ * @param amount The amount of intervals with those properties.
  * @return A pointer to the newly created interval.
  */
-Interval* intervalCreate(const uint32_t bottom, const uint32_t top) {
+Interval* intervalCreate(const uint32_t bottom, const uint32_t top, const uint32_t amount) {
   Interval* interval = malloc(sizeof(Interval));
 
   if (interval) {
     interval->bottom = bottom;
     interval->top = top;
+    interval->amount = amount;
   }
 
   return interval;

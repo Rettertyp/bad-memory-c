@@ -1,4 +1,5 @@
 #include "graphNode.h"
+// #define DEBUG_PRINT 1
 #include "debug.h"
 #include <stdlib.h>
 
