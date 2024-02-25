@@ -1,11 +1,17 @@
 #ifndef GRAPH_NODE_H
 #define GRAPH_NODE_H
 
+#include "graphNodeStorage.h"
 #include "intervalSet.h"
+#include "markStorage.h"
 #include <stdint.h>
 
-// forward declaration of IntervalSet
+// forward declaration of IntervalSet and MarkStorage
 typedef struct IntervalSet IntervalSet;
+typedef struct MarkNode MarkNode;
+typedef MarkNode* MarkStorage;
+typedef struct GraphNodeStorageNode GraphNodeStorageNode;
+typedef GraphNodeStorageNode* GraphNodeStorage;
 
 /**
  * @brief Structure representing a node in a linked list of interval sets.
@@ -23,11 +29,16 @@ typedef struct GraphNode {
   uint32_t s;                    /** The s-value of the graph node. */
   IntervalSetNode* intervalSets; /** Pointer to the linked list of interval
                                     sets associated with the graph node. */
+  MarkStorage markStorage;       /** Mark storage associated with the graph node. Only
+                                     used for the depth-first variant, otherwise left empty.*/
+  GraphNodeStorage incoming;     /** The incoming edges of the graph node. */
+  GraphNodeStorage outgoing;     /** The outgoing edges of the graph node. */
 } GraphNode;
 
 GraphNode graphNodeCreate(const uint32_t i, const uint32_t s);
 void graphNodeDelete(GraphNode* graphNode);
 void graphNodeAddIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet);
+bool graphNodeSetShouldBeAdded(const GraphNode* graphNode, const IntervalSet* intervalSet);
 void graphNodeRemoveDominatedSets(GraphNode* graphNode);
 uint32_t graphNodeGetNIntervalSets(const GraphNode* graphNode);
 void graphNodePrint(const GraphNode* graphNode);

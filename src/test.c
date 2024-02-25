@@ -59,10 +59,11 @@ static void logTestStatusIfNecessary(const uint32_t nIntervals, const uint32_t i
 static void logFailedYesInstance(IntervalSet* instance, const uint32_t i) {
   debug_print("Instance %d has no solution, but should.\n", i);
   if (instance->length == 0) {
-    debug_print("()");
+    debug_print("[]");
   } else
     for (uint32_t i = 0; i < instance->length; i++) {
-      debug_print("(%d, %d), ", instance->intervals[i].bottom, instance->intervals[i].top);
+      debug_print("[%d, %d, %d], ", instance->intervals[i].bottom, instance->intervals[i].top,
+                  instance->intervals[i].amount);
     }
 
   debug_print("\n");
@@ -77,10 +78,11 @@ static void logFailedYesInstance(IntervalSet* instance, const uint32_t i) {
 static void logFailedNoInstance(IntervalSet* instance, const uint32_t i) {
   debug_print("Instance %d has a solution, but shouldn't.\n", i);
   if (instance->length == 0) {
-    debug_print("()");
+    debug_print("[]");
   } else
     for (uint32_t i = 0; i < instance->length; i++) {
-      debug_print("(%d, %d), ", instance->intervals[i].bottom, instance->intervals[i].top);
+      debug_print("[%d, %d, %d], ", instance->intervals[i].bottom, instance->intervals[i].top,
+                  instance->intervals[i].amount);
     }
 
   debug_print("\n");
@@ -92,10 +94,13 @@ static void logFailedNoInstance(IntervalSet* instance, const uint32_t i) {
  * @param nInstances The number of instances to test.
  * @param nIntervals The number of intervals in each instance.
  * @param instanceGenerator The instance generator to use.
+ * @param solverAlgorithm The solver algorithm to use, either badMemoryAlgorithm or
+ * badMemoryDepthFirst.
  * @return True if the test was succesful, false otherwise.
  */
 static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
-                    IntervalSet* (*instanceGenerator)(const uint32_t)) {
+                    IntervalSet* (*instanceGenerator)(const uint32_t),
+                    bool (*solverAlgorithm)(IntervalSet*, bool)) {
   instanceInitRandom();
 
   bool success = true;
@@ -104,7 +109,7 @@ static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceGenerator(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance, nInstances == 1);
+    bool hasSolution = solverAlgorithm(instance, nInstances == 1);
 
     if (!hasSolution) {
       success = false;
@@ -125,17 +130,20 @@ static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
  * @param nInstances The number of instances to test.
  * @param nIntervals The number of intervals in each instance.
  * @param instanceGenerator The instance generator to use.
+ * @param solverAlgorithm The solver algorithm to use, either badMemoryAlgorithm or
+ * badMemoryDepthFirst.
  * @return True if the test was succesful, false otherwise.
  */
 static bool testNo(const uint32_t nInstances, const uint32_t nIntervals,
-                   IntervalSet* (*instanceGenerator)(const uint32_t)) {
+                   IntervalSet* (*instanceGenerator)(const uint32_t),
+                   bool (*solverAlgorithm)(IntervalSet*, bool)) {
   bool success = true;
 
   for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceGenerator(nIntervals);
-    bool hasSolution = badMemoryAlgorithm(instance, nInstances == 1);
+    bool hasSolution = solverAlgorithm(instance, nInstances == 1);
 
     if (hasSolution) {
       success = false;
@@ -160,7 +168,7 @@ static bool testNo(const uint32_t nInstances, const uint32_t nIntervals,
 bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceSimpleYes);
+  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryAlgorithm);
 }
 
 /**
@@ -173,7 +181,7 @@ bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceSimpleNo);
+  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryAlgorithm);
 }
 
 /**
@@ -186,7 +194,7 @@ bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes);
+  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm);
 }
 
 /**
@@ -199,7 +207,7 @@ bool testMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) 
 bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo);
+  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm);
 }
 
 /**
@@ -213,7 +221,7 @@ bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max group whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes);
+  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm);
 }
 
 /**
@@ -227,7 +235,7 @@ bool testMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nInterv
 bool testMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max group whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo);
+  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm);
 }
 
 /**
@@ -240,7 +248,7 @@ bool testMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nInterva
 bool testHardYesAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard yes amount version instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion);
+  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm);
 }
 
 /**
@@ -253,7 +261,7 @@ bool testHardYesAmountVersion(const uint32_t nInstances, const uint32_t nInterva
 bool testHardNoAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard no amount version instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion);
+  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm);
 }
 
 /**
@@ -266,7 +274,128 @@ bool testHardNoAmountVersion(const uint32_t nInstances, const uint32_t nInterval
 bool testAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing all full instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceAllFull);
+  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryAlgorithm);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of simple yes instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first simple yes instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of simple no instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first simple no instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first max whitness yes instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness no instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first max whitness no instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of whitness yes instances that
+ * try to maximize the number of groups built.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first max group whitness yes instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of whitness no instances that
+ * try to maximize the number of groups built.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first max group whitness no instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard yes amount version
+ * instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstHardYesAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first hard yes amount version instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard no amount version
+ * instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was succesful, false otherwise.
+ */
+bool testDepthFirstHardNoAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first hard no amount version instances.\n");
+
+  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst);
+}
+
+/**
+ * Tests the depth-first variant of the bad memory algorithm on a set of all full instances.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+bool testDepthFirstAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
+  debug_print("Testing depth-first all full instances.\n");
+
+  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryDepthFirst);
 }
 
 /**
@@ -309,6 +438,29 @@ bool testRunYes(const uint32_t nIntervals) {
   // success &= measureTime(1, nIntervals, testHardYesAmountVersion);
 
   debug_print(success ? "All tests passed.\n" : "Some tests failed.\n");
+
+  return success;
+}
+
+/**
+ * Runs all tests for the depth-first variant and logs the time it took to execute each test.
+ *
+ * @param nInstances The number of instances to test.
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if all tests were succesful, false otherwise.
+ */
+bool testRunAllDepthFirst(const uint32_t nInstances, const uint32_t nIntervals) {
+  bool success = true;
+
+  success &= measureTime(nInstances, nIntervals, testDepthFirstSimpleYes);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstSimpleNo);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstMaxWhitnessesYes);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstMaxWhitnessesNo);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstMaxGroupWhitnessesYes);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstMaxGroupWhitnessesNo);
+  success &= measureTime(nInstances, nIntervals, testDepthFirstAllFull);
+
+  debug_print(success ? "All depth-first tests passed.\n" : "Some depth-first tests failed.\n");
 
   return success;
 }

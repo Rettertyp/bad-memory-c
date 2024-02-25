@@ -13,5 +13,6 @@ bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals);
 bool testAllFull(const uint32_t nInstances, const uint32_t nIntervals);
 bool testRunAll(const uint32_t nInstances, const uint32_t nIntervals);
 bool testRunYes(const uint32_t nIntervals);
+bool testRunAllDepthFirst(const uint32_t nInstances, const uint32_t nIntervals);
 
 #endif // TEST_H

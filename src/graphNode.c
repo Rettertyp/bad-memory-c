@@ -12,13 +12,7 @@
  * @return The newly created GraphNode.
  */
 GraphNode graphNodeCreate(const uint32_t i, const uint32_t s) {
-  GraphNode graphNode;
-
-  graphNode.i = i;
-  graphNode.s = s;
-  graphNode.intervalSets = NULL;
-
-  return graphNode;
+  return (GraphNode){.i = i, .s = s, .intervalSets = NULL, .markStorage = NULL};
 }
 
 /**
@@ -29,8 +23,8 @@ GraphNode graphNodeCreate(const uint32_t i, const uint32_t s) {
  */
 void graphNodeDelete(GraphNode* graphNode) {
   if (graphNode) {
+    // delete the interval sets in the graph node
     IntervalSetNode* intervalSetNode = graphNode->intervalSets;
-
     while (intervalSetNode) {
       IntervalSetNode* next = intervalSetNode->next;
       intervalSetDelete(intervalSetNode->set);
@@ -38,6 +32,14 @@ void graphNodeDelete(GraphNode* graphNode) {
       free(intervalSetNode);
       intervalSetNode = next;
     }
+    graphNode->intervalSets = NULL;
+
+    // delete the mark storage
+    markStorageDelete(&(graphNode->markStorage));
+
+    // delete the incoming and outgoing edges
+    graphNodeStorageDelete(&(graphNode->incoming));
+    graphNodeStorageDelete(&(graphNode->outgoing));
 
     // the graphNode itself does not need to be freed, only the array containing it
   }
@@ -72,6 +74,28 @@ void graphNodeAddIntervalSet(GraphNode* graphNode, IntervalSet* intervalSet) {
     intervalSetNode->next = graphNode->intervalSets;
     graphNode->intervalSets = intervalSetNode;
   }
+}
+
+/**
+ * Checks whether the specified IntervalSet should be added to the specified GraphNode, or if it is
+ * dominated by another IntervalSet in the GraphNode.
+ *
+ * @param graphNode The GraphNode to which the IntervalSet should be added.
+ * @param intervalSet The IntervalSet to be added.
+ * @return True if the IntervalSet should be added, false if it is dominated by another IntervalSet
+ * in the GraphNode.
+ */
+bool graphNodeSetShouldBeAdded(const GraphNode* graphNode, const IntervalSet* intervalSet) {
+  IntervalSetNode* intervalSetNode = graphNode->intervalSets;
+
+  while (intervalSetNode) {
+    if (intervalSetIsDominatedBy(intervalSet, intervalSetNode->set)) {
+      return false;
+    }
+    intervalSetNode = intervalSetNode->next;
+  }
+
+  return true;
 }
 
 /**

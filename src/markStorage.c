@@ -9,7 +9,7 @@
  * @param intervalSet The IntervalSet to be added.
  */
 void markStorageAddSet(MarkStorage* markStorage, IntervalSet* intervalSet) {
-  if (markStorage && intervalSet) {
+  if (intervalSet) {
     MarkNode* markNode = malloc(sizeof(MarkNode));
 
     markNode->intervalSet = intervalSet;
@@ -57,4 +57,18 @@ bool markStorageIsMarked(MarkStorage* markStorage, IntervalSet* intervalSet) {
   }
 
   return false;
+}
+
+/**
+ * Prints the mark storage to the console for debugging purposes.
+ *
+ * @param markStorage The mark storage to print.
+ */
+void markStoragePrint(const MarkStorage* markStorage) {
+  MarkNode* currNode = *markStorage;
+
+  while (currNode) {
+    printf("Pointer to interval set: %p\n", (void*)currNode->intervalSet);
+    currNode = currNode->next;
+  }
 }
