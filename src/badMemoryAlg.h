@@ -26,7 +26,9 @@ typedef struct AssignRes {
                      assignment operation */
 } AssignRes;
 
-bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printExtraInfo);
-bool badMemoryDepthFirst(IntervalSet* inputIntervalSet, const bool printExtraInfo);
+bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printExtraInfo,
+                        char* description);
+bool badMemoryDepthFirst(IntervalSet* inputIntervalSet, const bool printExtraInfo,
+                         char* description);
 
 #endif // BAD_MEMORY_ALG_H

@@ -5,7 +5,7 @@
 #include "test.h"
 
 #define N_INSTANCES 1
-#define N_INTERVALS 200
+#define N_INTERVALS 500
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 int main(int argc, char** argv) {

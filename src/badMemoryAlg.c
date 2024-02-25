@@ -1,6 +1,7 @@
 #include "badMemoryAlg.h"
 // #define DEBUG_PRINT 1
 #include "debug.h"
+#include "jsonPrinter.h"
 #include "markStorage.h"
 #include <stdint.h>
 #include <stdlib.h>
@@ -199,7 +200,7 @@ static void freeGraphNodes(GraphNode** graphNodes, const uint32_t n) {
 /**
  * Prints the metrics of the bad memory algorithm.
  */
-static void printMetrics(GraphNode** graphNodes, const uint32_t n) {
+static void printMetrics(GraphNode** graphNodes, const uint32_t n, char* description) {
   uint32_t nSolutions = 0;
   uint32_t nUsedNodes = 0;
   uint32_t nOutgoingEdges = 0;
@@ -245,6 +246,11 @@ static void printMetrics(GraphNode** graphNodes, const uint32_t n) {
   printf("Max outgoing edges: %d\n", maxOutgoingEdges);
   printf("Max incoming edges: %d\n", maxIncomingEdges);
   printf("nEdges: %d\n", nOutgoingEdges);
+
+  jsonPrinterSaveToFile(description,
+                        (RunInfo){n, nGroupsBuilt, nGroupsKept, nSolutions, nSteps, nUsedNodes,
+                                  nOutgoingEdges, nIncomingEdges, maxOutgoingEdges,
+                                  maxIncomingEdges, nOutgoingEdges, description});
 }
 
 /**
@@ -253,7 +259,8 @@ static void printMetrics(GraphNode** graphNodes, const uint32_t n) {
  * @param intervalSet The input IntervalSet to be processed.
  * @return Returns true if there is a solution, false otherwise.
  */
-bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printAllMetrics) {
+bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printAllMetrics,
+                        char* description) {
   const uint32_t n = intervalSetCountIntervals(inputIntervalSet);
   GraphNode** graphNodes = initializeGraphNodes(inputIntervalSet, n);
 
@@ -332,7 +339,7 @@ bool badMemoryAlgorithm(IntervalSet* inputIntervalSet, const bool printAllMetric
   }
 
   if (printAllMetrics) {
-    printMetrics(graphNodes, n);
+    printMetrics(graphNodes, n, description);
   }
 
   freeGraphNodes(graphNodes, n);
@@ -507,7 +514,8 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
  * @param printAllMetrics If true, prints all the metrics of the algorithm.
  * @return Returns true if there is a solution, false otherwise.
  */
-bool badMemoryDepthFirst(IntervalSet* inputIntervalSet, const bool printAllMetrics) {
+bool badMemoryDepthFirst(IntervalSet* inputIntervalSet, const bool printAllMetrics,
+                         char* description) {
   const uint32_t n = intervalSetCountIntervals(inputIntervalSet);
   GraphNode** graphNodes = initializeGraphNodes(inputIntervalSet, n);
 
@@ -524,7 +532,7 @@ bool badMemoryDepthFirst(IntervalSet* inputIntervalSet, const bool printAllMetri
   }
 
   if (printAllMetrics) {
-    printMetrics(graphNodes, n);
+    printMetrics(graphNodes, n, description);
   }
 
   freeGraphNodes(graphNodes, n);

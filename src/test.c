@@ -100,7 +100,7 @@ static void logFailedNoInstance(IntervalSet* instance, const uint32_t i) {
  */
 static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
                     IntervalSet* (*instanceGenerator)(const uint32_t),
-                    bool (*solverAlgorithm)(IntervalSet*, bool)) {
+                    bool (*solverAlgorithm)(IntervalSet*, bool, char*), char* description) {
   instanceInitRandom();
 
   bool success = true;
@@ -109,7 +109,7 @@ static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceGenerator(nIntervals);
-    bool hasSolution = solverAlgorithm(instance, nInstances == 1);
+    bool hasSolution = solverAlgorithm(instance, nInstances == 1, description);
 
     if (!hasSolution) {
       success = false;
@@ -136,14 +136,14 @@ static bool testYes(const uint32_t nInstances, const uint32_t nIntervals,
  */
 static bool testNo(const uint32_t nInstances, const uint32_t nIntervals,
                    IntervalSet* (*instanceGenerator)(const uint32_t),
-                   bool (*solverAlgorithm)(IntervalSet*, bool)) {
+                   bool (*solverAlgorithm)(IntervalSet*, bool, char*), char* description) {
   bool success = true;
 
   for (uint32_t i = 0; i < nInstances; i++) {
     logTestStatusIfNecessary(nIntervals, i);
 
     IntervalSet* instance = instanceGenerator(nIntervals);
-    bool hasSolution = solverAlgorithm(instance, nInstances == 1);
+    bool hasSolution = solverAlgorithm(instance, nInstances == 1, description);
 
     if (hasSolution) {
       success = false;
@@ -168,7 +168,8 @@ static bool testNo(const uint32_t nInstances, const uint32_t nIntervals,
 bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryAlgorithm);
+  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryAlgorithm,
+                 "SimpleYesBreadthFirst");
 }
 
 /**
@@ -181,7 +182,8 @@ bool testSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing simple no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryAlgorithm);
+  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryAlgorithm,
+                "SimpleNoBreadthFirst");
 }
 
 /**
@@ -194,7 +196,8 @@ bool testSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm);
+  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm,
+                 "MaxWhitnessesYesBreadthFirst");
 }
 
 /**
@@ -207,7 +210,8 @@ bool testMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) 
 bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm);
+  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm,
+                "MaxWhitnessesNoBreadthFirst");
 }
 
 /**
@@ -221,7 +225,8 @@ bool testMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max group whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm);
+  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm,
+                 "MaxGroupWhitnessesYesBreadthFirst");
 }
 
 /**
@@ -235,7 +240,8 @@ bool testMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nInterv
 bool testMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing max group whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm);
+  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm,
+                "MaxGroupWhitnessesNoBreadthFirst");
 }
 
 /**
@@ -248,7 +254,8 @@ bool testMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nInterva
 bool testHardYesAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard yes amount version instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm);
+  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm,
+                 "HardYesAmountVersionBreadthFirst");
 }
 
 /**
@@ -261,7 +268,8 @@ bool testHardYesAmountVersion(const uint32_t nInstances, const uint32_t nInterva
 bool testHardNoAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing hard no amount version instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm);
+  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm,
+                "HardNoAmountVersionBreadthFirst");
 }
 
 /**
@@ -274,7 +282,8 @@ bool testHardNoAmountVersion(const uint32_t nInstances, const uint32_t nInterval
 bool testAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing all full instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryAlgorithm);
+  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryAlgorithm,
+                 "AllFullBreadthFirst");
 }
 
 /**
@@ -287,7 +296,8 @@ bool testAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
 bool testDepthFirstSimpleYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first simple yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryDepthFirst);
+  return testYes(nInstances, nIntervals, instanceSimpleYes, badMemoryDepthFirst,
+                 "SimpleYesDepthFirst");
 }
 
 /**
@@ -300,7 +310,8 @@ bool testDepthFirstSimpleYes(const uint32_t nInstances, const uint32_t nInterval
 bool testDepthFirstSimpleNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first simple no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryDepthFirst);
+  return testNo(nInstances, nIntervals, instanceSimpleNo, badMemoryDepthFirst,
+                "SimpleNoDepthFirst");
 }
 
 /**
@@ -313,7 +324,8 @@ bool testDepthFirstSimpleNo(const uint32_t nInstances, const uint32_t nIntervals
 bool testDepthFirstMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst);
+  return testYes(nInstances, nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst,
+                 "MaxWhitnessesYesDepthFirst");
 }
 
 /**
@@ -326,7 +338,8 @@ bool testDepthFirstMaxWhitnessesYes(const uint32_t nInstances, const uint32_t nI
 bool testDepthFirstMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst);
+  return testNo(nInstances, nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst,
+                "MaxWhitnessesNoDepthFirst");
 }
 
 /**
@@ -340,7 +353,8 @@ bool testDepthFirstMaxWhitnessesNo(const uint32_t nInstances, const uint32_t nIn
 bool testDepthFirstMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness yes instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst);
+  return testYes(nInstances, nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst,
+                 "MaxGroupWhitnessesYesDepthFirst");
 }
 
 /**
@@ -354,7 +368,8 @@ bool testDepthFirstMaxGroupWhitnessesYes(const uint32_t nInstances, const uint32
 bool testDepthFirstMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness no instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst);
+  return testNo(nInstances, nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst,
+                "MaxGroupWhitnessesNoDepthFirst");
 }
 
 /**
@@ -368,7 +383,8 @@ bool testDepthFirstMaxGroupWhitnessesNo(const uint32_t nInstances, const uint32_
 bool testDepthFirstHardYesAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first hard yes amount version instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst);
+  return testYes(nInstances, nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst,
+                 "HardYesAmountVersionDepthFirst");
 }
 
 /**
@@ -382,7 +398,8 @@ bool testDepthFirstHardYesAmountVersion(const uint32_t nInstances, const uint32_
 bool testDepthFirstHardNoAmountVersion(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first hard no amount version instances.\n");
 
-  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst);
+  return testNo(nInstances, nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst,
+                "HardNoAmountVersionDepthFirst");
 }
 
 /**
@@ -395,7 +412,7 @@ bool testDepthFirstHardNoAmountVersion(const uint32_t nInstances, const uint32_t
 bool testDepthFirstAllFull(const uint32_t nInstances, const uint32_t nIntervals) {
   debug_print("Testing depth-first all full instances.\n");
 
-  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryDepthFirst);
+  return testYes(nInstances, nIntervals, instanceAllFull, badMemoryDepthFirst, "AllFullDepthFirst");
 }
 
 /**
