@@ -4,12 +4,25 @@
 #include <unistd.h>
 
 /**
+ * Frees the memory used by a RunInfo.
+ *
+ * @param runInfo The RunInfo to free.
+ */
+void runInfoDelete(RunInfo* runInfo) {
+  free(runInfo->metadata);
+  runInfo->metadata = NULL;
+}
+
+/**
  * Adds the contents of a RunInfo to a json_object. Also calculates and adds average edge grades.
  *
  * @param runInfo The RunInfo to add to the json_object.
  * @param jobj The json_object to add the RunInfo to.
  */
-static void addRunInfoToJson(RunInfo* runInfo, json_object* jobj) {
+static void addRunInfoToJson(RunInfo* runInfo, double timeUsed, json_object* jobj) {
+  json_object_object_add(jobj, "description", json_object_new_string(runInfo->description));
+  json_object_object_add(jobj, "solutionFound", json_object_new_boolean(runInfo->solutionFound));
+  json_object_object_add(jobj, "nIntervals", json_object_new_int(runInfo->nIntervals));
   json_object_object_add(jobj, "nGroupsBuilt", json_object_new_int(runInfo->nGroupsBuilt));
   json_object_object_add(jobj, "nGroupsKept", json_object_new_int(runInfo->nGroupsKept));
   json_object_object_add(jobj, "nSolutions", json_object_new_int(runInfo->nSolutions));
@@ -26,7 +39,14 @@ static void addRunInfoToJson(RunInfo* runInfo, json_object* jobj) {
   json_object_object_add(jobj, "maxOutgoingEdges", json_object_new_int(runInfo->maxOutgoingEdges));
   json_object_object_add(jobj, "maxIncomingEdges", json_object_new_int(runInfo->maxIncomingEdges));
   json_object_object_add(jobj, "nEdges", json_object_new_int(runInfo->nEdges));
-  json_object_object_add(jobj, "description", json_object_new_string(runInfo->description));
+  json_object_object_add(jobj, "nMarkedSets", json_object_new_int(runInfo->nMarkedSets));
+  json_object_object_add(jobj, "runTime", json_object_new_double(timeUsed));
+  // add metadata
+  json_object_object_add(jobj, "metadata", json_object_new_array_ext(runInfo->metadataLength));
+  json_object* metadataArray = json_object_object_get(jobj, "metadata");
+  for (uint32_t i = 0; i < runInfo->metadataLength; i++) {
+    json_object_array_put_idx(metadataArray, i, json_object_new_int(runInfo->metadata[i]));
+  }
 }
 
 /**
@@ -35,17 +55,17 @@ static void addRunInfoToJson(RunInfo* runInfo, json_object* jobj) {
  * @param description A description of the run.
  * @param runInfo The RunInfo to save to the json file.
  */
-void jsonPrinterSaveToFile(const char* description, RunInfo runInfo) {
+void jsonPrinterSaveToFile(RunInfo runInfo, double timeUsed) {
   json_object* jobj = json_object_new_object();
 
-  addRunInfoToJson(&runInfo, jobj);
+  addRunInfoToJson(&runInfo, timeUsed, jobj);
 
   char filename[100];
 
   // check if the file already exists, if so, increase the number in the filename
   int i = 1;
   do {
-    sprintf(filename, "results/%s_%d_%d.json", description, runInfo.nIntervals, i);
+    sprintf(filename, "results/%s_%d_%d.json", runInfo.description, runInfo.nIntervals, i);
     i++;
   } while (access(filename, F_OK) != -1);
 

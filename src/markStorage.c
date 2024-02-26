@@ -60,6 +60,24 @@ bool markStorageIsMarked(MarkStorage* markStorage, IntervalSet* intervalSet) {
 }
 
 /**
+ * Counts the number of marked interval sets in the mark storage.
+ *
+ * @param markStorage The mark storage to count.
+ * @return The number of marked interval sets.
+ */
+uint32_t markStorageCount(MarkStorage* markStorage) {
+  uint32_t count = 0;
+  MarkNode* currNode = *markStorage;
+
+  while (currNode) {
+    count++;
+    currNode = currNode->next;
+  }
+
+  return count;
+}
+
+/**
  * Prints the mark storage to the console for debugging purposes.
  *
  * @param markStorage The mark storage to print.

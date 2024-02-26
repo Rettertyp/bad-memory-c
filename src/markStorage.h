@@ -17,6 +17,7 @@ typedef MarkNode* MarkStorage;
 void markStorageAddSet(MarkStorage* markStorage, IntervalSet* intervalSet);
 void markStorageDelete(MarkStorage* markStorage);
 bool markStorageIsMarked(MarkStorage* markStorage, IntervalSet* intervalSet);
+uint32_t markStorageCount(MarkStorage* markStorage);
 void markStoragePrint(const MarkStorage* markStorage);
 
 #endif // MARK_STORAGE_H

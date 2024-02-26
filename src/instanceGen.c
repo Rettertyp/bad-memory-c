@@ -112,48 +112,19 @@ static void printIntervals(Interval intervals[], uint32_t n) {
 }
 
 /**
- * Frees the memory allocated for groups and intervals.
- *
- * @param groups The pointer to the array of groups.
- * @param intervals The pointer to the array of intervals.
- */
-static void freeGroupsAndIntervals(uint32_t groups[], Interval intervals[]) {
-  free(groups);
-  groups = NULL;
-  free(intervals);
-  intervals = NULL;
-}
-
-/**
  * Creates an IntervalSet from an array of Intervals and frees the memory of the array.
  *
  * @param intervals The array of Intervals.
  * @param n The number of Intervals in the array.
  * @return The created IntervalSet.
  */
-static IntervalSet* createIntervalSetAndFree(Interval* intervals, const uint32_t n) {
+static InstanceInfo createIntervalSetAndFree(Interval* intervals, const uint32_t n,
+                                             uint32_t* metadata, const uint32_t metadataLength) {
   IntervalSet* instance = intervalSetCreateBlank(intervals, n);
 
   free(intervals);
 
-  return instance;
-}
-
-/**
- * Creates an interval set and frees the groups and intervals.
- *
- * @param intervals The array of intervals.
- * @param n The number of intervals.
- * @param groups The array of groups.
- * @return The created interval set.
- */
-static IntervalSet* createIntervalSetAndFreeGroups(Interval intervals[], uint32_t groups[],
-                                                   const uint32_t n) {
-  IntervalSet* instance = intervalSetCreateBlank(intervals, n);
-
-  freeGroupsAndIntervals(groups, intervals);
-
-  return instance;
+  return (InstanceInfo){instance, metadataLength, metadata};
 }
 
 /**
@@ -188,8 +159,9 @@ static void addImpossibleGroup(Interval intervals[], const uint32_t n) {
  * Generates a random simple instance of the GAI problem with a solution.
  *
  * @param n The number of intervals in the instance.
+ * @return The generated instance.
  */
-IntervalSet* instanceSimpleYes(const uint32_t n) {
+InstanceInfo instanceSimpleYes(const uint32_t n) {
   uint32_t* groups = malloc(sizeof(uint32_t) * n);
 
   // generate random numbers that add up to n
@@ -204,7 +176,7 @@ IntervalSet* instanceSimpleYes(const uint32_t n) {
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFreeGroups(intervals, groups, n);
+  return createIntervalSetAndFree(intervals, n, groups, nGroups);
 }
 
 /**
@@ -212,7 +184,7 @@ IntervalSet* instanceSimpleYes(const uint32_t n) {
  *
  * @param n The number of intervals in the instance.
  */
-IntervalSet* instanceSimpleNo(const uint32_t n) {
+InstanceInfo instanceSimpleNo(const uint32_t n) {
   uint32_t* groups = malloc(sizeof(uint32_t) * (n - 1));
 
   // make groups that add up to n-1, to be able to add the last group that makes the solution
@@ -230,7 +202,7 @@ IntervalSet* instanceSimpleNo(const uint32_t n) {
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFreeGroups(intervals, groups, n);
+  return createIntervalSetAndFree(intervals, n, groups, nGroups);
 }
 
 /**
@@ -347,14 +319,13 @@ static uint32_t fillRemainingSpace(Interval intervals[], uint32_t i, const uint3
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
  */
-static void getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
+static uint32_t getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
   uint32_t whitnessWidth = 4;
   uint32_t i = 0;
   uint32_t start = __min(3, n);
   uint32_t* endValues = malloc(sizeof(uint32_t) * (n / 4));
   uint32_t endLenght = calcEndValues(endValues, n, whitnessWidth);
 
-  // only used to print the number of whitnesses
   uint32_t nWhitnesses = 0;
 
   // add all whitnesses that were computed in calcEndValues
@@ -368,6 +339,8 @@ static void getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
   i = fillRemainingSpace(intervals, i, n);
 
   debug_print("Number of whitnesses: %d\n", nWhitnesses);
+
+  return nWhitnesses;
 }
 
 /**
@@ -376,14 +349,17 @@ static void getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceMaxWhitnessesYes(const uint32_t n) {
+InstanceInfo instanceMaxWhitnessesYes(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getMaxNumWhitnesses(intervals, n);
+  uint32_t nWhitnesses = getMaxNumWhitnesses(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -392,17 +368,20 @@ IntervalSet* instanceMaxWhitnessesYes(const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceMaxWhitnessesNo(const uint32_t n) {
+InstanceInfo instanceMaxWhitnessesNo(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getMaxNumWhitnesses(intervals, n - 1);
+  uint32_t nWhitnesses = getMaxNumWhitnesses(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -411,7 +390,7 @@ IntervalSet* instanceMaxWhitnessesNo(const uint32_t n) {
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
  */
-static void getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
+static uint32_t getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
   int32_t whitnessWidth = 6;
   uint32_t i = 0;
   int32_t start = __min(3, n);
@@ -440,6 +419,8 @@ static void getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
   }
 
   debug_print("Number of whitnesses: %d\n", nWhitnesses);
+
+  return nWhitnesses;
 }
 
 /**
@@ -449,14 +430,17 @@ static void getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceMaxGroupWhitnessesYes(const uint32_t n) {
+InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getMaxGroupWhitnesses(intervals, n);
+  uint32_t nWhitnesses = getMaxGroupWhitnesses(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -466,17 +450,20 @@ IntervalSet* instanceMaxGroupWhitnessesYes(const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceMaxGroupWhitnessesNo(const uint32_t n) {
+InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getMaxGroupWhitnesses(intervals, n - 1);
+  uint32_t nWhitnesses = getMaxGroupWhitnesses(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -513,7 +500,7 @@ static uint32_t getWhitnessAmountVersion(Interval intervals[], const uint32_t st
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
  */
-static void getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
+static uint32_t getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
   uint32_t i = 0;
   uint32_t start = __min(3, n);
   uint32_t end = n;
@@ -541,6 +528,8 @@ static void getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
   }
 
   debug_print("Number of whitnesses: %d\n", nWhitnesses);
+
+  return nWhitnesses;
 }
 
 /**
@@ -550,14 +539,17 @@ static void getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
  * @param n The number of interval-objects in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceHardYesAmountVersion(const uint32_t n) {
+InstanceInfo instanceHardYesAmountVersion(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getWhitnessesAmountVersion(intervals, n);
+  uint32_t nWhitnesses = getWhitnessesAmountVersion(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -567,17 +559,20 @@ IntervalSet* instanceHardYesAmountVersion(const uint32_t n) {
  * @param n The number of interval-objects in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceHardNoAmountVersion(const uint32_t n) {
+InstanceInfo instanceHardNoAmountVersion(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  getWhitnessesAmountVersion(intervals, n - 1);
+  uint32_t nWhitnesses = getWhitnessesAmountVersion(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n);
+  uint32_t* metadata = malloc(sizeof(uint32_t));
+  *metadata = nWhitnesses;
+
+  return createIntervalSetAndFree(intervals, n, metadata, 1);
 }
 
 /**
@@ -586,12 +581,12 @@ IntervalSet* instanceHardNoAmountVersion(const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-IntervalSet* instanceAllFull(const uint32_t n) {
+InstanceInfo instanceAllFull(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
   for (uint32_t i = 0; i < n; i++) {
     intervals[i] = (Interval){1, n, 1};
   }
 
-  return createIntervalSetAndFree(intervals, n);
+  return createIntervalSetAndFree(intervals, n, NULL, 0);
 }

@@ -4,15 +4,21 @@
 #include "intervalSet.h"
 #include <stdint.h>
 
+typedef struct InstanceInfo {
+  IntervalSet* intervalSet;
+  uint32_t metadataLength;
+  uint32_t* metadata;
+} InstanceInfo;
+
 void instanceInitRandom();
-IntervalSet* instanceSimpleYes(const uint32_t n);
-IntervalSet* instanceSimpleNo(const uint32_t n);
-IntervalSet* instanceMaxWhitnessesYes(const uint32_t n);
-IntervalSet* instanceMaxWhitnessesNo(const uint32_t n);
-IntervalSet* instanceMaxGroupWhitnessesYes(const uint32_t n);
-IntervalSet* instanceMaxGroupWhitnessesNo(const uint32_t n);
-IntervalSet* instanceHardYesAmountVersion(const uint32_t n);
-IntervalSet* instanceHardNoAmountVersion(const uint32_t n);
-IntervalSet* instanceAllFull(const uint32_t n);
+InstanceInfo instanceSimpleYes(const uint32_t n);
+InstanceInfo instanceSimpleNo(const uint32_t n);
+InstanceInfo instanceMaxWhitnessesYes(const uint32_t n);
+InstanceInfo instanceMaxWhitnessesNo(const uint32_t n);
+InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n);
+InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n);
+InstanceInfo instanceHardYesAmountVersion(const uint32_t n);
+InstanceInfo instanceHardNoAmountVersion(const uint32_t n);
+InstanceInfo instanceAllFull(const uint32_t n);
 
 #endif // INSTANCEGEN_H

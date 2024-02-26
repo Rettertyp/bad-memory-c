@@ -1,9 +1,12 @@
 #ifndef JSON_PRINTER_H
 #define JSON_PRINTER_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct RunInfo {
+  char* description;
+  bool solutionFound;
   uint32_t nIntervals;
   uint32_t nGroupsBuilt;
   uint32_t nGroupsKept;
@@ -15,9 +18,12 @@ typedef struct RunInfo {
   uint32_t maxOutgoingEdges;
   uint32_t maxIncomingEdges;
   uint32_t nEdges;
-  char* description;
+  uint32_t nMarkedSets;
+  uint32_t metadataLength;
+  uint32_t* metadata;
 } RunInfo;
 
-void jsonPrinterSaveToFile(const char* description, RunInfo runInfo);
+void runInfoDelete(RunInfo* runInfo);
+void jsonPrinterSaveToFile(RunInfo runInfo, double timeUsed);
 
 #endif // JSON_PRINTER_H
