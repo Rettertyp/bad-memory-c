@@ -129,7 +129,7 @@ static RunInfo testNo(const uint32_t nIntervals, InstanceInfo (*instanceGenerato
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testSimpleYes(const uint32_t nIntervals) {
-  debug_print("Testing simple yes instances.\n");
+  debug_print("Testing simple yes instance.\n");
 
   return testYes(nIntervals, instanceSimpleYes, badMemoryAlgorithm, "SimpleYesBreadthFirst");
 }
@@ -141,7 +141,7 @@ RunInfo testSimpleYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testSimpleNo(const uint32_t nIntervals) {
-  debug_print("Testing simple no instances.\n");
+  debug_print("Testing simple no instance.\n");
 
   return testNo(nIntervals, instanceSimpleNo, badMemoryAlgorithm, "SimpleNoBreadthFirst");
 }
@@ -153,7 +153,7 @@ RunInfo testSimpleNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing max whitness yes instances.\n");
+  debug_print("Testing max whitness yes instance.\n");
 
   return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm,
                  "MaxWhitnessesYesBreadthFirst");
@@ -166,7 +166,7 @@ RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing max whitness no instances.\n");
+  debug_print("Testing max whitness no instance.\n");
 
   return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm,
                 "MaxWhitnessesNoBreadthFirst");
@@ -180,7 +180,7 @@ RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing max group whitness yes instances.\n");
+  debug_print("Testing max group whitness yes instance.\n");
 
   return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm,
                  "MaxGroupWhitnessesYesBreadthFirst");
@@ -194,7 +194,7 @@ RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing max group whitness no instances.\n");
+  debug_print("Testing max group whitness no instance.\n");
 
   return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm,
                 "MaxGroupWhitnessesNoBreadthFirst");
@@ -207,7 +207,7 @@ RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
-  debug_print("Testing hard yes amount version instances.\n");
+  debug_print("Testing hard yes amount version instance.\n");
 
   return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm,
                  "HardYesAmountVersionBreadthFirst");
@@ -220,7 +220,7 @@ RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
-  debug_print("Testing hard no amount version instances.\n");
+  debug_print("Testing hard no amount version instance.\n");
 
   return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm,
                 "HardNoAmountVersionBreadthFirst");
@@ -233,7 +233,7 @@ RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testAllFull(const uint32_t nIntervals) {
-  debug_print("Testing all full instances.\n");
+  debug_print("Testing all full instance.\n");
 
   return testYes(nIntervals, instanceAllFull, badMemoryAlgorithm, "AllFullBreadthFirst");
 }
@@ -245,7 +245,7 @@ RunInfo testAllFull(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
-  debug_print("Testing depth-first simple yes instances.\n");
+  debug_print("Testing depth-first simple yes instance.\n");
 
   return testYes(nIntervals, instanceSimpleYes, badMemoryDepthFirst, "SimpleYesDepthFirst");
 }
@@ -257,7 +257,7 @@ RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
-  debug_print("Testing depth-first simple no instances.\n");
+  debug_print("Testing depth-first simple no instance.\n");
 
   return testNo(nIntervals, instanceSimpleNo, badMemoryDepthFirst, "SimpleNoDepthFirst");
 }
@@ -269,7 +269,7 @@ RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max whitness yes instances.\n");
+  debug_print("Testing depth-first max whitness yes instance.\n");
 
   return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst,
                  "MaxWhitnessesYesDepthFirst");
@@ -282,7 +282,7 @@ RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max whitness no instances.\n");
+  debug_print("Testing depth-first max whitness no instance.\n");
 
   return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst,
                 "MaxWhitnessesNoDepthFirst");
@@ -296,7 +296,7 @@ RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max group whitness yes instances.\n");
+  debug_print("Testing depth-first max group whitness yes instance.\n");
 
   return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst,
                  "MaxGroupWhitnessesYesDepthFirst");
@@ -310,7 +310,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max group whitness no instances.\n");
+  debug_print("Testing depth-first max group whitness no instance.\n");
 
   return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst,
                 "MaxGroupWhitnessesNoDepthFirst");
@@ -324,7 +324,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
-  debug_print("Testing depth-first hard yes amount version instances.\n");
+  debug_print("Testing depth-first hard yes amount version instance.\n");
 
   return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst,
                  "HardYesAmountVersionDepthFirst");
@@ -338,7 +338,7 @@ RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
  * @return True if the test was succesful, false otherwise.
  */
 RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
-  debug_print("Testing depth-first hard no amount version instances.\n");
+  debug_print("Testing depth-first hard no amount version instance.\n");
 
   return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst,
                 "HardNoAmountVersionDepthFirst");
@@ -351,7 +351,7 @@ RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
  * @return True if the test was successful, false otherwise.
  */
 RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
-  debug_print("Testing depth-first all full instances.\n");
+  debug_print("Testing depth-first all full instance.\n");
 
   return testYes(nIntervals, instanceAllFull, badMemoryDepthFirst, "AllFullDepthFirst");
 }
