@@ -4,7 +4,7 @@
 #include "instanceGen.h"
 #include "test.h"
 
-#define N_INTERVALS 500
+#define N_INTERVALS 1000
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 int main(int argc, char** argv) {

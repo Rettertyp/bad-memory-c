@@ -232,6 +232,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
   uint32_t maxOutgoingEdges = 0;
   uint32_t maxIncomingEdges = 0;
   uint32_t nMarkedSets = 0;
+  uint32_t maxSetsPerNode = 0;
+  uint32_t minSetsPerNode = UINT32_MAX;
 
   // count the number of solutions
   for (uint32_t i = 1; i <= n; i++) {
@@ -261,6 +263,10 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
 
       // count the number of marked sets
       nMarkedSets += markStorageCount(&(currNode->markStorage));
+
+      // count the number of sets per node
+      maxSetsPerNode = __max(maxSetsPerNode, nIntervalSets);
+      minSetsPerNode = __min(minSetsPerNode, nIntervalSets);
     }
   }
 
@@ -275,6 +281,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
   printf("Max incoming edges: %d\n", maxIncomingEdges);
   printf("nEdges: %d\n", nOutgoingEdges);
   printf("nMarkedSets: %d\n", nMarkedSets);
+  printf("Max sets per node: %d\n", maxSetsPerNode);
+  printf("Min sets per node: %d\n", minSetsPerNode);
 
   return (RunInfo){description,
                    solutionFound,
@@ -290,6 +298,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
                    maxIncomingEdges,
                    nOutgoingEdges,
                    nMarkedSets,
+                   maxSetsPerNode,
+                   minSetsPerNode,
                    0,
                    NULL};
 }
