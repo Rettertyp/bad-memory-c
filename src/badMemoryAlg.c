@@ -4,6 +4,7 @@
 #include "jsonPrinter.h"
 #include "markStorage.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -43,6 +44,8 @@ uint32_t nSteps = 0;
  * the success or failure of the assignment operation.
  */
 static AssignRes assign(const IntervalSet* intervalSet, const uint32_t groupSize) {
+  nSteps++;
+
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
     return (AssignRes){NULL, ERROR_defn};
   }
@@ -70,6 +73,8 @@ static AssignRes assign(const IntervalSet* intervalSet, const uint32_t groupSize
  */
 static AssignRes assignRest(const IntervalSet* intervalSet, const uint32_t groupSize,
                             const uint32_t rest) {
+  nSteps++;
+
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
     return (AssignRes){NULL, ERROR_defn};
   }
@@ -95,7 +100,6 @@ static AssignRes assignRest(const IntervalSet* intervalSet, const uint32_t group
  */
 static void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSet,
                       Stack otherStack, GraphNode* directPredNode) {
-  nSteps++;
   Stack currStack = stackCopy(otherStack);
 
   // mark the current interval set
@@ -189,7 +193,6 @@ static GraphNode** initializeGraphNodes(IntervalSet* inputIntervalSet, const uin
       GraphNode* currNode = getGraphNode(graphNodes, i, i);
       graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
       graphNodePrintDetailed(currNode);
-      nSteps++;
       nGroupsBuilt++;
     }
   }
@@ -314,6 +317,10 @@ RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description) {
   const uint32_t n = intervalSetCountIntervals(inputIntervalSet);
   GraphNode** graphNodes = initializeGraphNodes(inputIntervalSet, n);
 
+  // for logging the progress of the algorithm
+  uint32_t nNodesFinished = 0;
+  const uint32_t nNodesTotal = n * (n + 1) / 2;
+
   // main loop of the algorithm
   for (uint32_t i = n; i > 0; i--) {
     for (uint32_t s = i + 1; s <= n; s++) {
@@ -330,7 +337,6 @@ RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description) {
         // iterate over all the interval sets in the graph node
         IntervalSetNode* currIntSetNode = predNode->intervalSets;
         while (currIntSetNode) {
-          nSteps++;
           IntervalSet* currSet = currIntSetNode->set;
 
           IntervalSet* lowestPart = intervalSetGetLowestPart(currSet);
@@ -365,6 +371,11 @@ RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description) {
       }
 
       graphNodeRemoveDominatedSets(currNode);
+
+      if (!(++nNodesFinished % 1000)) {
+        printf("Finished processing node %d/%d.\n", nNodesFinished, nNodesTotal);
+        fflush(stdout);
+      }
     }
   }
 
@@ -405,7 +416,7 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
  * @return Returns true if a solution has been found, false otherwise.
  */
 static bool buildAndCallRecursive(GraphNode** graphNodes, const uint32_t n, GraphNode* currNode,
-                                  GraphNode* predNode, IntervalSet* currSet) {
+                                  GraphNode* predNode, IntervalSet* currSet, bool pushToStack) {
   nGroupsBuilt++;
   // check if the rest set is dominated by one of the other sets in its graph node. If not, add
   // it and recursively call the function on it
@@ -413,6 +424,11 @@ static bool buildAndCallRecursive(GraphNode** graphNodes, const uint32_t n, Grap
     graphNodeAddIntervalSet(currNode, currSet);
     graphNodeStorageConnectNodes(predNode, currNode);
     graphNodePrintDetailed(currNode);
+
+    // push the predecessor node to the stack, if we might have to backtrack later on
+    if (pushToStack) {
+      stackPush(&(currSet->stack), predNode);
+    }
 
     // recursively call the function
     return buildSetsDepthFirstRecursive(graphNodes, n, currNode, currSet);
@@ -436,7 +452,6 @@ static bool buildAndCallRecursive(GraphNode** graphNodes, const uint32_t n, Grap
 static bool backtrackDepthFirst(GraphNode** graphNodes, GraphNode* predNode, GraphNode* currNode,
                                 IntervalSet* intervalSet, Stack otherStack, const uint32_t n,
                                 GraphNode* directPredNode) {
-  nSteps++;
   Stack currStack = stackCopy(otherStack);
 
   // mark the current interval set in the mark storage of the current graph node
@@ -458,8 +473,8 @@ static bool backtrackDepthFirst(GraphNode** graphNodes, GraphNode* predNode, Gra
 
   switch (assignRes.statusCode) {
   case SUCCESS:
-    solutionFound &=
-        buildAndCallRecursive(graphNodes, n, currNode, directPredNode, assignRes.intervalSet);
+    solutionFound &= buildAndCallRecursive(graphNodes, n, currNode, directPredNode,
+                                           assignRes.intervalSet, false);
     break;
 
   case ERROR_evtl:
@@ -517,8 +532,6 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
 
   // try to build every possible group
   for (uint32_t j = __min(i, n - s); j > 0; j--) {
-    nSteps++;
-
     GraphNode* currNode = getGraphNode(graphNodes, j, s + j);
 
     // try to build the group of size j
@@ -529,7 +542,7 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
     switch (assignRes.statusCode) {
     case SUCCESS:
       solutionFound |=
-          buildAndCallRecursive(graphNodes, n, currNode, predNode, assignRes.intervalSet);
+          buildAndCallRecursive(graphNodes, n, currNode, predNode, assignRes.intervalSet, true);
       break;
 
     case ERROR_evtl:
@@ -570,6 +583,9 @@ RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet, char* description) {
       solutionFound = true;
       break;
     }
+
+    printf("Finished backtracking node %d/%d.\n", n - i + 1, n);
+    fflush(stdout);
   }
 
   RunInfo runInfo = computeMetrics(graphNodes, n, solutionFound, description);
