@@ -15,14 +15,13 @@ typedef struct RunInfo {
   uint32_t nSolutions;
   uint32_t nSteps;
   uint32_t nUsedNodes;
-  uint32_t nOutgoingEdges;
-  uint32_t nIncomingEdges;
+  double avgOutgoingEdges;
+  double avgIncomingEdges;
   uint32_t maxOutgoingEdges;
   uint32_t maxIncomingEdges;
   uint32_t nEdges;
   uint32_t nMarkedSets;
   uint32_t maxSetsPerNode;
-  uint32_t minSetsPerNode;
   double runTime;
   uint32_t metadataLength;
   uint32_t* metadata;

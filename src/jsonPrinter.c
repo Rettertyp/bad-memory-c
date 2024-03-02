@@ -32,18 +32,15 @@ static void addRunInfoToJson(RunInfo* runInfo, json_object* jobj) {
   json_object_object_add(jobj, "nSolutions", json_object_new_int(runInfo->nSolutions));
   json_object_object_add(jobj, "nSteps", json_object_new_int(runInfo->nSteps));
   json_object_object_add(jobj, "nUsedNodes", json_object_new_int(runInfo->nUsedNodes));
-  json_object_object_add(jobj, "nOutgoingEdges", json_object_new_int(runInfo->nOutgoingEdges));
-  json_object_object_add(jobj, "nIncomingEdges", json_object_new_int(runInfo->nIncomingEdges));
-  json_object_object_add(
-      jobj, "avgOutgoingEdges",
-      json_object_new_double((double)runInfo->nOutgoingEdges / runInfo->nUsedNodes));
-  json_object_object_add(
-      jobj, "avgIncomingEdges",
-      json_object_new_double((double)runInfo->nIncomingEdges / runInfo->nUsedNodes));
+  json_object_object_add(jobj, "avgOutgoingEdges",
+                         json_object_new_double(runInfo->avgOutgoingEdges));
+  json_object_object_add(jobj, "avgIncomingEdges",
+                         json_object_new_double(runInfo->avgIncomingEdges));
   json_object_object_add(jobj, "maxOutgoingEdges", json_object_new_int(runInfo->maxOutgoingEdges));
   json_object_object_add(jobj, "maxIncomingEdges", json_object_new_int(runInfo->maxIncomingEdges));
   json_object_object_add(jobj, "nEdges", json_object_new_int(runInfo->nEdges));
   json_object_object_add(jobj, "nMarkedSets", json_object_new_int(runInfo->nMarkedSets));
+  json_object_object_add(jobj, "maxSetsPerNode", json_object_new_int(runInfo->maxSetsPerNode));
   json_object_object_add(jobj, "runTime", json_object_new_double(runInfo->runTime));
   // add metadata
   json_object_object_add(jobj, "metadata", json_object_new_array_ext(runInfo->metadataLength));
@@ -106,22 +103,19 @@ void jsonPrinterPrint(RunInfo runInfo) {
 
 */
 void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo) {
-  json_object* jobj = json_object_new_object();
-  json_object* runInfoArrayJson = json_object_new_array_ext(2);
+  json_object* jobj = json_object_new_array_ext(2);
 
   // add breadth first information
   json_object* breadthFirstJson = json_object_new_object();
   addRunInfoToJson(&breadthFirstRunInfo, breadthFirstJson);
-  json_object_array_put_idx(runInfoArrayJson, 0, breadthFirstJson);
+  json_object_array_put_idx(jobj, 0, breadthFirstJson);
 
   // add depth first information
   json_object* depthFirstJson = json_object_new_object();
   addRunInfoToJson(&depthFirstRunInfo, depthFirstJson);
-  json_object_array_put_idx(runInfoArrayJson, 1, depthFirstJson);
+  json_object_array_put_idx(jobj, 1, depthFirstJson);
 
-  json_object_object_add(jobj, "runs", runInfoArrayJson);
-
-  char fileDesc[FILE_DESC_LENGTH] = "SimpleYes_BreadthFirst_DepthFirst_1000";
+  char fileDesc[FILE_DESC_LENGTH];
   snprintf(fileDesc, FILE_DESC_LENGTH, "%s_&_%s_%d", breadthFirstRunInfo.description,
            depthFirstRunInfo.description, breadthFirstRunInfo.nIntervals);
 

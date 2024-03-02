@@ -231,13 +231,15 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
                               char* description) {
   uint32_t nSolutions = 0;
   uint32_t nUsedNodes = 0;
+  uint32_t nEdges = 0;
   uint32_t nOutgoingEdges = 0;
   uint32_t nIncomingEdges = 0;
+  uint32_t nNodesWithOutgoingEdges = 0;
+  uint32_t nNodesWithIncomingEdges = 0;
   uint32_t maxOutgoingEdges = 0;
   uint32_t maxIncomingEdges = 0;
   uint32_t nMarkedSets = 0;
   uint32_t maxSetsPerNode = 0;
-  uint32_t minSetsPerNode = UINT32_MAX;
 
   // count the number of solutions
   for (uint32_t i = 1; i <= n; i++) {
@@ -259,34 +261,46 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
       uint32_t nOutgoingEdgesCurr = graphNodeStorageGetNNodes(&(currNode->outgoing));
       nOutgoingEdges += nOutgoingEdgesCurr;
       maxOutgoingEdges = __max(maxOutgoingEdges, nOutgoingEdgesCurr);
+      if (nOutgoingEdgesCurr > 0) {
+        nNodesWithOutgoingEdges++;
+      }
 
       // count the number of incoming edges
       uint32_t nIncomingEdgesCurr = graphNodeStorageGetNNodes(&(currNode->incoming));
       nIncomingEdges += nIncomingEdgesCurr;
       maxIncomingEdges = __max(maxIncomingEdges, nIncomingEdgesCurr);
+      if (nIncomingEdgesCurr > 0) {
+        nNodesWithIncomingEdges++;
+      }
 
       // count the number of marked sets
       nMarkedSets += markStorageCount(&(currNode->markStorage));
 
       // count the number of sets per node
       maxSetsPerNode = __max(maxSetsPerNode, nIntervalSets);
-      minSetsPerNode = __min(minSetsPerNode, nIntervalSets);
     }
   }
+
+  if (nOutgoingEdges != nIncomingEdges) {
+    printf("Error: nOutgoingEdges != nIncomingEdges\n");
+  }
+  nEdges = nOutgoingEdges;
+
+  double avgOutgoingEdges = (double)nEdges / nNodesWithOutgoingEdges;
+  double avgIncomingEdges = (double)nEdges / nNodesWithIncomingEdges;
 
   printf("\nnGroupsBuilt: %d\n", nGroupsBuilt);
   printf("nGroupsKept: %d\n", nGroupsKept);
   printf("nSolutions: %d\n", nSolutions);
   printf("nSteps: %d\n", nSteps);
   printf("nUsedNodes: %d\n", nUsedNodes);
-  printf("Average outgoing edges: %.2f\n", (float)nOutgoingEdges / nUsedNodes);
-  printf("Average incoming edges: %.2f\n", (float)nIncomingEdges / nUsedNodes);
+  printf("Average outgoing edges: %.2f\n", avgOutgoingEdges);
+  printf("Average incoming edges: %.2f\n", avgIncomingEdges);
   printf("Max outgoing edges: %d\n", maxOutgoingEdges);
   printf("Max incoming edges: %d\n", maxIncomingEdges);
-  printf("nEdges: %d\n", nOutgoingEdges);
+  printf("nEdges: %d\n", nEdges);
   printf("nMarkedSets: %d\n", nMarkedSets);
   printf("Max sets per node: %d\n", maxSetsPerNode);
-  printf("Min sets per node: %d\n", minSetsPerNode);
 
   RunInfo runInfo = {
       .solutionFound = solutionFound,
@@ -296,14 +310,13 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
       .nSolutions = nSolutions,
       .nSteps = nSteps,
       .nUsedNodes = nUsedNodes,
-      .nOutgoingEdges = nOutgoingEdges,
-      .nIncomingEdges = nIncomingEdges,
+      .avgOutgoingEdges = avgOutgoingEdges,
+      .avgIncomingEdges = avgIncomingEdges,
       .maxOutgoingEdges = maxOutgoingEdges,
       .maxIncomingEdges = maxIncomingEdges,
-      .nEdges = nOutgoingEdges,
+      .nEdges = nEdges,
       .nMarkedSets = nMarkedSets,
       .maxSetsPerNode = maxSetsPerNode,
-      .minSetsPerNode = minSetsPerNode,
       .runTime = 0,
       .metadataLength = 0,
       .metadata = NULL,
