@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
 RunInfo testSimpleYes(const uint32_t nIntervals);
 RunInfo testSimpleNo(const uint32_t nIntervals);
 RunInfo testMaxWhitnessesYes(const uint32_t nIntervals);
@@ -27,5 +26,7 @@ RunInfo testDepthFirstAllFull(const uint32_t nIntervals);
 void testRunAll(const uint32_t nIntervals);
 void testRunYes(const uint32_t nIntervals);
 void testRunAllDepthFirst(const uint32_t nIntervals);
+void testSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations);
+void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations);
 
 #endif // TEST_H

@@ -7,28 +7,6 @@
 #include <unistd.h>
 
 /**
- * Measures the time it takes to execute the given test.
- *
- * @param nIntervals The number of intervals in each instance.
- * @param test The test to execute.
- * @return True if the test was succesful, false otherwise.
- */
-void measureTime(const uint32_t nIntervals, RunInfo (*test)(const uint32_t)) {
-  clock_t start, end;
-
-  start = clock();
-  RunInfo runInfo = test(nIntervals);
-  end = clock();
-  double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-  debug_print("Test took %.3f seconds to execute \n\n", cpu_time_used);
-
-  // save the results to a json file
-  jsonPrinterSaveToFile(runInfo, cpu_time_used);
-
-  runInfoDelete(&(runInfo));
-}
-
-/**
  * Logs a failed yes instance for debugging purposes.
  *
  * @param instance The instance to log.
@@ -76,14 +54,17 @@ static void logFailedNoInstance(IntervalSet* instance) {
  * @return True if the test was succesful, false otherwise.
  */
 static RunInfo testYes(const uint32_t nIntervals, InstanceInfo (*instanceGenerator)(const uint32_t),
-                       RunInfo (*solverAlgorithm)(IntervalSet*, char*), char* description) {
+                       RunInfo (*solverAlgorithm)(IntervalSet*)) {
   instanceInitRandom();
 
   InstanceInfo instance = instanceGenerator(nIntervals);
-  RunInfo runInfo = solverAlgorithm(instance.intervalSet, description);
+  RunInfo runInfo = solverAlgorithm(instance.intervalSet);
 
   runInfo.metadataLength = instance.metadataLength;
   runInfo.metadata = instance.metadata;
+  char tmp[RUN_INFO_DESC_LENGTH];
+  snprintf(tmp, RUN_INFO_DESC_LENGTH, "%s_%s", instance.name, runInfo.description);
+  strncpy(runInfo.description, tmp, RUN_INFO_DESC_LENGTH);
 
   if (!runInfo.solutionFound) {
     logFailedYesInstance(instance.intervalSet);
@@ -104,14 +85,17 @@ static RunInfo testYes(const uint32_t nIntervals, InstanceInfo (*instanceGenerat
  * @return True if the test was succesful, false otherwise.
  */
 static RunInfo testNo(const uint32_t nIntervals, InstanceInfo (*instanceGenerator)(const uint32_t),
-                      RunInfo (*solverAlgorithm)(IntervalSet*, char*), char* description) {
+                      RunInfo (*solverAlgorithm)(IntervalSet*)) {
   instanceInitRandom();
 
   InstanceInfo instance = instanceGenerator(nIntervals);
-  RunInfo runInfo = solverAlgorithm(instance.intervalSet, description);
+  RunInfo runInfo = solverAlgorithm(instance.intervalSet);
 
   runInfo.metadataLength = instance.metadataLength;
   runInfo.metadata = instance.metadata;
+  char tmp[RUN_INFO_DESC_LENGTH];
+  snprintf(tmp, RUN_INFO_DESC_LENGTH, "%s_%s", instance.name, runInfo.description);
+  strncpy(runInfo.description, tmp, RUN_INFO_DESC_LENGTH);
 
   if (runInfo.solutionFound) {
     logFailedNoInstance(instance.intervalSet);
@@ -123,6 +107,84 @@ static RunInfo testNo(const uint32_t nIntervals, InstanceInfo (*instanceGenerato
 }
 
 /**
+ * Gets an instance and tests the bad memory algorithm on it.
+ *
+ * @param instance The instance to test.
+ * @param solverAlgorithm The solver algorithm to use, either badMemoryAlgorithm or
+ * badMemoryDepthFirst.
+ * @return The RunInfo of the test.
+ */
+static RunInfo testGivenInstance(InstanceInfo instance, RunInfo (*solverAlgorithm)(IntervalSet*)) {
+  RunInfo runInfo = solverAlgorithm(instance.intervalSet);
+
+  runInfo.metadataLength = instance.metadataLength;
+  runInfo.metadata = instance.metadata;
+  char tmp[RUN_INFO_DESC_LENGTH];
+  snprintf(tmp, RUN_INFO_DESC_LENGTH, "%s_%s", instance.name, runInfo.description);
+  strncpy(runInfo.description, tmp, RUN_INFO_DESC_LENGTH);
+
+  return runInfo;
+}
+
+/**
+ * Measures and saves the time it takes to execute a test.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @param test The test to execute.
+ */
+static void measureTime(const uint32_t nIntervals, RunInfo (*test)(const uint32_t)) {
+  clock_t start, end;
+
+  start = clock();
+  RunInfo runInfo = test(nIntervals);
+  end = clock();
+
+  // set the run time
+  runInfo.runTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+  debug_print("Test took %.3f seconds to execute \n\n", runInfo.runTime);
+
+  // save the results to a json file
+  jsonPrinterPrint(runInfo);
+
+  runInfoDelete(&(runInfo));
+}
+
+/**
+ * Measures and saves the time it takes to execute both algorithms on the same instance.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @param instanceGenerator The instance generator to use.
+ */
+static void measureTimeSameInstance(const uint32_t nIntervals,
+                                    InstanceInfo (*instanceGenerator)(const uint32_t)) {
+  instanceInitRandom();
+
+  InstanceInfo instance = instanceGenerator(nIntervals);
+  clock_t start, end;
+
+  start = clock();
+  RunInfo breadthFirstRunInfo = testGivenInstance(instance, badMemoryAlgorithm);
+  end = clock();
+  breadthFirstRunInfo.runTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+  debug_print("BreadthFirst took %.3f seconds to execute \n\n", breadthFirstRunInfo.runTime);
+
+  start = clock();
+  RunInfo depthFirstRunInfo = testGivenInstance(instance, badMemoryDepthFirst);
+  end = clock();
+  depthFirstRunInfo.runTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+  debug_print("DepthFirst took %.3f seconds to execute \n\n", depthFirstRunInfo.runTime);
+
+  // delete the instance
+  intervalSetDelete(instance.intervalSet);
+
+  // save the results to a json file
+  jsonPrinterPrintArray(breadthFirstRunInfo, depthFirstRunInfo);
+
+  runInfoDelete(&(breadthFirstRunInfo));
+  // frees metadata of both runInfos, since it's the same
+}
+
+/**
  * Tests the bad memory algorithm on a set of simple yes instances.
  *
  * @param nIntervals The number of intervals in each instance.
@@ -131,7 +193,7 @@ static RunInfo testNo(const uint32_t nIntervals, InstanceInfo (*instanceGenerato
 RunInfo testSimpleYes(const uint32_t nIntervals) {
   debug_print("Testing simple yes instance.\n");
 
-  return testYes(nIntervals, instanceSimpleYes, badMemoryAlgorithm, "SimpleYesBreadthFirst");
+  return testYes(nIntervals, instanceSimpleYes, badMemoryAlgorithm);
 }
 
 /**
@@ -143,7 +205,7 @@ RunInfo testSimpleYes(const uint32_t nIntervals) {
 RunInfo testSimpleNo(const uint32_t nIntervals) {
   debug_print("Testing simple no instance.\n");
 
-  return testNo(nIntervals, instanceSimpleNo, badMemoryAlgorithm, "SimpleNoBreadthFirst");
+  return testNo(nIntervals, instanceSimpleNo, badMemoryAlgorithm);
 }
 
 /**
@@ -155,8 +217,7 @@ RunInfo testSimpleNo(const uint32_t nIntervals) {
 RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing max whitness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm,
-                 "MaxWhitnessesYesBreadthFirst");
+  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm);
 }
 
 /**
@@ -168,8 +229,7 @@ RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
 RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing max whitness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm,
-                "MaxWhitnessesNoBreadthFirst");
+  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm);
 }
 
 /**
@@ -182,8 +242,7 @@ RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
 RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing max group whitness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm,
-                 "MaxGroupWhitnessesYesBreadthFirst");
+  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm);
 }
 
 /**
@@ -196,8 +255,7 @@ RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
 RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing max group whitness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm,
-                "MaxGroupWhitnessesNoBreadthFirst");
+  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm);
 }
 
 /**
@@ -209,8 +267,7 @@ RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
 RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing hard yes amount version instance.\n");
 
-  return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm,
-                 "HardYesAmountVersionBreadthFirst");
+  return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithm);
 }
 
 /**
@@ -222,8 +279,7 @@ RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
 RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing hard no amount version instance.\n");
 
-  return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm,
-                "HardNoAmountVersionBreadthFirst");
+  return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithm);
 }
 
 /**
@@ -235,7 +291,7 @@ RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
 RunInfo testAllFull(const uint32_t nIntervals) {
   debug_print("Testing all full instance.\n");
 
-  return testYes(nIntervals, instanceAllFull, badMemoryAlgorithm, "AllFullBreadthFirst");
+  return testYes(nIntervals, instanceAllFull, badMemoryAlgorithm);
 }
 
 /**
@@ -247,7 +303,7 @@ RunInfo testAllFull(const uint32_t nIntervals) {
 RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first simple yes instance.\n");
 
-  return testYes(nIntervals, instanceSimpleYes, badMemoryDepthFirst, "SimpleYesDepthFirst");
+  return testYes(nIntervals, instanceSimpleYes, badMemoryDepthFirst);
 }
 
 /**
@@ -259,7 +315,7 @@ RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
 RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first simple no instance.\n");
 
-  return testNo(nIntervals, instanceSimpleNo, badMemoryDepthFirst, "SimpleNoDepthFirst");
+  return testNo(nIntervals, instanceSimpleNo, badMemoryDepthFirst);
 }
 
 /**
@@ -271,8 +327,7 @@ RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
 RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst,
-                 "MaxWhitnessesYesDepthFirst");
+  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst);
 }
 
 /**
@@ -284,8 +339,7 @@ RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
 RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst,
-                "MaxWhitnessesNoDepthFirst");
+  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst);
 }
 
 /**
@@ -298,8 +352,7 @@ RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
 RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst,
-                 "MaxGroupWhitnessesYesDepthFirst");
+  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst);
 }
 
 /**
@@ -312,8 +365,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
 RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst,
-                "MaxGroupWhitnessesNoDepthFirst");
+  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst);
 }
 
 /**
@@ -326,8 +378,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
 RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing depth-first hard yes amount version instance.\n");
 
-  return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst,
-                 "HardYesAmountVersionDepthFirst");
+  return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryDepthFirst);
 }
 
 /**
@@ -340,8 +391,7 @@ RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
 RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing depth-first hard no amount version instance.\n");
 
-  return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst,
-                "HardNoAmountVersionDepthFirst");
+  return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryDepthFirst);
 }
 
 /**
@@ -353,7 +403,7 @@ RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
 RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
   debug_print("Testing depth-first all full instance.\n");
 
-  return testYes(nIntervals, instanceAllFull, badMemoryDepthFirst, "AllFullDepthFirst");
+  return testYes(nIntervals, instanceAllFull, badMemoryDepthFirst);
 }
 
 /**
@@ -409,4 +459,32 @@ void testRunAllDepthFirst(const uint32_t nIntervals) {
   measureTime(nIntervals, testDepthFirstAllFull);
 
   debug_print("All depth-first tests completed.\n");
+}
+
+/**
+ * Runs and tests all simple instances, yes and no, using both algorithms nIterations times.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @param nIterations The number of times to run each test.
+ */
+void testSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations) {
+  for (uint32_t i = 0; i < nIterations; i++) {
+    measureTime(nIntervals, testSimpleYes);
+    measureTime(nIntervals, testSimpleNo);
+    measureTime(nIntervals, testDepthFirstSimpleYes);
+    measureTime(nIntervals, testDepthFirstSimpleNo);
+  }
+}
+
+/**
+ * Runs both algorithms on the same instance nIterations times.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @param nIterations The number of times to run each test.
+ */
+void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations) {
+  for (uint32_t i = 0; i < nIterations; i++) {
+    measureTimeSameInstance(nIntervals, instanceSimpleYes);
+    measureTimeSameInstance(nIntervals, instanceSimpleNo);
+  }
 }

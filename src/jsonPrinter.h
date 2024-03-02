@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define RUN_INFO_DESC_LENGTH 100
+
 typedef struct RunInfo {
-  char* description;
+  char description[RUN_INFO_DESC_LENGTH];
   bool solutionFound;
   uint32_t nIntervals;
   uint32_t nGroupsBuilt;
@@ -21,11 +23,13 @@ typedef struct RunInfo {
   uint32_t nMarkedSets;
   uint32_t maxSetsPerNode;
   uint32_t minSetsPerNode;
+  double runTime;
   uint32_t metadataLength;
   uint32_t* metadata;
 } RunInfo;
 
 void runInfoDelete(RunInfo* runInfo);
-void jsonPrinterSaveToFile(RunInfo runInfo, double timeUsed);
+void jsonPrinterPrint(RunInfo runInfo);
+void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo);
 
 #endif // JSON_PRINTER_H

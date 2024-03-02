@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * @brief Represents the status of an assignment operation.
@@ -287,24 +288,31 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
   printf("Max sets per node: %d\n", maxSetsPerNode);
   printf("Min sets per node: %d\n", minSetsPerNode);
 
-  return (RunInfo){description,
-                   solutionFound,
-                   n,
-                   nGroupsBuilt,
-                   nGroupsKept,
-                   nSolutions,
-                   nSteps,
-                   nUsedNodes,
-                   nOutgoingEdges,
-                   nIncomingEdges,
-                   maxOutgoingEdges,
-                   maxIncomingEdges,
-                   nOutgoingEdges,
-                   nMarkedSets,
-                   maxSetsPerNode,
-                   minSetsPerNode,
-                   0,
-                   NULL};
+  RunInfo runInfo = {
+      .solutionFound = solutionFound,
+      .nIntervals = n,
+      .nGroupsBuilt = nGroupsBuilt,
+      .nGroupsKept = nGroupsKept,
+      .nSolutions = nSolutions,
+      .nSteps = nSteps,
+      .nUsedNodes = nUsedNodes,
+      .nOutgoingEdges = nOutgoingEdges,
+      .nIncomingEdges = nIncomingEdges,
+      .maxOutgoingEdges = maxOutgoingEdges,
+      .maxIncomingEdges = maxIncomingEdges,
+      .nEdges = nOutgoingEdges,
+      .nMarkedSets = nMarkedSets,
+      .maxSetsPerNode = maxSetsPerNode,
+      .minSetsPerNode = minSetsPerNode,
+      .runTime = 0,
+      .metadataLength = 0,
+      .metadata = NULL,
+  };
+
+  strncpy(runInfo.description, description, sizeof(runInfo.description) - 1);
+  runInfo.description[sizeof(runInfo.description) - 1] = '\0';
+
+  return runInfo;
 }
 
 /**
@@ -313,7 +321,7 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
  * @param intervalSet The input IntervalSet to be processed.
  * @return Returns true if there is a solution, false otherwise.
  */
-RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description) {
+RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet) {
   const uint32_t n = intervalSetCountIntervals(inputIntervalSet);
   GraphNode** graphNodes = initializeGraphNodes(inputIntervalSet, n);
 
@@ -393,7 +401,7 @@ RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description) {
     }
   }
 
-  RunInfo runInfo = computeMetrics(graphNodes, n, solutionFound, description);
+  RunInfo runInfo = computeMetrics(graphNodes, n, solutionFound, "BreadthFirst");
 
   freeGraphNodes(graphNodes, n);
 
@@ -569,7 +577,7 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
  * @param printAllMetrics If true, prints all the metrics of the algorithm.
  * @return Returns true if there is a solution, false otherwise.
  */
-RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet, char* description) {
+RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet) {
   const uint32_t n = intervalSetCountIntervals(inputIntervalSet);
   GraphNode** graphNodes = initializeGraphNodes(inputIntervalSet, n);
 
@@ -588,7 +596,7 @@ RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet, char* description) {
     fflush(stdout);
   }
 
-  RunInfo runInfo = computeMetrics(graphNodes, n, solutionFound, description);
+  RunInfo runInfo = computeMetrics(graphNodes, n, solutionFound, "DepthFirst");
 
   freeGraphNodes(graphNodes, n);
 

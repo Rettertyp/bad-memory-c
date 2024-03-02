@@ -3,14 +3,18 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#define FILE_DESC_LENGTH 100
+
 /**
  * Frees the memory used by a RunInfo.
  *
  * @param runInfo The RunInfo to free.
  */
 void runInfoDelete(RunInfo* runInfo) {
-  free(runInfo->metadata);
-  runInfo->metadata = NULL;
+  if (runInfo->metadata) {
+    free(runInfo->metadata);
+    runInfo->metadata = NULL;
+  }
 }
 
 /**
@@ -19,7 +23,7 @@ void runInfoDelete(RunInfo* runInfo) {
  * @param runInfo The RunInfo to add to the json_object.
  * @param jobj The json_object to add the RunInfo to.
  */
-static void addRunInfoToJson(RunInfo* runInfo, double timeUsed, json_object* jobj) {
+static void addRunInfoToJson(RunInfo* runInfo, json_object* jobj) {
   json_object_object_add(jobj, "description", json_object_new_string(runInfo->description));
   json_object_object_add(jobj, "solutionFound", json_object_new_boolean(runInfo->solutionFound));
   json_object_object_add(jobj, "nIntervals", json_object_new_int(runInfo->nIntervals));
@@ -40,7 +44,7 @@ static void addRunInfoToJson(RunInfo* runInfo, double timeUsed, json_object* job
   json_object_object_add(jobj, "maxIncomingEdges", json_object_new_int(runInfo->maxIncomingEdges));
   json_object_object_add(jobj, "nEdges", json_object_new_int(runInfo->nEdges));
   json_object_object_add(jobj, "nMarkedSets", json_object_new_int(runInfo->nMarkedSets));
-  json_object_object_add(jobj, "runTime", json_object_new_double(timeUsed));
+  json_object_object_add(jobj, "runTime", json_object_new_double(runInfo->runTime));
   // add metadata
   json_object_object_add(jobj, "metadata", json_object_new_array_ext(runInfo->metadataLength));
   json_object* metadataArray = json_object_object_get(jobj, "metadata");
@@ -50,22 +54,18 @@ static void addRunInfoToJson(RunInfo* runInfo, double timeUsed, json_object* job
 }
 
 /**
- * Saves the contents of a RunInfo to a json file.
+ * Saves a json_object to a file.
  *
- * @param description A description of the run.
- * @param runInfo The RunInfo to save to the json file.
+ * @param jobj The json_object to save to the file.
+ * @param fileDesc The description of the file to save the json_object to.
  */
-void jsonPrinterSaveToFile(RunInfo runInfo, double timeUsed) {
-  json_object* jobj = json_object_new_object();
-
-  addRunInfoToJson(&runInfo, timeUsed, jobj);
-
+static void jsonPrinterSaveToFile(json_object* jobj, char fileDesc[100]) {
   char filename[100];
 
   // check if the file already exists, if so, increase the number in the filename
   int i = 1;
   do {
-    sprintf(filename, "results/%s_%d_%d.json", runInfo.description, runInfo.nIntervals, i);
+    sprintf(filename, "results/%s_%d.json", fileDesc, i);
     i++;
   } while (access(filename, F_OK) != -1);
 
@@ -77,6 +77,55 @@ void jsonPrinterSaveToFile(RunInfo runInfo, double timeUsed) {
   } else {
     printf("Error: Could not open file %s for writing.\n", filename);
   }
+}
+
+/**
+ * Saves the contents of a RunInfo to a json file.
+ *
+ * @param runInfo The RunInfo to save to the json file.
+ */
+void jsonPrinterPrint(RunInfo runInfo) {
+  json_object* jobj = json_object_new_object();
+
+  addRunInfoToJson(&runInfo, jobj);
+
+  char fileDesc[FILE_DESC_LENGTH];
+  snprintf(fileDesc, FILE_DESC_LENGTH, "%s_%d", runInfo.description, runInfo.nIntervals);
+
+  jsonPrinterSaveToFile(jobj, fileDesc);
+
+  // free the json object
+  json_object_put(jobj);
+}
+
+/**
+ * Saves the contents of an array of RunInfo to a json file.
+ *
+ * @param runInfoArray The array of RunInfo to save to the json file.
+ * @param nRuns The number of RunInfo in the array.
+
+*/
+void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo) {
+  json_object* jobj = json_object_new_object();
+  json_object* runInfoArrayJson = json_object_new_array_ext(2);
+
+  // add breadth first information
+  json_object* breadthFirstJson = json_object_new_object();
+  addRunInfoToJson(&breadthFirstRunInfo, breadthFirstJson);
+  json_object_array_put_idx(runInfoArrayJson, 0, breadthFirstJson);
+
+  // add depth first information
+  json_object* depthFirstJson = json_object_new_object();
+  addRunInfoToJson(&depthFirstRunInfo, depthFirstJson);
+  json_object_array_put_idx(runInfoArrayJson, 1, depthFirstJson);
+
+  json_object_object_add(jobj, "runs", runInfoArrayJson);
+
+  char fileDesc[FILE_DESC_LENGTH] = "SimpleYes_BreadthFirst_DepthFirst_1000";
+  snprintf(fileDesc, FILE_DESC_LENGTH, "%s_&_%s_%d", breadthFirstRunInfo.description,
+           depthFirstRunInfo.description, breadthFirstRunInfo.nIntervals);
+
+  jsonPrinterSaveToFile(jobj, fileDesc);
 
   // free the json object
   json_object_put(jobj);

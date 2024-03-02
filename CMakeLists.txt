@@ -13,4 +13,4 @@ set_property (TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
 find_package (json-c CONFIG REQUIRED)
 target_link_libraries (${PROJECT_NAME} PRIVATE json-c::json-c)
 
-target_compile_options (${PROJECT_NAME} PRIVATE -Wall -Wextra -g)
+target_compile_options (${PROJECT_NAME} PRIVATE -Wall -Wextra -Wno-format-truncation -g)

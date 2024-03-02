@@ -16,5 +16,6 @@ int main(int argc, char** argv) {
 
   testRunAll(N_INTERVALS);
   testRunAllDepthFirst(N_INTERVALS);
+  testSameSimpleInstances(N_INTERVALS, 20);
   return 0;
 }

@@ -5,7 +5,7 @@
 #include "jsonPrinter.h"
 #include <stdlib.h>
 
-RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet, char* description);
-RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet, char* description);
+RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet);
+RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet);
 
 #endif // BAD_MEMORY_ALG_H

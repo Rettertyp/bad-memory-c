@@ -4,8 +4,11 @@
 #include "intervalSet.h"
 #include <stdint.h>
 
+#define INSTANCE_NAME_LENGTH 100
+
 typedef struct InstanceInfo {
   IntervalSet* intervalSet;
+  char name[INSTANCE_NAME_LENGTH];
   uint32_t metadataLength;
   uint32_t* metadata;
 } InstanceInfo;

@@ -3,6 +3,7 @@
 #include "debug.h"
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 /**
@@ -118,13 +119,19 @@ static void printIntervals(Interval intervals[], uint32_t n) {
  * @param n The number of Intervals in the array.
  * @return The created IntervalSet.
  */
-static InstanceInfo createIntervalSetAndFree(Interval* intervals, const uint32_t n,
+static InstanceInfo createIntervalSetAndFree(Interval* intervals, const uint32_t n, char* name,
                                              uint32_t* metadata, const uint32_t metadataLength) {
   IntervalSet* instance = intervalSetCreateBlank(intervals, n);
 
   free(intervals);
 
-  return (InstanceInfo){instance, metadataLength, metadata};
+  InstanceInfo instanceInfo = {
+      .intervalSet = instance, .metadataLength = metadataLength, .metadata = metadata};
+
+  strncpy(instanceInfo.name, name, sizeof(instanceInfo.name) - 1);
+  instanceInfo.name[sizeof(instanceInfo.name) - 1] = '\0';
+
+  return instanceInfo;
 }
 
 /**
@@ -176,7 +183,7 @@ InstanceInfo instanceSimpleYes(const uint32_t n) {
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n, groups, nGroups);
+  return createIntervalSetAndFree(intervals, n, "SimpleYes", groups, nGroups);
 }
 
 /**
@@ -202,7 +209,7 @@ InstanceInfo instanceSimpleNo(const uint32_t n) {
 
   printIntervals(intervals, n);
 
-  return createIntervalSetAndFree(intervals, n, groups, nGroups);
+  return createIntervalSetAndFree(intervals, n, "SimpleNo", groups, nGroups);
 }
 
 /**
@@ -359,7 +366,7 @@ InstanceInfo instanceMaxWhitnessesYes(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxWhitnessesYes", metadata, 1);
 }
 
 /**
@@ -381,7 +388,7 @@ InstanceInfo instanceMaxWhitnessesNo(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxWhitnessesNo", metadata, 1);
 }
 
 /**
@@ -440,7 +447,7 @@ InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxGroupWhitnessesYes", metadata, 1);
 }
 
 /**
@@ -463,7 +470,7 @@ InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxGroupWhitnessesNo", metadata, 1);
 }
 
 /**
@@ -549,7 +556,7 @@ InstanceInfo instanceHardYesAmountVersion(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "HardYesAmountVersion", metadata, 1);
 }
 
 /**
@@ -572,7 +579,7 @@ InstanceInfo instanceHardNoAmountVersion(const uint32_t n) {
   uint32_t* metadata = malloc(sizeof(uint32_t));
   *metadata = nWhitnesses;
 
-  return createIntervalSetAndFree(intervals, n, metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "HardNoAmountVersion", metadata, 1);
 }
 
 /**
@@ -588,5 +595,5 @@ InstanceInfo instanceAllFull(const uint32_t n) {
     intervals[i] = (Interval){1, n, 1};
   }
 
-  return createIntervalSetAndFree(intervals, n, NULL, 0);
+  return createIntervalSetAndFree(intervals, n, "AllFull", NULL, 0);
 }
