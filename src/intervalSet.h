@@ -5,13 +5,10 @@
 #include "stack.h"
 #include <stdint.h>
 
-// forward declaration of the Stack
 struct StackNode;
 typedef struct StackNode* Stack;
 
 /**
- * @brief Represents a set of intervals.
- *
  * The IntervalSet struct intervalContains a stack of GraphNodes, the length of the interval set,
  * and an array of Interval structs.
  */

@@ -52,8 +52,6 @@ GraphNode* stackTop(const Stack* stack) {
 }
 
 /**
- * @brief Deletes all elements from the stack.
- *
  * This function removes all elements from the stack by repeatedly calling the stackPop function
  * until the stack is empty.
  *

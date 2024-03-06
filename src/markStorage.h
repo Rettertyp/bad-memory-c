@@ -4,7 +4,6 @@
 #include "intervalSet.h"
 #include <stdbool.h>
 
-// forward declaration of IntervalSet
 typedef struct IntervalSet IntervalSet;
 
 typedef struct MarkNode {

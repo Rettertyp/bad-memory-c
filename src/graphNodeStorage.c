@@ -6,9 +6,10 @@
  *
  * @param graphNodeStorage The GraphNodeStorage to search in.
  * @param graphNode The GraphNode to check for.
+ * @returns true if the GraphNode is contained in the GraphNodeStorage, false otherwise.
  */
-bool graphNodeStorageContainsNode(const GraphNodeStorage* graphNodeStorage,
-                                  const GraphNode* graphNode) {
+static bool graphNodeStorageContainsNode(const GraphNodeStorage* graphNodeStorage,
+                                         const GraphNode* graphNode) {
   GraphNodeStorageNode* currNode = *graphNodeStorage;
 
   while (currNode) {
@@ -42,7 +43,6 @@ static void graphNodeStorageAddNode(GraphNodeStorage* graphNodeStorage, GraphNod
 /**
  * Connects two GraphNodes in the GraphNodeStorage.
  *
- * @param graphNodeStorage The GraphNodeStorage to connect the nodes in.
  * @param fromNode The GraphNode from which the edge will be directed.
  * @param toNode The GraphNode to which the edge will be directed.
  */
@@ -74,6 +74,7 @@ void graphNodeStorageDelete(GraphNodeStorage* graphNodeStorage) {
  * Returns the number of nodes in the graph node storage.
  *
  * @param graphNodeStorage The graph node storage.
+ * @returns The number of nodes in the graph node storage.
  */
 uint32_t graphNodeStorageGetNNodes(const GraphNodeStorage* graphNodeStorage) {
   uint32_t nNodes = 0;

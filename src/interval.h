@@ -13,7 +13,6 @@ typedef struct Interval {
   uint32_t amount; /** The amount of intervals with those properties. */
 } Interval;
 
-Interval* intervalCreate(const uint32_t bottom, const uint32_t top, const uint32_t amount);
 bool intervalContains(const Interval* interval, const uint32_t value);
 bool intervalGreaterThan(const Interval* interval, const uint32_t value);
 bool intervalGreaterEqual(const Interval* interval, const uint32_t value);

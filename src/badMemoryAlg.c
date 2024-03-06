@@ -30,6 +30,7 @@ typedef struct AssignRes {
                      assignment operation */
 } AssignRes;
 
+// global variables used for measuring metrics
 uint32_t nGroupsBuilt = 0;
 uint32_t nGroupsKept = 0;
 uint32_t nSteps = 0;
@@ -95,8 +96,7 @@ static AssignRes assignRest(const IntervalSet* intervalSet, const uint32_t group
  * @param predNode The predecessor node of the current node.
  * @param currNode The current node.
  * @param intervalSet The current interval set.
- * @param currStack The current stack.
- * @param markStorage The mark storage of the current graph node.
+ * @param otherStack The stack to be copied.
  * @param directPredNode The direct predecessor node of the current node, used for in/out edges.
  */
 static void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* intervalSet,
@@ -313,7 +313,13 @@ static void freeGraphNodes(GraphNode** graphNodes, const uint32_t n) {
 }
 
 /**
- * Prints the metrics of the bad memory algorithm.
+ * Computes the relevant metrics of the bad memory algorithm.
+ *
+ * @param graphNodes The graph nodes to be processed.
+ * @param n The dimension of graph nodes.
+ * @param solutionFound Indicates whether a solution has been found by the algorithm.
+ * @param description The description of the algorithm.
+ * @returns Returns a RunInfo struct containing the metrics of the algorithm.
  */
 static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool solutionFound,
                               char* description) {
@@ -534,6 +540,7 @@ static bool buildAndCallRecursive(GraphNode** graphNodes, const uint32_t n, Grap
  * @param intervalSet The current interval set.
  * @param otherStack The current stack.
  * @param n The size of each dimension of the graph.
+ * @param directPredNode The direct predecessor node of the current node, used for in/out edges.
  * @return Returns true if a solution has been found, false otherwise.
  */
 static bool backtrackDepthFirst(GraphNode** graphNodes, GraphNode* predNode, GraphNode* currNode,
@@ -600,8 +607,7 @@ static bool backtrackDepthFirst(GraphNode** graphNodes, GraphNode* predNode, Gra
  *
  * @param graphNodes The graph nodes to be processed.
  * @param n The number of graph nodes.
- * @param i The i-value of the current graph node.
- * @param s The s-value of the current graph node.
+ * @param predNode The predecessor node of the current node.
  * @param currSet The current interval set.
  * @return Returns true if a solution has been found, false otherwise.
  */
@@ -653,7 +659,6 @@ static bool buildSetsDepthFirstRecursive(GraphNode** graphNodes, const uint32_t 
  * Alternative implementation of the bad memory algorithm using a depth-first approach.
  *
  * @param inputIntervalSet The input IntervalSet to be processed.
- * @param printAllMetrics If true, prints all the metrics of the algorithm.
  * @return Returns true if there is a solution, false otherwise.
  */
 RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet) {

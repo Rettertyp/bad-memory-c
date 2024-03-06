@@ -4,7 +4,6 @@
 #include "graphNode.h"
 #include <stdbool.h>
 
-// forward declaration of the GraphNode struct
 typedef struct GraphNode GraphNode;
 
 /**

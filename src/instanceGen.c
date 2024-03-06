@@ -24,9 +24,12 @@ static uint32_t getRandomNumber(const uint32_t min, const uint32_t max) {
 }
 
 /**
- * Returns an Interval containing the given integer.
+ * Returns a random Interval containing the given integer.
+ * The bottom of the Interval is a random number between 1 and i/2, and the top is a random number
+ * between i and 2i (or n, if 2i > n).
  *
  * @param i The integer to be contained in the Interval.
+ * @param n The maximum value of the Interval.
  * @return The Interval containing the given integer.
  */
 static Interval getIntervalContainingI(const uint32_t i, const uint32_t n) {
@@ -61,13 +64,12 @@ static uint32_t getRandomGroups(uint32_t groups[], const uint32_t n) {
 }
 
 /**
- * @brief Generates intervals containing the given groups.
- *
  * This function populates an array of intervals with intervals that contain the specified groups.
  *
  * @param intervals The array of intervals to be populated.
  * @param groups The array of groups to be checked.
  * @param nGroups The number of groups in the array.
+ * @param n The maximum value of the intervals.
  */
 static void getIntervalsContainingI(Interval intervals[], const uint32_t groups[],
                                     const uint32_t nGroups, const uint32_t n) {
@@ -113,10 +115,14 @@ static void printIntervals(Interval intervals[], uint32_t n) {
 }
 
 /**
- * Creates an IntervalSet from an array of Intervals and frees the memory of the array.
+ * Creates an IntervalSet from an array of Intervals and frees the memory of the array. Then packs
+ * it into an InstanceInfo.
  *
  * @param intervals The array of Intervals.
  * @param n The number of Intervals in the array.
+ * @param name The name type of the instance.
+ * @param metadata The metadata of the instance.
+ * @param metadataLength The length of the metadata.
  * @return The created IntervalSet.
  */
 static InstanceInfo createIntervalSetAndFree(Interval* intervals, const uint32_t n, char* name,
@@ -230,8 +236,10 @@ static uint32_t calcWhitnessSize(const uint32_t start, const uint32_t end) {
 /**
  * Calculates the optimal end value to build whitnesses based on the given number of intervals.
  *
+ * @param endValues The array to store the ending values of the whitnesses.
  * @param n The number of intervals.
- * @return The ending value of the whitness.
+ * @param whitnessWidth The width of the whitnesses.
+ * @return The number of whitnesses that were computed.
  */
 static uint32_t calcEndValues(uint32_t endValues[], const uint32_t n,
                               const uint32_t whitnessWidth) {
@@ -311,6 +319,7 @@ static uint32_t getWhitness(Interval intervals[], const uint32_t start, const ui
  * @param intervals The array of intervals to be populated.
  * @param i The index of the array on which to start adding the intervals.
  * @param n The length of the array.
+ * @returns The index of the array after adding the intervals.
  */
 static uint32_t fillRemainingSpace(Interval intervals[], uint32_t i, const uint32_t n) {
   while (i < n) {
@@ -325,6 +334,7 @@ static uint32_t fillRemainingSpace(Interval intervals[], uint32_t i, const uint3
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
+ * @returns The number of whitnesses that were computed.
  */
 static uint32_t getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
   uint32_t whitnessWidth = 4;
@@ -396,6 +406,7 @@ InstanceInfo instanceMaxWhitnessesNo(const uint32_t n) {
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
+ * @returns The number of whitnesses that were computed.
  */
 static uint32_t getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
   int32_t whitnessWidth = 6;
@@ -481,6 +492,7 @@ InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n) {
  * @param start The starting value of the whitness.
  * @param end The ending value of the whitness.
  * @param i The index of the array on which to start adding the whitness.
+ * @returns The index of the array after adding the whitness.
  */
 static uint32_t getWhitnessAmountVersion(Interval intervals[], const uint32_t start,
                                          const uint32_t end, uint32_t i) {
@@ -506,6 +518,7 @@ static uint32_t getWhitnessAmountVersion(Interval intervals[], const uint32_t st
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
+ * @returns The number of whitnesses that were computed.
  */
 static uint32_t getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
   uint32_t i = 0;

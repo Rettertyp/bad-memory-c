@@ -6,7 +6,6 @@
 #include "markStorage.h"
 #include <stdint.h>
 
-// forward declaration of IntervalSet and MarkStorage
 typedef struct IntervalSet IntervalSet;
 typedef struct MarkNode MarkNode;
 typedef MarkNode* MarkStorage;

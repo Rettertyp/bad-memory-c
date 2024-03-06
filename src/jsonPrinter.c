@@ -100,10 +100,10 @@ void jsonPrinterPrint(RunInfo runInfo) {
 /**
  * Saves the contents of an array of RunInfo to a json file.
  *
- * @param runInfoArray The array of RunInfo to save to the json file.
- * @param nRuns The number of RunInfo in the array.
-
-*/
+ * @param breadthFirstRunInfo The RunInfo for the breadth first algorithm.
+ * @param depthFirstRunInfo The RunInfo for the depth first algorithm.
+ * @param parallelizedRunInfo The RunInfo for the parallelized algorithm.
+ */
 void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo,
                            RunInfo parallelizedRunInfo) {
   json_object* jobj = json_object_new_array_ext(2);

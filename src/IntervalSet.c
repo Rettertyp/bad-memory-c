@@ -52,7 +52,7 @@ IntervalSet* intervalSetCreateBlank(const Interval intervals[], const uint32_t l
  * @param intervalSet The IntervalSet to be copied.
  * @return A new IntervalSet that is a copy of the original IntervalSet.
  */
-IntervalSet* intervalSetCopy(const IntervalSet* intervalSet) {
+static IntervalSet* intervalSetCopy(const IntervalSet* intervalSet) {
   return intervalSetCreate(intervalSet->intervals, intervalSet->length, intervalSet->stack);
 }
 

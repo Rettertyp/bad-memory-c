@@ -227,7 +227,6 @@ void graphNodePrintDetailed(const GraphNode* graphNode) {
  * @param graphNodes The 2D array of GraphNodes.
  * @param i The row index of the desired GraphNode (1-based index).
  * @param s The column index of the desired GraphNode (1-based index).
- * @param n The size of the square matrix (number of rows/columns).
  * @return A pointer to the specified GraphNode.
  */
 GraphNode* getGraphNode(GraphNode** graphNodes, const uint32_t i, const uint32_t s) {

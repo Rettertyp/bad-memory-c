@@ -10,7 +10,6 @@
  * Logs a failed yes instance for debugging purposes.
  *
  * @param instance The instance to log.
- * @param i The instance index.
  */
 static void logFailedYesInstance(IntervalSet* instance) {
   debug_print("Instance has no solution, but should.\n");
@@ -29,7 +28,6 @@ static void logFailedYesInstance(IntervalSet* instance) {
  * Logs a failed no instance for debugging purposes.
  *
  * @param instance The instance to log.
- * @param i The instance index.
  */
 static void logFailedNoInstance(IntervalSet* instance) {
   debug_print("Instance has a solution, but shouldn't.\n");
@@ -150,7 +148,7 @@ static void measureTime(const uint32_t nIntervals, RunInfo (*test)(const uint32_
 }
 
 /**
- * Measures and saves the time it takes to execute both algorithms on the same instance.
+ * Measures and saves the time it takes to execute all three algorithms on the same instance.
  *
  * @param nIntervals The number of intervals in each instance.
  * @param instanceGenerator The instance generator to use.
@@ -194,7 +192,7 @@ static void measureTimeSameInstance(const uint32_t nIntervals,
  * Tests the bad memory algorithm on a set of simple yes instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testSimpleYes(const uint32_t nIntervals) {
   debug_print("Testing simple yes instance.\n");
@@ -206,7 +204,7 @@ RunInfo testSimpleYes(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of simple no instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testSimpleNo(const uint32_t nIntervals) {
   debug_print("Testing simple no instance.\n");
@@ -218,7 +216,7 @@ RunInfo testSimpleNo(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of hard whitness instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing max whitness yes instance.\n");
@@ -230,7 +228,7 @@ RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of hard whitness no instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing max whitness no instance.\n");
@@ -243,7 +241,7 @@ RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
  * of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing max group whitness yes instance.\n");
@@ -256,7 +254,7 @@ RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
  * of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing max group whitness no instance.\n");
@@ -268,7 +266,7 @@ RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of hard yes amount version instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing hard yes amount version instance.\n");
@@ -280,7 +278,7 @@ RunInfo testHardYesAmountVersion(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of hard no amount version instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing hard no amount version instance.\n");
@@ -292,7 +290,7 @@ RunInfo testHardNoAmountVersion(const uint32_t nIntervals) {
  * Tests the bad memory algorithm on a set of all full instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testAllFull(const uint32_t nIntervals) {
   debug_print("Testing all full instance.\n");
@@ -304,7 +302,7 @@ RunInfo testAllFull(const uint32_t nIntervals) {
  * Tests the depth-first variant of the bad memory algorithm on a set of simple yes instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first simple yes instance.\n");
@@ -316,7 +314,7 @@ RunInfo testDepthFirstSimpleYes(const uint32_t nIntervals) {
  * Tests the depth-first variant of the bad memory algorithm on a set of simple no instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first simple no instance.\n");
@@ -328,7 +326,7 @@ RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
  * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness yes instance.\n");
@@ -340,7 +338,7 @@ RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
  * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness no instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first max whitness no instance.\n");
@@ -353,7 +351,7 @@ RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness yes instance.\n");
@@ -366,7 +364,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing depth-first max group whitness no instance.\n");
@@ -379,7 +377,7 @@ RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing depth-first hard yes amount version instance.\n");
@@ -392,7 +390,7 @@ RunInfo testDepthFirstHardYesAmountVersion(const uint32_t nIntervals) {
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was succesful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing depth-first hard no amount version instance.\n");
@@ -404,7 +402,7 @@ RunInfo testDepthFirstHardNoAmountVersion(const uint32_t nIntervals) {
  * Tests the depth-first variant of the bad memory algorithm on a set of all full instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
   debug_print("Testing depth-first all full instance.\n");
@@ -416,7 +414,7 @@ RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
  * Tests the parallelized version of the bad memory algorithm on a set of simple yes instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedSimpleYes(const uint32_t nIntervals) {
   debug_print("Testing parallelized simple yes instance.\n");
@@ -428,7 +426,7 @@ RunInfo testParallelizedSimpleYes(const uint32_t nIntervals) {
  * Tests the parallelized version of the bad memory algorithm on a set of simple no instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedSimpleNo(const uint32_t nIntervals) {
   debug_print("Testing parallelized simple no instance.\n");
@@ -440,7 +438,7 @@ RunInfo testParallelizedSimpleNo(const uint32_t nIntervals) {
  * Tests the parallelized version of the bad memory algorithm on a set of hard whitness instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedMaxWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing parallelized max whitness yes instance.\n");
@@ -453,7 +451,7 @@ RunInfo testParallelizedMaxWhitnessesYes(const uint32_t nIntervals) {
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedMaxWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing parallelized max whitness no instance.\n");
@@ -466,7 +464,7 @@ RunInfo testParallelizedMaxWhitnessesNo(const uint32_t nIntervals) {
  * that try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedMaxGroupWhitnessesYes(const uint32_t nIntervals) {
   debug_print("Testing parallelized max group whitness yes instance.\n");
@@ -479,7 +477,7 @@ RunInfo testParallelizedMaxGroupWhitnessesYes(const uint32_t nIntervals) {
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedMaxGroupWhitnessesNo(const uint32_t nIntervals) {
   debug_print("Testing parallelized max group whitness no instance.\n");
@@ -492,7 +490,7 @@ RunInfo testParallelizedMaxGroupWhitnessesNo(const uint32_t nIntervals) {
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedHardYesAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing parallelized hard yes amount version instance.\n");
@@ -505,7 +503,7 @@ RunInfo testParallelizedHardYesAmountVersion(const uint32_t nIntervals) {
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedHardNoAmountVersion(const uint32_t nIntervals) {
   debug_print("Testing parallelized hard no amount version instance.\n");
@@ -517,7 +515,7 @@ RunInfo testParallelizedHardNoAmountVersion(const uint32_t nIntervals) {
  * Tests the parallelized version of the bad memory algorithm on a set of all full instances.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if the test was successful, false otherwise.
+ * @return The RunInfo of the test.
  */
 RunInfo testParallelizedAllFull(const uint32_t nIntervals) {
   debug_print("Testing parallelized all full instance.\n");
@@ -529,7 +527,6 @@ RunInfo testParallelizedAllFull(const uint32_t nIntervals) {
  * Runs all tests and logs the time it took to execute each test.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if all tests were succesful, false otherwise.
  */
 void testRunAll(const uint32_t nIntervals) {
 
@@ -548,7 +545,6 @@ void testRunAll(const uint32_t nIntervals) {
  * Runs 1 instance of all yes tests and logs the time it took to execute each test.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if all tests were succesful, false otherwise.
  */
 void testRunYes(const uint32_t nIntervals) {
   measureTime(nIntervals, testSimpleYes);
@@ -564,7 +560,6 @@ void testRunYes(const uint32_t nIntervals) {
  * Runs all tests for the depth-first variant and logs the time it took to execute each test.
  *
  * @param nIntervals The number of intervals in each instance.
- * @return True if all tests were succesful, false otherwise.
  */
 void testRunAllDepthFirst(const uint32_t nIntervals) {
   // measureTime(nIntervals, testDepthFirstSimpleYes);
