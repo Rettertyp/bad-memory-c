@@ -566,9 +566,9 @@ void testRunAllDepthFirst(const uint32_t nIntervals) {
   // measureTime(nIntervals, testDepthFirstSimpleNo);
   measureTime(nIntervals, testDepthFirstMaxWhitnessesYes);
   measureTime(nIntervals, testDepthFirstMaxWhitnessesNo);
-  measureTime(nIntervals, testDepthFirstAllFull);
-  measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesNo);
   measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesYes);
+  measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesNo);
+  measureTime(nIntervals, testDepthFirstAllFull);
 
   debug_print("All depth-first tests completed.\n");
 }

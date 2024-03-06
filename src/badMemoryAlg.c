@@ -567,7 +567,7 @@ static bool backtrackDepthFirst(GraphNode** graphNodes, GraphNode* predNode, Gra
 
   switch (assignRes.statusCode) {
   case SUCCESS:
-    solutionFound &= buildAndCallRecursive(graphNodes, n, currNode, directPredNode,
+    solutionFound |= buildAndCallRecursive(graphNodes, n, currNode, directPredNode,
                                            assignRes.intervalSet, false);
     break;
 
