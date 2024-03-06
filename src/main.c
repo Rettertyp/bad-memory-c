@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
   const uint32_t N_INTERVALS = atoi(argv[1]);
 
   testSameSimpleInstances(N_INTERVALS, 1);
+  testRunAllParallelized(N_INTERVALS);
   testRunAll(N_INTERVALS);
   testRunAllDepthFirst(N_INTERVALS);
 
