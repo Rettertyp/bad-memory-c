@@ -46,6 +46,7 @@ uint32_t nSteps = 0;
  * the success or failure of the assignment operation.
  */
 static AssignRes assign(const IntervalSet* intervalSet, const uint32_t groupSize) {
+#pragma omp atomic
   nSteps++;
 
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
@@ -75,6 +76,7 @@ static AssignRes assign(const IntervalSet* intervalSet, const uint32_t groupSize
  */
 static AssignRes assignRest(const IntervalSet* intervalSet, const uint32_t groupSize,
                             const uint32_t rest) {
+#pragma omp atomic
   nSteps++;
 
   if (intervalSetCountGreaterI(intervalSet, groupSize) > 0) {
@@ -123,6 +125,7 @@ static void backtrack(GraphNode* predNode, GraphNode* currNode, IntervalSet* int
     graphNodeAddIntervalSet(currNode, assignRes.intervalSet);
     graphNodeStorageConnectNodes(directPredNode, currNode);
     graphNodePrintDetailed(currNode);
+#pragma omp atomic
     nGroupsBuilt++;
     break;
 
@@ -247,6 +250,7 @@ static void badMemAlgMainLoop(GraphNode** graphNodes, const uint32_t n, const ui
         stackPush(&(assignRes.intervalSet->stack), predNode);
 
         graphNodePrintDetailed(currNode);
+#pragma omp atomic
         nGroupsBuilt++;
         break;
 
@@ -264,8 +268,10 @@ static void badMemAlgMainLoop(GraphNode** graphNodes, const uint32_t n, const ui
 
   graphNodeRemoveDominatedSets(currNode);
 
-  if (!(++*(nNodesFinished) % 1000)) {
-    printf("Finished processing node %d/%d.\n", *(nNodesFinished), nNodesTotal);
+#pragma omp atomic
+  (*nNodesFinished)++;
+  if (!((*nNodesFinished) % 1000)) {
+    printf("Finished processing node %d/%d.\n", *nNodesFinished, nNodesTotal);
     fflush(stdout);
   }
 }
