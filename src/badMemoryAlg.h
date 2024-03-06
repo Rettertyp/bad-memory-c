@@ -7,5 +7,6 @@
 
 RunInfo badMemoryAlgorithm(IntervalSet* inputIntervalSet);
 RunInfo badMemoryDepthFirst(IntervalSet* inputIntervalSet);
+RunInfo badMemoryAlgorithmParallelized(IntervalSet* inputIntervalSet);
 
 #endif // BAD_MEMORY_ALG_H

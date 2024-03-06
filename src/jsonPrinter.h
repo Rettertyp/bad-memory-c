@@ -31,6 +31,7 @@ typedef struct RunInfo {
 
 void runInfoDelete(RunInfo* runInfo);
 void jsonPrinterPrint(RunInfo runInfo);
-void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo);
+void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo,
+                           RunInfo parallelizedRunInfo);
 
 #endif // JSON_PRINTER_H

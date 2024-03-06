@@ -174,11 +174,17 @@ static void measureTimeSameInstance(const uint32_t nIntervals,
   depthFirstRunInfo.runTime = ((double)(end - start)) / CLOCKS_PER_SEC;
   debug_print("DepthFirst took %.3f seconds to execute \n\n", depthFirstRunInfo.runTime);
 
+  start = clock();
+  RunInfo parallelizedRunInfo = testGivenInstance(instance, badMemoryAlgorithmParallelized);
+  end = clock();
+  parallelizedRunInfo.runTime = ((double)(end - start)) / CLOCKS_PER_SEC;
+  debug_print("Parallelized took %.3f seconds to execute \n\n", parallelizedRunInfo.runTime);
+
   // delete the instance
   intervalSetDelete(instance.intervalSet);
 
   // save the results to a json file
-  jsonPrinterPrintArray(breadthFirstRunInfo, depthFirstRunInfo);
+  jsonPrinterPrintArray(breadthFirstRunInfo, depthFirstRunInfo, parallelizedRunInfo);
 
   runInfoDelete(&(breadthFirstRunInfo));
   // frees metadata of both runInfos, since it's the same
@@ -407,6 +413,119 @@ RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
 }
 
 /**
+ * Tests the parallelized version of the bad memory algorithm on a set of simple yes instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedSimpleYes(const uint32_t nIntervals) {
+  debug_print("Testing parallelized simple yes instance.\n");
+
+  return testYes(nIntervals, instanceSimpleYes, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of simple no instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedSimpleNo(const uint32_t nIntervals) {
+  debug_print("Testing parallelized simple no instance.\n");
+
+  return testNo(nIntervals, instanceSimpleNo, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of hard whitness instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedMaxWhitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max whitness yes instance.\n");
+
+  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of hard whitness no
+ * instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedMaxWhitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max whitness no instance.\n");
+
+  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of whitness yes instances
+ * that try to maximize the number of groups built.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedMaxGroupWhitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max group whitness yes instance.\n");
+
+  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of whitness no instances that
+ * try to maximize the number of groups built.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedMaxGroupWhitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max group whitness no instance.\n");
+
+  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of hard yes amount version
+ * instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedHardYesAmountVersion(const uint32_t nIntervals) {
+  debug_print("Testing parallelized hard yes amount version instance.\n");
+
+  return testYes(nIntervals, instanceHardYesAmountVersion, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of hard no amount version
+ * instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedHardNoAmountVersion(const uint32_t nIntervals) {
+  debug_print("Testing parallelized hard no amount version instance.\n");
+
+  return testNo(nIntervals, instanceHardNoAmountVersion, badMemoryAlgorithmParallelized);
+}
+
+/**
+ * Tests the parallelized version of the bad memory algorithm on a set of all full instances.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ * @return True if the test was successful, false otherwise.
+ */
+RunInfo testParallelizedAllFull(const uint32_t nIntervals) {
+  debug_print("Testing parallelized all full instance.\n");
+
+  return testYes(nIntervals, instanceAllFull, badMemoryAlgorithmParallelized);
+}
+
+/**
  * Runs all tests and logs the time it took to execute each test.
  *
  * @param nIntervals The number of intervals in each instance.
@@ -432,7 +551,6 @@ void testRunAll(const uint32_t nIntervals) {
  * @return True if all tests were succesful, false otherwise.
  */
 void testRunYes(const uint32_t nIntervals) {
-
   measureTime(nIntervals, testSimpleYes);
   measureTime(nIntervals, testMaxWhitnessesYes);
   measureTime(nIntervals, testMaxGroupWhitnessesYes);
@@ -449,7 +567,6 @@ void testRunYes(const uint32_t nIntervals) {
  * @return True if all tests were succesful, false otherwise.
  */
 void testRunAllDepthFirst(const uint32_t nIntervals) {
-
   // measureTime(nIntervals, testDepthFirstSimpleYes);
   // measureTime(nIntervals, testDepthFirstSimpleNo);
   measureTime(nIntervals, testDepthFirstMaxWhitnessesYes);
@@ -459,6 +576,23 @@ void testRunAllDepthFirst(const uint32_t nIntervals) {
   measureTime(nIntervals, testDepthFirstAllFull);
 
   debug_print("All depth-first tests completed.\n");
+}
+
+/**
+ * Runs all tests for the parallelized variant and logs the time it took to execute each test.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ */
+void testRunAllParallelized(const uint32_t nIntervals) {
+  // measureTime(nIntervals, testParallelizedSimpleYes);
+  // measureTime(nIntervals, testParallelizedSimpleNo);
+  measureTime(nIntervals, testParallelizedMaxWhitnessesYes);
+  measureTime(nIntervals, testParallelizedMaxWhitnessesNo);
+  measureTime(nIntervals, testParallelizedMaxGroupWhitnessesYes);
+  measureTime(nIntervals, testParallelizedMaxGroupWhitnessesNo);
+  measureTime(nIntervals, testParallelizedAllFull);
+
+  debug_print("All parallelized tests completed.\n");
 }
 
 /**

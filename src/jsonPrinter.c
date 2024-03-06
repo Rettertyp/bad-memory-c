@@ -104,7 +104,8 @@ void jsonPrinterPrint(RunInfo runInfo) {
  * @param nRuns The number of RunInfo in the array.
 
 */
-void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo) {
+void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInfo,
+                           RunInfo parallelizedRunInfo) {
   json_object* jobj = json_object_new_array_ext(2);
 
   // add breadth first information
@@ -116,6 +117,11 @@ void jsonPrinterPrintArray(RunInfo breadthFirstRunInfo, RunInfo depthFirstRunInf
   json_object* depthFirstJson = json_object_new_object();
   addRunInfoToJson(&depthFirstRunInfo, depthFirstJson);
   json_object_array_put_idx(jobj, 1, depthFirstJson);
+
+  // add parallel information
+  json_object* parallelJson = json_object_new_object();
+  addRunInfoToJson(&parallelizedRunInfo, parallelJson);
+  json_object_array_put_idx(jobj, 2, parallelJson);
 
   char fileDesc[FILE_DESC_LENGTH];
   snprintf(fileDesc, FILE_DESC_LENGTH, "%s_&_%s_%d", breadthFirstRunInfo.description,
