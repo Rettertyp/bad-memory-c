@@ -22,6 +22,8 @@ typedef struct RunInfo {
   uint32_t nEdges;
   uint32_t nMarkedSets;
   uint32_t maxSetsPerNode;
+  int32_t longestPath;
+  int32_t shortestPath;
   double runTime;
   uint32_t metadataLength;
   uint32_t* metadata;

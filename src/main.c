@@ -14,9 +14,9 @@ int main(int argc, char** argv) {
 
   const uint32_t N_INTERVALS = atoi(argv[1]);
 
+  testSameSimpleInstances(N_INTERVALS, 1);
   testRunAll(N_INTERVALS);
   testRunAllDepthFirst(N_INTERVALS);
-  testSameSimpleInstances(N_INTERVALS, 20);
 
   printf("Done.\n");
   return 0;

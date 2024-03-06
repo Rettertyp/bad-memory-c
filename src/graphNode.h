@@ -44,5 +44,10 @@ uint32_t graphNodeGetNIntervalSets(const GraphNode* graphNode);
 void graphNodePrint(const GraphNode* graphNode);
 void graphNodePrintDetailed(const GraphNode* graphNode);
 GraphNode* getGraphNode(GraphNode** graphNodes, const uint32_t i, const uint32_t s);
+typedef bool (*CompareFunc)(int32_t, int32_t);
+bool greater(int32_t a, int32_t b);
+bool less(int32_t a, int32_t b);
+int32_t graphNodeGetPathLengthBackwards(GraphNode** graphNodes, const uint32_t n,
+                                        CompareFunc compare, int32_t initialValue);
 
 #endif // GRAPH_NODE_H

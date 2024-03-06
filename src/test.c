@@ -414,8 +414,8 @@ RunInfo testDepthFirstAllFull(const uint32_t nIntervals) {
  */
 void testRunAll(const uint32_t nIntervals) {
 
-  measureTime(nIntervals, testSimpleYes);
-  measureTime(nIntervals, testSimpleNo);
+  // measureTime(nIntervals, testSimpleYes);
+  // measureTime(nIntervals, testSimpleNo);
   measureTime(nIntervals, testMaxWhitnessesYes);
   measureTime(nIntervals, testMaxWhitnessesNo);
   measureTime(nIntervals, testMaxGroupWhitnessesYes);
@@ -450,8 +450,8 @@ void testRunYes(const uint32_t nIntervals) {
  */
 void testRunAllDepthFirst(const uint32_t nIntervals) {
 
-  measureTime(nIntervals, testDepthFirstSimpleYes);
-  measureTime(nIntervals, testDepthFirstSimpleNo);
+  // measureTime(nIntervals, testDepthFirstSimpleYes);
+  // measureTime(nIntervals, testDepthFirstSimpleNo);
   measureTime(nIntervals, testDepthFirstMaxWhitnessesYes);
   measureTime(nIntervals, testDepthFirstMaxWhitnessesNo);
   measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesYes);

@@ -186,6 +186,14 @@ uint32_t graphNodeGetNIntervalSets(const GraphNode* graphNode) {
 }
 
 /**
+ * Checks whether the specified GraphNode has any IntervalSets.
+ *
+ * @param graphNode The GraphNode to be checked.
+ * @return True if the GraphNode has any IntervalSets, false otherwise.
+ */
+bool graphNodeHasIntervalSet(const GraphNode* graphNode) { return graphNode->intervalSets != NULL; }
+
+/**
  * Prints the details of a GraphNode.
  *
  * @param graphNode The GraphNode to be printed.
@@ -224,4 +232,117 @@ void graphNodePrintDetailed(const GraphNode* graphNode) {
  */
 GraphNode* getGraphNode(GraphNode** graphNodes, const uint32_t i, const uint32_t s) {
   return &(graphNodes[i - 1][s - 1]);
+}
+
+/**
+ * Checks whether a is greater than b.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ * @return True if a is greater than b, false otherwise.
+ */
+bool greater(int32_t a, int32_t b) { return a > b; }
+
+/**
+ * Checks whether a is less than b.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ * @return True if a is less than b, false otherwise.
+ */
+bool less(int32_t a, int32_t b) { return a < b; }
+
+/**
+ * Recursively finds the best path from a sink node (j, n) to a start node (i, i) in the datagraph.
+ * Depending on the compare function and the initial value, this function can be used to find the
+ * longest or shortest path.
+ *
+ * @param graphNodes The 2D array of GraphNodes.
+ * @param i The row index of the current GraphNode (1-based index).
+ * @param s The column index of the current GraphNode (1-based index).
+ * @param n The size of the square matrix (number of rows/columns).
+ * @param compare The comparison function to use (greater or less).
+ * @param initialValue The initial value to use (INT32_MIN or INT32_MAX).
+ * @param visited The 2D array of booleans to keep track of which nodes have already been visited.
+ * @return The length of the longest path from the current node to the sink node.
+ */
+static int32_t getPathLengthRecursiveBackwards(GraphNode** graphNodes, const uint32_t i,
+                                               const uint32_t s, const uint32_t n,
+                                               CompareFunc compare, int32_t initialValue,
+                                               bool** visited) {
+  if (i == s) {
+    return 0;
+  }
+
+  if (visited[i - 1][s - 1]) {
+    return initialValue;
+  }
+
+  GraphNode* currNode = getGraphNode(graphNodes, i, s);
+  int32_t bestPath = initialValue;
+
+  GraphNodeStorageNode* incomingNode = currNode->incoming;
+  while (incomingNode) {
+    int32_t pathLength = getPathLengthRecursiveBackwards(
+        graphNodes, incomingNode->i, incomingNode->s, n, compare, initialValue, visited);
+    if (compare(pathLength, bestPath)) {
+      bestPath = pathLength;
+    }
+    incomingNode = incomingNode->next;
+  }
+
+  visited[i - 1][s - 1] = true;
+
+  return bestPath + (bestPath != initialValue ? 1 : 0);
+}
+
+/**
+ * Finds the best path from a sink node (j, n) to a source node (i, i) in the datagraph. Depending
+ * on the compare function and the initial value, this function can be used to find the longest or
+ * shortest path.
+ *
+ * @param graphNodes The 2D array of GraphNodes.
+ * @param n The size of the square matrix (number of rows/columns).
+ * @param compare The comparison function to use (greater or less).
+ * @param initialValue The initial value to use (INT32_MIN or INT32_MAX).
+ * @return The length of the longest path from the source node to the sink node.
+ */
+int32_t graphNodeGetPathLengthBackwards(GraphNode** graphNodes, const uint32_t n,
+                                        CompareFunc compare, int32_t initialValue) {
+  int32_t bestPath = initialValue;
+
+  // the visited array is used to keep track of which nodes have already been visited
+  bool** visited = malloc(n * sizeof(bool*));
+  for (uint32_t i = 0; i < n; i++) {
+    visited[i] = malloc(n * sizeof(bool));
+    for (uint32_t j = 0; j < n; j++) {
+      visited[i][j] = false;
+    }
+  }
+
+  for (uint32_t i = 1; i <= n; i++) {
+    GraphNode* currNode = getGraphNode(graphNodes, i, n);
+    if (graphNodeHasIntervalSet(currNode)) {
+      printf("Calculating path length for node (%d, %d)\n", i, n);
+      fflush(stdout);
+      int32_t pathLength =
+          getPathLengthRecursiveBackwards(graphNodes, i, n, n, compare, initialValue, visited);
+      if (compare(pathLength, bestPath)) {
+        bestPath = pathLength;
+      }
+    }
+  }
+
+  // free the visited array
+  for (uint32_t i = 0; i < n; i++) {
+    free(visited[i]);
+  }
+  free(visited);
+
+  // if no path was found, return -1
+  if (bestPath == initialValue) {
+    bestPath = -1;
+  }
+
+  return bestPath;
 }

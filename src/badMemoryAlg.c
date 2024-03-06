@@ -240,6 +240,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
   uint32_t maxIncomingEdges = 0;
   uint32_t nMarkedSets = 0;
   uint32_t maxSetsPerNode = 0;
+  int32_t longestPath = graphNodeGetPathLengthBackwards(graphNodes, n, greater, INT32_MIN);
+  int32_t shortestPath = graphNodeGetPathLengthBackwards(graphNodes, n, less, INT32_MAX);
 
   // count the number of solutions
   for (uint32_t i = 1; i <= n; i++) {
@@ -301,6 +303,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
   printf("nEdges: %d\n", nEdges);
   printf("nMarkedSets: %d\n", nMarkedSets);
   printf("Max sets per node: %d\n", maxSetsPerNode);
+  printf("Longest path: %d\n", longestPath);
+  printf("Shortest path: %d\n", shortestPath);
 
   RunInfo runInfo = {
       .solutionFound = solutionFound,
@@ -317,6 +321,8 @@ static RunInfo computeMetrics(GraphNode** graphNodes, const uint32_t n, bool sol
       .nEdges = nEdges,
       .nMarkedSets = nMarkedSets,
       .maxSetsPerNode = maxSetsPerNode,
+      .longestPath = longestPath,
+      .shortestPath = shortestPath,
       .runTime = 0,
       .metadataLength = 0,
       .metadata = NULL,
