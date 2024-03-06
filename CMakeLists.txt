@@ -13,4 +13,8 @@ set_property (TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
 find_package (json-c CONFIG REQUIRED)
 target_link_libraries (${PROJECT_NAME} PRIVATE json-c::json-c)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wno-format-truncation -g -fopenmp)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wno-format-truncation -fopenmp -g)
+
+if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_link_libraries(${PROJECT_NAME} PRIVATE gomp)
+endif()
