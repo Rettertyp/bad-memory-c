@@ -47,8 +47,11 @@ static void graphNodeStorageAddNode(GraphNodeStorage* graphNodeStorage, GraphNod
  * @param toNode The GraphNode to which the edge will be directed.
  */
 void graphNodeStorageConnectNodes(GraphNode* fromNode, GraphNode* toNode) {
-  graphNodeStorageAddNode(&(fromNode->outgoing), toNode);
-  graphNodeStorageAddNode(&(toNode->incoming), fromNode);
+#pragma omp critical
+  {
+    graphNodeStorageAddNode(&(fromNode->outgoing), toNode);
+    graphNodeStorageAddNode(&(toNode->incoming), fromNode);
+  }
 }
 
 /**
