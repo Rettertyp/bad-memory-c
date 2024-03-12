@@ -36,7 +36,7 @@ void testRunAll(const uint32_t nIntervals);
 void testRunYes(const uint32_t nIntervals);
 void testRunAllDepthFirst(const uint32_t nIntervals);
 void testRunAllParallelized(const uint32_t nIntervals);
-void testSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations);
 void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations);
+void testAmountInstances(const uint32_t nIntervals);
 
 #endif // TEST_H

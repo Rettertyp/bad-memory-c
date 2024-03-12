@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
   testRunAll(N_INTERVALS);
   testSameSimpleInstances(N_INTERVALS, 20);
   testRunAllDepthFirst(N_INTERVALS);
+  // testAmountInstances(N_INTERVALS);
 
   printf("Done.\n");
   return 0;

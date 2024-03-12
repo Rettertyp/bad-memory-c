@@ -591,22 +591,7 @@ void testRunAllParallelized(const uint32_t nIntervals) {
 }
 
 /**
- * Runs and tests all simple instances, yes and no, using both algorithms nIterations times.
- *
- * @param nIntervals The number of intervals in each instance.
- * @param nIterations The number of times to run each test.
- */
-void testSimpleInstances(const uint32_t nIntervals, const uint32_t nIterations) {
-  for (uint32_t i = 0; i < nIterations; i++) {
-    measureTime(nIntervals, testSimpleYes);
-    measureTime(nIntervals, testSimpleNo);
-    measureTime(nIntervals, testDepthFirstSimpleYes);
-    measureTime(nIntervals, testDepthFirstSimpleNo);
-  }
-}
-
-/**
- * Runs both algorithms on the same instance nIterations times.
+ * Runs all algorithms on the same instance nIterations times.
  *
  * @param nIntervals The number of intervals in each instance.
  * @param nIterations The number of times to run each test.
@@ -616,4 +601,18 @@ void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIteratio
     measureTimeSameInstance(nIntervals, instanceSimpleYes);
     measureTimeSameInstance(nIntervals, instanceSimpleNo);
   }
+}
+
+/**
+ * Runs all algorithms on amount instances consisting of nIntervals intervals.
+ *
+ * @param nIntervals The number of intervals in each instance.
+ */
+void testAmountInstances(const uint32_t nIntervals) {
+  // measureTime(nIntervals, testHardYesAmountVersion);
+  measureTime(nIntervals, testHardNoAmountVersion);
+  // measureTime(nIntervals, testParallelizedHardYesAmountVersion);
+  measureTime(nIntervals, testParallelizedHardNoAmountVersion);
+  // measureTime(nIntervals, testDepthFirstHardYesAmountVersion);
+  measureTime(nIntervals, testDepthFirstHardNoAmountVersion);
 }
