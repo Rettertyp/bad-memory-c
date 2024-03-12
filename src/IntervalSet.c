@@ -92,19 +92,23 @@ uint32_t intervalSetCountIntervals(const IntervalSet* intervalSet) {
  * otherwise.
  */
 bool intervalSetIsDominatedBy(const IntervalSet* thisSet, const IntervalSet* otherSet) {
+  // if the sets are not equally long, no assertion can be made
   if (intervalSetCountIntervals(thisSet) != intervalSetCountIntervals(otherSet)) {
     return false;
   }
 
+  // I is the index of the current interval, J is the amount of elements that have been compared
   uint32_t thisI = 0, thisJ = 0, otherI = 0, otherJ = 0;
   while (thisI < thisSet->length) {
     if (!(otherSet->intervals[otherI].bottom <= thisSet->intervals[thisI].bottom)) {
       return false;
     }
 
-    // J counts how many intervals at position I have been checked
-    thisJ++;
-    otherJ++;
+    // get the minimum of the two amounts, to skip equal comparisons
+    uint32_t minAmount = __min(thisSet->intervals[thisI].amount - thisJ,
+                               otherSet->intervals[otherI].amount - otherJ);
+    thisJ += minAmount;
+    otherJ += minAmount;
     if (thisJ == thisSet->intervals[thisI].amount) {
       thisI++;
       thisJ = 0;

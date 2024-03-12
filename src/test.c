@@ -609,10 +609,10 @@ void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIteratio
  * @param nIntervals The number of intervals in each instance.
  */
 void testAmountInstances(const uint32_t nIntervals) {
-  // measureTime(nIntervals, testHardYesAmountVersion);
+  measureTime(nIntervals, testHardYesAmountVersion);
   measureTime(nIntervals, testHardNoAmountVersion);
-  // measureTime(nIntervals, testParallelizedHardYesAmountVersion);
+  measureTime(nIntervals, testParallelizedHardYesAmountVersion);
   measureTime(nIntervals, testParallelizedHardNoAmountVersion);
-  // measureTime(nIntervals, testDepthFirstHardYesAmountVersion);
+  measureTime(nIntervals, testDepthFirstHardYesAmountVersion);
   measureTime(nIntervals, testDepthFirstHardNoAmountVersion);
 }
