@@ -225,7 +225,7 @@ InstanceInfo instanceSimpleNo(const uint32_t n) {
  * @param end The ending value.
  * @return The size of the whiteness.
  */
-static uint32_t calcWhitnessSize(const uint32_t start, const uint32_t end) {
+static uint32_t calcWitnessSize(const uint32_t start, const uint32_t end) {
   if (start >= end) {
     return 0;
   }
@@ -234,35 +234,34 @@ static uint32_t calcWhitnessSize(const uint32_t start, const uint32_t end) {
 }
 
 /**
- * Calculates the optimal end value to build whitnesses based on the given number of intervals.
+ * Calculates the optimal end value to build witnesses based on the given number of intervals.
  *
- * @param endValues The array to store the ending values of the whitnesses.
+ * @param endValues The array to store the ending values of the witnesses.
  * @param n The number of intervals.
- * @param whitnessWidth The width of the whitnesses.
- * @return The number of whitnesses that were computed.
+ * @param witnessWidth The width of the witnesses.
+ * @return The number of witnesses that were computed.
  */
-static uint32_t calcEndValues(uint32_t endValues[], const uint32_t n,
-                              const uint32_t whitnessWidth) {
+static uint32_t calcEndValues(uint32_t endValues[], const uint32_t n, const uint32_t witnessWidth) {
   uint32_t currEnd = 3;
   uint32_t sum = 0;
-  uint32_t nextWhitnessSize = calcWhitnessSize(3, currEnd + whitnessWidth);
+  uint32_t nextWitnessSize = calcWitnessSize(3, currEnd + witnessWidth);
   uint32_t i = 0;
 
-  // add whitnesses until no whitness fits in the remaining space
-  while (sum + nextWhitnessSize < n) {
-    currEnd += whitnessWidth;
-    sum += nextWhitnessSize;
+  // add witnesses until no witness fits in the remaining space
+  while (sum + nextWitnessSize < n) {
+    currEnd += witnessWidth;
+    sum += nextWitnessSize;
     endValues[i++] = currEnd;
 
-    nextWhitnessSize = calcWhitnessSize(3, currEnd + whitnessWidth);
+    nextWitnessSize = calcWitnessSize(3, currEnd + witnessWidth);
   }
 
-  // try moving the whitnesses to the left by one up to three times
+  // try moving the witnesses to the left by one up to three times
   bool spaceLeft = i > 0;
   while (spaceLeft) {
-    // check if the whitnesses could be moved to the left by one
+    // check if the witnesses could be moved to the left by one
     for (int32_t j = i - 1; j >= 0; j--) {
-      // when moving a whitness to the left, the sum of intervals increases by 3
+      // when moving a witness to the left, the sum of intervals increases by 3
       uint32_t newSum = sum + 3;
       if (newSum < n) {
         sum = newSum;
@@ -280,16 +279,16 @@ static uint32_t calcEndValues(uint32_t endValues[], const uint32_t n,
 }
 
 /**
- * Adds a whitness to the given array of intervals.
+ * Adds a witness to the given array of intervals.
  *
  * @param intervals The array of intervals to be populated.
- * @param start The starting value of the whitness.
- * @param end The ending value of the whitness.
- * @param i The index of the array on which to start adding the whitness.
- * @return The index of the array after adding the whitness.
+ * @param start The starting value of the witness.
+ * @param end The ending value of the witness.
+ * @param i The index of the array on which to start adding the witness.
+ * @return The index of the array after adding the witness.
  */
-static uint32_t getWhitness(Interval intervals[], const uint32_t start, const uint32_t end,
-                            uint32_t i) {
+static uint32_t getWitness(Interval intervals[], const uint32_t start, const uint32_t end,
+                           uint32_t i) {
   const uint32_t nIntervalsPerGroup = end - 1;
 
   // add the top interval
@@ -305,7 +304,7 @@ static uint32_t getWhitness(Interval intervals[], const uint32_t start, const ui
     intervals[i++] = (Interval){start + 2, end - 2, 1};
   }
 
-  // add the key group that turns the combination into a whitness
+  // add the key group that turns the combination into a witness
   for (uint32_t j = 0; j < nIntervalsPerGroup; j++) {
     intervals[i++] = (Interval){end - 1, end, 1};
   }
@@ -330,65 +329,65 @@ static uint32_t fillRemainingSpace(Interval intervals[], uint32_t i, const uint3
 }
 
 /**
- * Generates as many whitnesses as possible for the given number of intervals.
+ * Generates as many witnesses as possible for the given number of intervals.
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
- * @returns The number of whitnesses that were computed.
+ * @returns The number of witnesses that were computed.
  */
-static uint32_t getMaxNumWhitnesses(Interval intervals[], const uint32_t n) {
-  uint32_t whitnessWidth = 4;
+static uint32_t getMaxNumWitnesses(Interval intervals[], const uint32_t n) {
+  uint32_t witnessWidth = 4;
   uint32_t i = 0;
   uint32_t start = __min(3, n);
   uint32_t* endValues = malloc(sizeof(uint32_t) * (n / 4));
-  uint32_t endLenght = calcEndValues(endValues, n, whitnessWidth);
+  uint32_t endLenght = calcEndValues(endValues, n, witnessWidth);
 
-  uint32_t nWhitnesses = 0;
+  uint32_t nWitnesses = 0;
 
-  // add all whitnesses that were computed in calcEndValues
+  // add all witnesses that were computed in calcEndValues
   for (uint32_t endI = 0; endI < endLenght; endI++) {
-    i = getWhitness(intervals, start, endValues[endI], i);
-    nWhitnesses++;
-    start += whitnessWidth / 2;
+    i = getWitness(intervals, start, endValues[endI], i);
+    nWitnesses++;
+    start += witnessWidth / 2;
   }
 
   // fill the remaining space with "[1, 1]" intervals
   i = fillRemainingSpace(intervals, i, n);
 
-  debug_print("Number of whitnesses: %d\n", nWhitnesses);
+  debug_print("Number of witnesses: %d\n", nWitnesses);
 
-  return nWhitnesses;
+  return nWitnesses;
 }
 
 /**
- * Generates a hard yes instance of the GAI problem, consisting of as many whitnesses as possible.
+ * Generates a hard yes instance of the GAI problem, consisting of as many witnesses as possible.
  *
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-InstanceInfo instanceMaxWhitnessesYes(const uint32_t n) {
+InstanceInfo instanceMaxWitnessesYes(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getMaxNumWhitnesses(intervals, n);
+  uint32_t nWitnesses = getMaxNumWitnesses(intervals, n);
 
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
-  return createIntervalSetAndFree(intervals, n, "MaxWhitnessesYes", metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxWitnessesYes", metadata, 1);
 }
 
 /**
- * Generates a hard no instance of the GAI problem, consisting of as many whitnesses as possible.
+ * Generates a hard no instance of the GAI problem, consisting of as many witnesses as possible.
  *
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-InstanceInfo instanceMaxWhitnessesNo(const uint32_t n) {
+InstanceInfo instanceMaxWitnessesNo(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getMaxNumWhitnesses(intervals, n - 1);
+  uint32_t nWitnesses = getMaxNumWitnesses(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
@@ -396,49 +395,49 @@ InstanceInfo instanceMaxWhitnessesNo(const uint32_t n) {
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
-  return createIntervalSetAndFree(intervals, n, "MaxWhitnessesNo", metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxWitnessesNo", metadata, 1);
 }
 
 /**
- * Generates whitnesses that maximize the number of groups the algorithm will build.
+ * Generates witnesses that maximize the number of groups the algorithm will build.
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
- * @returns The number of whitnesses that were computed.
+ * @returns The number of witnesses that were computed.
  */
-static uint32_t getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
-  int32_t whitnessWidth = 6;
+static uint32_t getMaxGroupWitnesses(Interval intervals[], const uint32_t n) {
+  int32_t witnessWidth = 6;
   uint32_t i = 0;
   int32_t start = __min(3, n);
   int32_t end = 2 * sqrt(n);
-  uint32_t nextWhitnessSize = 0;
-  uint32_t nWhitnesses = 0;
-  // add whitnesses until no whitness fits in the remaining space
+  uint32_t nextWitnessSize = 0;
+  uint32_t nWitnesses = 0;
+  // add witnesses until no witness fits in the remaining space
   while (i < n) {
-    nextWhitnessSize = calcWhitnessSize(start, end);
-    // if the next whitness does not fit in the remaining space , shrink the end value
-    while (i + nextWhitnessSize >= n) {
+    nextWitnessSize = calcWitnessSize(start, end);
+    // if the next witness does not fit in the remaining space , shrink the end value
+    while (i + nextWitnessSize >= n) {
       end--;
-      nextWhitnessSize = calcWhitnessSize(start, end);
+      nextWitnessSize = calcWitnessSize(start, end);
     }
-    // if no whitnesses can be added anymore , add "[1 , 1]" intervals to fill the remaining space
-    if (end - start < whitnessWidth) {
+    // if no witnesses can be added anymore , add "[1 , 1]" intervals to fill the remaining space
+    if (end - start < witnessWidth) {
       i = fillRemainingSpace(intervals, i, n);
     }
-    // if there is space for a whitness , add it
-    else if (i + nextWhitnessSize < n) {
-      nWhitnesses++;
-      i = getWhitness(intervals, start, end, i);
-      start += whitnessWidth / 2;
-      end -= whitnessWidth / 2;
+    // if there is space for a witness , add it
+    else if (i + nextWitnessSize < n) {
+      nWitnesses++;
+      i = getWitness(intervals, start, end, i);
+      start += witnessWidth / 2;
+      end -= witnessWidth / 2;
     }
   }
 
-  debug_print("Number of whitnesses: %d\n", nWhitnesses);
+  debug_print("Number of witnesses: %d\n", nWitnesses);
 
-  return nWhitnesses;
+  return nWitnesses;
 }
 
 /**
@@ -448,17 +447,17 @@ static uint32_t getMaxGroupWhitnesses(Interval intervals[], const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n) {
+InstanceInfo instanceMaxGroupWitnessesYes(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getMaxGroupWhitnesses(intervals, n);
+  uint32_t nWitnesses = getMaxGroupWitnesses(intervals, n);
 
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
-  return createIntervalSetAndFree(intervals, n, "MaxGroupWhitnessesYes", metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxGroupWitnessesYes", metadata, 1);
 }
 
 /**
@@ -468,10 +467,10 @@ InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n) {
  * @param n The number of intervals in the instance.
  * @return The generated instance.
  */
-InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n) {
+InstanceInfo instanceMaxGroupWitnessesNo(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getMaxGroupWhitnesses(intervals, n - 1);
+  uint32_t nWitnesses = getMaxGroupWitnesses(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
@@ -479,23 +478,23 @@ InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n) {
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
-  return createIntervalSetAndFree(intervals, n, "MaxGroupWhitnessesNo", metadata, 1);
+  return createIntervalSetAndFree(intervals, n, "MaxGroupWitnessesNo", metadata, 1);
 }
 
 /**
- * Adds a especially hard whitness to the given array of intervals, that makes use of the "amount"
+ * Adds a especially hard witness to the given array of intervals, that makes use of the "amount"
  * key of Intervals to make the hardest possible instance
  *
  * @param intervals The array of intervals to be populated.
- * @param start The starting value of the whitness.
- * @param end The ending value of the whitness.
- * @param i The index of the array on which to start adding the whitness.
- * @returns The index of the array after adding the whitness.
+ * @param start The starting value of the witness.
+ * @param end The ending value of the witness.
+ * @param i The index of the array on which to start adding the witness.
+ * @returns The index of the array after adding the witness.
  */
-static uint32_t getWhitnessAmountVersion(Interval intervals[], const uint32_t start,
-                                         const uint32_t end, uint32_t i) {
+static uint32_t getWitnessAmountVersion(Interval intervals[], const uint32_t start,
+                                        const uint32_t end, uint32_t i) {
   const uint32_t nIntervalsPerGroup = end - 1;
 
   // add the top interval
@@ -507,53 +506,53 @@ static uint32_t getWhitnessAmountVersion(Interval intervals[], const uint32_t st
   // add the bottom group of interval
   intervals[i++] = (Interval){start + 2, end - 2, nIntervalsPerGroup - 1};
 
-  // add the key group that turns the combination into a whitness
+  // add the key group that turns the combination into a witness
   intervals[i++] = (Interval){end - 1, end, nIntervalsPerGroup};
 
   return i;
 }
 
 /**
- * Generates as many amount-whitnesses as possible for the given number of interval-objects.
+ * Generates as many amount-witnesses as possible for the given number of interval-objects.
  *
  * @param intervals The array of intervals to be populated.
  * @param n The length of the array.
- * @returns The number of whitnesses that were computed.
+ * @returns The number of witnesses that were computed.
  */
-static uint32_t getWhitnessesAmountVersion(Interval intervals[], const uint32_t n) {
+static uint32_t getWitnessesAmountVersion(Interval intervals[], const uint32_t n) {
   uint32_t i = 0;
   uint32_t start = __min(3, n);
   uint32_t end = n;
-  uint32_t whitnessSize = 4;
-  // only used to print the number of whitnesses
-  uint32_t nWhitnesses = 0;
+  uint32_t witnessSize = 4;
+  // only used to print the number of witnesses
+  uint32_t nWitnesses = 0;
 
-  // add whitnesses until the next whitness does not fit in the remaining space
+  // add witnesses until the next witness does not fit in the remaining space
   while (i < n) {
-    // if the next whitness does not fit in the remaining space, add "[1, 1]" intervals to fill the
+    // if the next witness does not fit in the remaining space, add "[1, 1]" intervals to fill the
     // remaining space
-    if (i + whitnessSize >= n || start + whitnessSize >= end) {
+    if (i + witnessSize >= n || start + witnessSize >= end) {
       while (i < n) {
         intervals[i++] = (Interval){1, 1, 1};
       }
     }
 
-    // if there is space for a whitness, add it
+    // if there is space for a witness, add it
     else {
-      nWhitnesses++;
-      i = getWhitnessAmountVersion(intervals, start, end, i);
+      nWitnesses++;
+      i = getWitnessAmountVersion(intervals, start, end, i);
       start += 2;
       end -= 2;
     }
   }
 
-  debug_print("Number of whitnesses: %d\n", nWhitnesses);
+  debug_print("Number of witnesses: %d\n", nWitnesses);
 
-  return nWhitnesses;
+  return nWitnesses;
 }
 
 /**
- * Generates a hard yes instance of the GAI problem, consisting of as many whitnesses as possible,
+ * Generates a hard yes instance of the GAI problem, consisting of as many witnesses as possible,
  * using the amount key.
  *
  * @param n The number of interval-objects in the instance.
@@ -562,18 +561,18 @@ static uint32_t getWhitnessesAmountVersion(Interval intervals[], const uint32_t 
 InstanceInfo instanceHardYesAmountVersion(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getWhitnessesAmountVersion(intervals, n);
+  uint32_t nWitnesses = getWitnessesAmountVersion(intervals, n);
 
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
   return createIntervalSetAndFree(intervals, n, "HardYesAmountVersion", metadata, 1);
 }
 
 /**
- * Generates a hard no instance of the GAI problem, consisting of as many whitnesses as possible,
+ * Generates a hard no instance of the GAI problem, consisting of as many witnesses as possible,
  * using the amount key.
  *
  * @param n The number of interval-objects in the instance.
@@ -582,7 +581,7 @@ InstanceInfo instanceHardYesAmountVersion(const uint32_t n) {
 InstanceInfo instanceHardNoAmountVersion(const uint32_t n) {
   Interval* intervals = malloc(sizeof(Interval) * n);
 
-  uint32_t nWhitnesses = getWhitnessesAmountVersion(intervals, n - 1);
+  uint32_t nWitnesses = getWitnessesAmountVersion(intervals, n - 1);
 
   // add the last group that makes the solution impossible
   addImpossibleGroup(intervals, n);
@@ -590,7 +589,7 @@ InstanceInfo instanceHardNoAmountVersion(const uint32_t n) {
   printIntervals(intervals, n);
 
   uint32_t* metadata = malloc(sizeof(uint32_t));
-  *metadata = nWhitnesses;
+  *metadata = nWitnesses;
 
   return createIntervalSetAndFree(intervals, n, "HardNoAmountVersion", metadata, 1);
 }

@@ -213,53 +213,53 @@ RunInfo testSimpleNo(const uint32_t nIntervals) {
 }
 
 /**
- * Tests the bad memory algorithm on a set of hard whitness instances.
+ * Tests the bad memory algorithm on a set of hard witness instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testMaxWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing max whitness yes instance.\n");
+RunInfo testMaxWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing max witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithm);
+  return testYes(nIntervals, instanceMaxWitnessesYes, badMemoryAlgorithm);
 }
 
 /**
- * Tests the bad memory algorithm on a set of hard whitness no instances.
+ * Tests the bad memory algorithm on a set of hard witness no instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testMaxWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing max whitness no instance.\n");
+RunInfo testMaxWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing max witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithm);
+  return testNo(nIntervals, instanceMaxWitnessesNo, badMemoryAlgorithm);
 }
 
 /**
- * Tests the bad memory algorithm on a set of whitness yes instances that try to maximize the number
+ * Tests the bad memory algorithm on a set of witness yes instances that try to maximize the number
  * of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testMaxGroupWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing max group whitness yes instance.\n");
+RunInfo testMaxGroupWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing max group witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithm);
+  return testYes(nIntervals, instanceMaxGroupWitnessesYes, badMemoryAlgorithm);
 }
 
 /**
- * Tests the bad memory algorithm on a set of whitness no instances that try to maximize the number
+ * Tests the bad memory algorithm on a set of witness no instances that try to maximize the number
  * of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testMaxGroupWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing max group whitness no instance.\n");
+RunInfo testMaxGroupWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing max group witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithm);
+  return testNo(nIntervals, instanceMaxGroupWitnessesNo, badMemoryAlgorithm);
 }
 
 /**
@@ -323,53 +323,53 @@ RunInfo testDepthFirstSimpleNo(const uint32_t nIntervals) {
 }
 
 /**
- * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness instances.
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard witness instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testDepthFirstMaxWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max whitness yes instance.\n");
+RunInfo testDepthFirstMaxWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing depth-first max witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryDepthFirst);
+  return testYes(nIntervals, instanceMaxWitnessesYes, badMemoryDepthFirst);
 }
 
 /**
- * Tests the depth-first variant of the bad memory algorithm on a set of hard whitness no instances.
+ * Tests the depth-first variant of the bad memory algorithm on a set of hard witness no instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testDepthFirstMaxWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max whitness no instance.\n");
+RunInfo testDepthFirstMaxWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing depth-first max witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryDepthFirst);
+  return testNo(nIntervals, instanceMaxWitnessesNo, badMemoryDepthFirst);
 }
 
 /**
- * Tests the depth-first variant of the bad memory algorithm on a set of whitness yes instances that
+ * Tests the depth-first variant of the bad memory algorithm on a set of witness yes instances that
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testDepthFirstMaxGroupWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max group whitness yes instance.\n");
+RunInfo testDepthFirstMaxGroupWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing depth-first max group witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryDepthFirst);
+  return testYes(nIntervals, instanceMaxGroupWitnessesYes, badMemoryDepthFirst);
 }
 
 /**
- * Tests the depth-first variant of the bad memory algorithm on a set of whitness no instances that
+ * Tests the depth-first variant of the bad memory algorithm on a set of witness no instances that
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testDepthFirstMaxGroupWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing depth-first max group whitness no instance.\n");
+RunInfo testDepthFirstMaxGroupWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing depth-first max group witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryDepthFirst);
+  return testNo(nIntervals, instanceMaxGroupWitnessesNo, badMemoryDepthFirst);
 }
 
 /**
@@ -435,54 +435,54 @@ RunInfo testParallelizedSimpleNo(const uint32_t nIntervals) {
 }
 
 /**
- * Tests the parallelized version of the bad memory algorithm on a set of hard whitness instances.
+ * Tests the parallelized version of the bad memory algorithm on a set of hard witness instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testParallelizedMaxWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing parallelized max whitness yes instance.\n");
+RunInfo testParallelizedMaxWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxWhitnessesYes, badMemoryAlgorithmParallelized);
+  return testYes(nIntervals, instanceMaxWitnessesYes, badMemoryAlgorithmParallelized);
 }
 
 /**
- * Tests the parallelized version of the bad memory algorithm on a set of hard whitness no
+ * Tests the parallelized version of the bad memory algorithm on a set of hard witness no
  * instances.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testParallelizedMaxWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing parallelized max whitness no instance.\n");
+RunInfo testParallelizedMaxWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxWhitnessesNo, badMemoryAlgorithmParallelized);
+  return testNo(nIntervals, instanceMaxWitnessesNo, badMemoryAlgorithmParallelized);
 }
 
 /**
- * Tests the parallelized version of the bad memory algorithm on a set of whitness yes instances
+ * Tests the parallelized version of the bad memory algorithm on a set of witness yes instances
  * that try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testParallelizedMaxGroupWhitnessesYes(const uint32_t nIntervals) {
-  debug_print("Testing parallelized max group whitness yes instance.\n");
+RunInfo testParallelizedMaxGroupWitnessesYes(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max group witness yes instance.\n");
 
-  return testYes(nIntervals, instanceMaxGroupWhitnessesYes, badMemoryAlgorithmParallelized);
+  return testYes(nIntervals, instanceMaxGroupWitnessesYes, badMemoryAlgorithmParallelized);
 }
 
 /**
- * Tests the parallelized version of the bad memory algorithm on a set of whitness no instances that
+ * Tests the parallelized version of the bad memory algorithm on a set of witness no instances that
  * try to maximize the number of groups built.
  *
  * @param nIntervals The number of intervals in each instance.
  * @return The RunInfo of the test.
  */
-RunInfo testParallelizedMaxGroupWhitnessesNo(const uint32_t nIntervals) {
-  debug_print("Testing parallelized max group whitness no instance.\n");
+RunInfo testParallelizedMaxGroupWitnessesNo(const uint32_t nIntervals) {
+  debug_print("Testing parallelized max group witness no instance.\n");
 
-  return testNo(nIntervals, instanceMaxGroupWhitnessesNo, badMemoryAlgorithmParallelized);
+  return testNo(nIntervals, instanceMaxGroupWitnessesNo, badMemoryAlgorithmParallelized);
 }
 
 /**
@@ -532,10 +532,10 @@ void testRunAll(const uint32_t nIntervals) {
 
   // measureTime(nIntervals, testSimpleYes);
   // measureTime(nIntervals, testSimpleNo);
-  measureTime(nIntervals, testMaxWhitnessesYes);
-  measureTime(nIntervals, testMaxWhitnessesNo);
-  measureTime(nIntervals, testMaxGroupWhitnessesYes);
-  measureTime(nIntervals, testMaxGroupWhitnessesNo);
+  measureTime(nIntervals, testMaxWitnessesYes);
+  measureTime(nIntervals, testMaxWitnessesNo);
+  measureTime(nIntervals, testMaxGroupWitnessesYes);
+  measureTime(nIntervals, testMaxGroupWitnessesNo);
   measureTime(nIntervals, testAllFull);
 
   debug_print("All tests completed.\n");
@@ -548,8 +548,8 @@ void testRunAll(const uint32_t nIntervals) {
  */
 void testRunYes(const uint32_t nIntervals) {
   measureTime(nIntervals, testSimpleYes);
-  measureTime(nIntervals, testMaxWhitnessesYes);
-  measureTime(nIntervals, testMaxGroupWhitnessesYes);
+  measureTime(nIntervals, testMaxWitnessesYes);
+  measureTime(nIntervals, testMaxGroupWitnessesYes);
   measureTime(nIntervals, testAllFull);
   // success &= measureTime(1, nIntervals, testHardYesAmountVersion);
 
@@ -564,10 +564,10 @@ void testRunYes(const uint32_t nIntervals) {
 void testRunAllDepthFirst(const uint32_t nIntervals) {
   // measureTime(nIntervals, testDepthFirstSimpleYes);
   // measureTime(nIntervals, testDepthFirstSimpleNo);
-  measureTime(nIntervals, testDepthFirstMaxWhitnessesYes);
-  measureTime(nIntervals, testDepthFirstMaxWhitnessesNo);
-  measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesYes);
-  measureTime(nIntervals, testDepthFirstMaxGroupWhitnessesNo);
+  measureTime(nIntervals, testDepthFirstMaxWitnessesYes);
+  measureTime(nIntervals, testDepthFirstMaxWitnessesNo);
+  measureTime(nIntervals, testDepthFirstMaxGroupWitnessesYes);
+  measureTime(nIntervals, testDepthFirstMaxGroupWitnessesNo);
   measureTime(nIntervals, testDepthFirstAllFull);
 
   debug_print("All depth-first tests completed.\n");
@@ -581,10 +581,10 @@ void testRunAllDepthFirst(const uint32_t nIntervals) {
 void testRunAllParallelized(const uint32_t nIntervals) {
   // measureTime(nIntervals, testParallelizedSimpleYes);
   // measureTime(nIntervals, testParallelizedSimpleNo);
-  measureTime(nIntervals, testParallelizedMaxWhitnessesYes);
-  measureTime(nIntervals, testParallelizedMaxWhitnessesNo);
-  measureTime(nIntervals, testParallelizedMaxGroupWhitnessesYes);
-  measureTime(nIntervals, testParallelizedMaxGroupWhitnessesNo);
+  measureTime(nIntervals, testParallelizedMaxWitnessesYes);
+  measureTime(nIntervals, testParallelizedMaxWitnessesNo);
+  measureTime(nIntervals, testParallelizedMaxGroupWitnessesYes);
+  measureTime(nIntervals, testParallelizedMaxGroupWitnessesNo);
   measureTime(nIntervals, testParallelizedAllFull);
 
   debug_print("All parallelized tests completed.\n");

@@ -347,8 +347,8 @@ IntervalSet* intervalSetGetWithoutFirstGIncludingI(const IntervalSet* intervalSe
  * @param b The value the intervals must have a greater or equal bottom value than.
  * @return A new IntervalSet containing the retrieved intervals.
  */
-static IntervalSet* getLessThanIRightOfB(const IntervalSet* intervalSet, const uint32_t i,
-                                         const uint32_t b) {
+static IntervalSet* getRightOfIUnderB(const IntervalSet* intervalSet, const uint32_t i,
+                                      const uint32_t b) {
   // choosing intervalSet.length as upper bound
   Interval* intervals = malloc(sizeof(Interval) * intervalSet->length);
 
@@ -384,7 +384,7 @@ IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet) {
   // check if there is an Interval that intervalContains i
   Interval* interval = intervalSetGetFirstContainingI(intervalSet, predNode->i);
 
-  return getLessThanIRightOfB(intervalSet, predNode->i, interval ? interval->bottom : 0);
+  return getRightOfIUnderB(intervalSet, predNode->i, interval ? interval->bottom : 0);
 }
 
 /**
@@ -399,9 +399,8 @@ IntervalSet* intervalSetGetLowestPart(IntervalSet* intervalSet) {
  * @param j           The lower limit index.
  * @return            The count of intervals that meet the specified conditions.
  */
-static uint32_t countLessThanIRightOfBGreaterEqualJ(const IntervalSet* intervalSet,
-                                                    const uint32_t i, const uint32_t b,
-                                                    const uint32_t j) {
+static uint32_t countRightOfIUnderBGreaterEqualJ(const IntervalSet* intervalSet, const uint32_t i,
+                                                 const uint32_t b, const uint32_t j) {
   uint32_t nChosen = 0;
   for (uint32_t k = 0; k < intervalSet->length; k++) {
     const Interval* currInterval = &(intervalSet->intervals[k]);
@@ -433,8 +432,8 @@ uint32_t intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet, const
   // check if there is an Interval that intervalContains i
   Interval* interval = intervalSetGetFirstContainingI(intervalSet, predNode->i);
 
-  return countLessThanIRightOfBGreaterEqualJ(intervalSet, predNode->i,
-                                             interval ? interval->bottom : 0, j);
+  return countRightOfIUnderBGreaterEqualJ(intervalSet, predNode->i, interval ? interval->bottom : 0,
+                                          j);
 }
 
 /**
@@ -450,9 +449,9 @@ uint32_t intervalSetCountLowestPartGreaterEqualJ(IntervalSet* intervalSet, const
  * @param j           The lower bound index.
  * @return            A new IntervalSet containing the desired intervals.
  */
-static IntervalSet* getInverseLessThanIRightOfBGreaterEqualJ(const IntervalSet* intervalSet,
-                                                             const uint32_t i, const uint32_t b,
-                                                             const uint32_t j) {
+static IntervalSet* getInverseRightOfIUnderBGreaterEqualJ(const IntervalSet* intervalSet,
+                                                          const uint32_t i, const uint32_t b,
+                                                          const uint32_t j) {
   // choosing intervalSet.length as upper bound
   Interval* intervals = malloc(sizeof(Interval) * intervalSet->length);
 
@@ -491,6 +490,6 @@ IntervalSet* intervalSetGetInverseLowestPartGreaterEqualJ(IntervalSet* intervalS
   // check if there is an Interval that intervalContains i
   Interval* interval = intervalSetGetFirstContainingI(intervalSet, predNode->i);
 
-  return getInverseLessThanIRightOfBGreaterEqualJ(intervalSet, predNode->i,
-                                                  interval ? interval->bottom : 0, j);
+  return getInverseRightOfIUnderBGreaterEqualJ(intervalSet, predNode->i,
+                                               interval ? interval->bottom : 0, j);
 }

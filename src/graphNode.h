@@ -28,8 +28,7 @@ typedef struct GraphNode {
   uint32_t s;                    /** The s-value of the graph node. */
   IntervalSetNode* intervalSets; /** Pointer to the linked list of interval
                                     sets associated with the graph node. */
-  MarkStorage markStorage;       /** Mark storage associated with the graph node. Only
-                                     used for the depth-first variant, otherwise left empty.*/
+  MarkStorage markStorage;       /** Mark storage associated with the graph node. */
   GraphNodeStorage incoming;     /** The incoming edges of the graph node. */
   GraphNodeStorage outgoing;     /** The outgoing edges of the graph node. */
 } GraphNode;

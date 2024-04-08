@@ -16,10 +16,10 @@ typedef struct InstanceInfo {
 void instanceInitRandom();
 InstanceInfo instanceSimpleYes(const uint32_t n);
 InstanceInfo instanceSimpleNo(const uint32_t n);
-InstanceInfo instanceMaxWhitnessesYes(const uint32_t n);
-InstanceInfo instanceMaxWhitnessesNo(const uint32_t n);
-InstanceInfo instanceMaxGroupWhitnessesYes(const uint32_t n);
-InstanceInfo instanceMaxGroupWhitnessesNo(const uint32_t n);
+InstanceInfo instanceMaxWitnessesYes(const uint32_t n);
+InstanceInfo instanceMaxWitnessesNo(const uint32_t n);
+InstanceInfo instanceMaxGroupWitnessesYes(const uint32_t n);
+InstanceInfo instanceMaxGroupWitnessesNo(const uint32_t n);
 InstanceInfo instanceHardYesAmountVersion(const uint32_t n);
 InstanceInfo instanceHardNoAmountVersion(const uint32_t n);
 InstanceInfo instanceAllFull(const uint32_t n);
