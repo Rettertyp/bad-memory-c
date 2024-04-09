@@ -18,11 +18,11 @@ int main(int argc, char** argv) {
   // log the number of threads
   printf("Max number of threads: %d\n", omp_get_max_threads());
 
-  testRunAllParallelized(N_INTERVALS);
-  testRunAll(N_INTERVALS);
-  testSameSimpleInstances(N_INTERVALS, 20);
-  testRunAllDepthFirst(N_INTERVALS);
-  // testAmountInstances(N_INTERVALS);
+  // testRunAllParallelized(N_INTERVALS);
+  // testRunAll(N_INTERVALS);
+  // testSameSimpleInstances(N_INTERVALS, 20);
+  // testRunAllDepthFirst(N_INTERVALS);
+  testAmountInstances(N_INTERVALS);
 
   printf("Done.\n");
   return 0;

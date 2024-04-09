@@ -219,11 +219,11 @@ InstanceInfo instanceSimpleNo(const uint32_t n) {
 }
 
 /**
- * Calculates the size of the whiteness based on the given start and end values.
+ * Calculates the size of the witness based on the given start and end values.
  *
  * @param start The starting value.
  * @param end The ending value.
- * @return The size of the whiteness.
+ * @return The size of the witness.
  */
 static uint32_t calcWitnessSize(const uint32_t start, const uint32_t end) {
   if (start >= end) {
@@ -234,7 +234,7 @@ static uint32_t calcWitnessSize(const uint32_t start, const uint32_t end) {
 }
 
 /**
- * Calculates the optimal end value to build witnesses based on the given number of intervals.
+ * Calculates the optimal end values to build witnesses based on the given number of intervals.
  *
  * @param endValues The array to store the ending values of the witnesses.
  * @param n The number of intervals.
@@ -352,7 +352,7 @@ static uint32_t getMaxNumWitnesses(Interval intervals[], const uint32_t n) {
   }
 
   // fill the remaining space with "[1, 1]" intervals
-  i = fillRemainingSpace(intervals, i, n);
+  fillRemainingSpace(intervals, i, n);
 
   debug_print("Number of witnesses: %d\n", nWitnesses);
 
@@ -417,7 +417,7 @@ static uint32_t getMaxGroupWitnesses(Interval intervals[], const uint32_t n) {
   // add witnesses until no witness fits in the remaining space
   while (i < n) {
     nextWitnessSize = calcWitnessSize(start, end);
-    // if the next witness does not fit in the remaining space , shrink the end value
+    // if the next witness does not fit in the remaining space, shrink the end value
     while (i + nextWitnessSize >= n) {
       end--;
       nextWitnessSize = calcWitnessSize(start, end);
@@ -532,9 +532,7 @@ static uint32_t getWitnessesAmountVersion(Interval intervals[], const uint32_t n
     // if the next witness does not fit in the remaining space, add "[1, 1]" intervals to fill the
     // remaining space
     if (i + witnessSize >= n || start + witnessSize >= end) {
-      while (i < n) {
-        intervals[i++] = (Interval){1, 1, 1};
-      }
+      i = fillRemainingSpace(intervals, i, n);
     }
 
     // if there is space for a witness, add it
