@@ -262,19 +262,22 @@ bool less(int32_t a, int32_t b) { return a < b; }
  * @param n The size of the square matrix (number of rows/columns).
  * @param compare The comparison function to use (greater or less).
  * @param initialValue The initial value to use (INT32_MIN or INT32_MAX).
- * @param visited The 2D array of booleans to keep track of which nodes have already been visited.
+ * @param visited The 2D array of ints, that saves all already computed best paths, in order to
+ * avoid doing it twice.
  * @return The length of the longest path from the current node to the sink node.
  */
 static int32_t getPathLengthRecursiveBackwards(GraphNode** graphNodes, const uint32_t i,
                                                const uint32_t s, const uint32_t n,
                                                CompareFunc compare, int32_t initialValue,
-                                               bool** visited) {
+                                               int32_t** visited) {
+  // if a starting node is reached, return 0
   if (i == s) {
     return 0;
   }
 
-  if (visited[i - 1][s - 1]) {
-    return initialValue;
+  // if the path from this node has already been computed, return it to avoid doing it twice
+  if (visited[i - 1][s - 1] != -1) {
+    return visited[i - 1][s - 1];
   }
 
   GraphNode* currNode = getGraphNode(graphNodes, i, s);
@@ -290,9 +293,9 @@ static int32_t getPathLengthRecursiveBackwards(GraphNode** graphNodes, const uin
     incomingNode = incomingNode->next;
   }
 
-  visited[i - 1][s - 1] = true;
-
-  return bestPath + (bestPath != initialValue ? 1 : 0);
+  int32_t res = bestPath + (bestPath != initialValue ? 1 : 0);
+  visited[i - 1][s - 1] = res;
+  return res;
 }
 
 /**
@@ -311,11 +314,11 @@ int32_t graphNodeGetPathLengthBackwards(GraphNode** graphNodes, const uint32_t n
   int32_t bestPath = initialValue;
 
   // the visited array is used to keep track of which nodes have already been visited
-  bool** visited = malloc(n * sizeof(bool*));
+  int32_t** visited = malloc(n * sizeof(int32_t*));
   for (uint32_t i = 0; i < n; i++) {
-    visited[i] = malloc(n * sizeof(bool));
+    visited[i] = malloc(n * sizeof(int32_t));
     for (uint32_t j = 0; j < n; j++) {
-      visited[i][j] = false;
+      visited[i][j] = -1;
     }
   }
 
