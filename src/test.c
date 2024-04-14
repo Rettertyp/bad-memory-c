@@ -611,8 +611,8 @@ void testSameSimpleInstances(const uint32_t nIntervals, const uint32_t nIteratio
 void testAmountInstances(const uint32_t nIntervals) {
   measureTime(nIntervals, testHardYesAmountVersion);
   measureTime(nIntervals, testHardNoAmountVersion);
-  measureTime(nIntervals, testParallelizedHardYesAmountVersion);
-  measureTime(nIntervals, testParallelizedHardNoAmountVersion);
-  measureTime(nIntervals, testDepthFirstHardYesAmountVersion);
-  measureTime(nIntervals, testDepthFirstHardNoAmountVersion);
+  // measureTime(nIntervals, testParallelizedHardYesAmountVersion);
+  // measureTime(nIntervals, testParallelizedHardNoAmountVersion);
+  // measureTime(nIntervals, testDepthFirstHardYesAmountVersion);
+  // measureTime(nIntervals, testDepthFirstHardNoAmountVersion);
 }

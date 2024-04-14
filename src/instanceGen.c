@@ -531,7 +531,7 @@ static uint32_t getWitnessesAmountVersion(Interval intervals[], const uint32_t n
   while (i < n) {
     // if the next witness does not fit in the remaining space, add "[1, 1]" intervals to fill the
     // remaining space
-    if (i + witnessSize >= n || start + witnessSize >= end) {
+    if (i + witnessSize >= n || start + witnessSize > end) {
       i = fillRemainingSpace(intervals, i, n);
     }
 
