@@ -1,0 +1,21 @@
+{
+  "description":"AllFull_DepthFirst",
+  "solutionFound":true,
+  "nIntervals":1000,
+  "nGroupsBuilt":1000,
+  "nGroupsKept":1000,
+  "nSolutions":1,
+  "nSteps":1000,
+  "nUsedNodes":1000,
+  "avgOutgoingEdges":NaN,
+  "avgIncomingEdges":NaN,
+  "maxOutgoingEdges":0,
+  "maxIncomingEdges":0,
+  "nEdges":0,
+  "nMarkedSets":0,
+  "maxSetsPerNode":1,
+  "longestPath":0,
+  "shortestPath":0,
+  "runTime":0.071999999999999995,
+  "metadata":[]
+}

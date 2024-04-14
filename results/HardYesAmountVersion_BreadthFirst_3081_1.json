@@ -1,0 +1,23 @@
+{
+  "description":"HardYesAmountVersion_BreadthFirst",
+  "solutionFound":true,
+  "nIntervals":3081,
+  "nGroupsBuilt":27901415,
+  "nGroupsKept":3989221,
+  "nSolutions":1,
+  "nSteps":220209961,
+  "nUsedNodes":76174,
+  "avgOutgoingEdges":8.6788667586932231,
+  "avgIncomingEdges":8.6666754187890565,
+  "maxOutgoingEdges":36,
+  "maxIncomingEdges":36,
+  "nEdges":660158,
+  "nMarkedSets":88751037,
+  "maxSetsPerNode":119,
+  "longestPath":173,
+  "shortestPath":56,
+  "runTime":883.82399999999996,
+  "metadata":[
+    18
+  ]
+}

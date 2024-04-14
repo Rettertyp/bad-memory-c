@@ -1,0 +1,23 @@
+{
+  "description":"MaxWitnessesYes_DepthFirst",
+  "solutionFound":true,
+  "nIntervals":1000,
+  "nGroupsBuilt":35,
+  "nGroupsKept":35,
+  "nSolutions":1,
+  "nSteps":1778,
+  "nUsedNodes":35,
+  "avgOutgoingEdges":1.0,
+  "avgIncomingEdges":1.0,
+  "maxOutgoingEdges":1,
+  "maxIncomingEdges":1,
+  "nEdges":33,
+  "nMarkedSets":702,
+  "maxSetsPerNode":1,
+  "longestPath":33,
+  "shortestPath":33,
+  "runTime":0.065000000000000002,
+  "metadata":[
+    11
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "description":"MaxWitnessesNo_BreadthFirst",
+  "solutionFound":false,
+  "nIntervals":1000,
+  "nGroupsBuilt":78191,
+  "nGroupsKept":20313,
+  "nSolutions":0,
+  "nSteps":697893,
+  "nUsedNodes":10333,
+  "avgOutgoingEdges":3.9347172373654087,
+  "avgIncomingEdges":3.9263382054012195,
+  "maxOutgoingEdges":7,
+  "maxIncomingEdges":6,
+  "nEdges":40563,
+  "nMarkedSets":170223,
+  "maxSetsPerNode":8,
+  "longestPath":-1,
+  "shortestPath":-1,
+  "runTime":8.7919999999999998,
+  "metadata":[
+    11
+  ]
+}
